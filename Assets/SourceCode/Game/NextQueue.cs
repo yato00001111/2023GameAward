@@ -16,7 +16,7 @@ class NextQueue
     Vector2Int CreateNext()
     {
         return new Vector2Int(
-            Random.Range(0, (int)Constants.BLOCK_TYPE_MAX) + 1,// [1,PUYO_TYPE_MAX]‚Ì’l
+            Random.Range(0, (int)Constants.BLOCK_TYPE_MAX) + 1,// [1,BLOCK_TYPE_MAX]‚Ì’l
             Random.Range(0, (int)Constants.BLOCK_TYPE_MAX) + 1);
     }
 

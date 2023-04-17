@@ -19,21 +19,24 @@ public enum BlockType
 
 public class BlockController : MonoBehaviour
 {
-    static readonly Color[] color_table = new Color[] {
-        Color.black,
+    //static readonly Color[] color_table = new Color[] {
+    //    Color.black,
 
-        Color.blue,
-        Color.green,
-        Color.cyan,
-        Color.magenta,
-        Color.red,
-        Color.yellow,
+    //    Color.blue,
+    //    Color.green,
+    //    Color.cyan,
+    //    Color.magenta,
+    //    Color.red,
+    //    Color.yellow,
 
-        Color.gray,
-    };
+    //    Color.gray,
+    //};
 
     // 縦座標
+    // 真ん中の円のスケールが1.5の場合
     private float[] BLOCK_SCALE = { 0.5733f, 0.6332f, 0.7003f, 0.7664f, 0.8419f, 0.9251f, 1.0100f, 1.10818f, 1.20f, 1.333f, 1.466f, 1.61f };
+    // 真ん中の円のスケールが1.0の場合
+    //private float[] BLOCK_SCALE = { 0.3833f, 0.4222f, 0.463f, 0.5055f, 0.5533f, 0.6f, 0.65888f, 0.7222f, 0.80f, 0.8955f };
     // 横座標(360と-22.5fは端に行ったときに周回できるように用意した角度)
     private float[] BLOCK_ROTATE = { 0, 22.5f, 45.0f, 67.5f, 90.0f, 112.5f, 135.0f, 157.5f,
                                      180.0f, 202.5f, 225.0f, 247.5f, 270.0f, 292.5f, 315.0f, 337.5f, 360.0f, -22.5f};
@@ -41,6 +44,7 @@ public class BlockController : MonoBehaviour
 
     [SerializeField, Header("位置が原点の親オブジェクト")] GameObject parentObject;
     [SerializeField] Renderer my_renderer = default!;// 自分自身のマテリアルを登録しておく(GetComponentをなくす)
+    [SerializeField] List<Material> _materials = new();
     BlockType _type = BlockType.Invalid;
 
     // Start is called before the first frame update
@@ -58,8 +62,7 @@ public class BlockController : MonoBehaviour
     public void SetBlockType(BlockType type)
     {
         _type = type;
-
-        my_renderer.material.color = color_table[(int)_type];
+        my_renderer.material = _materials[(int)_type];
     }
     public BlockType GetBlockType()
     {
@@ -68,8 +71,8 @@ public class BlockController : MonoBehaviour
 
     public void SetPos(Vector3Int pos)
     {
-        parentObject.transform.localRotation = Quaternion.Euler(0, BLOCK_ROTATE[pos.x], 0);
-        parentObject.transform.localScale = new Vector3(BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y]);
+        transform.localRotation = Quaternion.Euler(0, BLOCK_ROTATE[pos.x], 0);
+        transform.localScale = new Vector3(BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y]);
     }
     
     public void SetPosInterpolate(Vector2Int pos, Vector2Int pos_last, float rate, float fall_y)
@@ -78,11 +81,11 @@ public class BlockController : MonoBehaviour
         //Debug.Log("pos_last" + pos_last);
         //Debug.Log("fall_y" + fall_y);
         Vector3 p = Vector3.Lerp(
-    new Vector3((float)BLOCK_ROTATE[pos.x], (float)BLOCK_SCALE[pos.y]/* + fall_y*/, 0.0f),
-    new Vector3((float)BLOCK_ROTATE[pos_last.x], (float)BLOCK_SCALE[pos_last.y]/* + fall_y*/, 0.0f), rate);
+    new Vector3((float)BLOCK_ROTATE[pos.x], (float)BLOCK_SCALE[pos.y], 0.0f),
+    new Vector3((float)BLOCK_ROTATE[pos_last.x], (float)BLOCK_SCALE[pos_last.y], 0.0f), rate);
         p = Vector3.Lerp(new Vector3(p.x, (float)BLOCK_SCALE[pos_last.y], p.z), new Vector3(p.x, (float)BLOCK_SCALE[pos.y], p.z), (1 - fall_y));
 
-        parentObject.transform.localRotation = Quaternion.Euler(0, p.x, 0);
-        parentObject.transform.localScale = new Vector3(p.y, p.y, p.y);
+        transform.localRotation = Quaternion.Euler(0, p.x, 0);
+        transform.localScale = new Vector3(p.y, p.y, p.y);
     }
 }

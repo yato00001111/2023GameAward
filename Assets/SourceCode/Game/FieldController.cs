@@ -22,7 +22,10 @@ public class FieldController : MonoBehaviour
     public const int BOARD_HEIGHT = 10;
 
     // 縦座標
+    // 真ん中の円のスケールが1.5の場合
     private float[] BLOCK_SCALE = { 0.5733f, 0.6332f, 0.7003f, 0.7664f, 0.8419f, 0.9251f, 1.0100f, 1.10818f, 1.20f, 1.333f, 1.466f, 1.61f };
+    // 真ん中の円のスケールが1.0の場合
+    //private float[] BLOCK_SCALE = { 0.3833f, 0.4222f, 0.463f, 0.5055f, 0.5533f, 0.6f, 0.65888f, 0.7222f, 0.80f, 0.8955f };
     // 横座標(360と-22.5fは端に行ったときに周回できるように用意した角度)
     private float[] BLOCK_ROTATE = { 0, 22.5f, 45.0f, 67.5f, 90.0f, 112.5f, 135.0f, 157.5f,
                                      180.0f, 202.5f, 225.0f, 247.5f, 270.0f, 292.5f, 315.0f, 337.5f, 360.0f, -22.5f};
