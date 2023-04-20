@@ -245,8 +245,9 @@ public class FieldController : MonoBehaviour
         // 最初のぷよから上下左右を見て、同じ種類のぷよがあれば、そのぷよの上下左右も見るということを続けて、同じ種類の繋がっているぷよを抜き出していく
         // 上下左右を見るのは、それらのオフセットのテーブルを用意しておいて、foreach文で4方向を取り出して検索
         List<Vector2Int> add_list = new();
-        List<int> xChainTemp = new();
-        List<int> yChainTemp = new();
+        int xChainTemp = -1;
+        int yChainTemp = -1;
+        int typeTemp = -1;
         for (int y = 0; y < BOARD_HEIGHT; y++)
         {
             for (int x = 0; x < BOARD_WIDTH; x++)
@@ -284,71 +285,70 @@ public class FieldController : MonoBehaviour
                 add_list.Clear();
                 get_connection(new Vector2Int(x, y));
 
-                //int xCount = 0;
-                //int yCount = 0;
+                int xCount = 0;
+                int yCount = 0;
                 if (3 <= add_list.Count)
                 {
-                    //    foreach (Vector2Int d in add_list)
-                    //    {
-                    //        foreach (Vector2Int d2 in add_list)
-                    //        {
-                    //            if(xChainTemp.Count >= 0)
-                    //            {
-                    //                if (d.y == xChainTemp[0]) continue;
-                    //            }
-                    //            if (yChainTemp.Count >= 0)
-                    //            {
-                    //                if (d.x == yChainTemp[0]) continue;
-                    //            }
-                    //            if (d.x == d2.x)
-                    //            {
-                    //                yCount++;
-                    //            }
-                    //            if (d.y == d2.y)
-                    //            {
-                    //                xCount++;
-                    //            }
-                    //        }
-                    //        if(xCount >= 3)
-                    //        {
-                    //            xChainTemp.Add(d.y);
-                    //        }
-                    //        if (yCount >= 3)
-                    //        {
-                    //            yChainTemp.Add(d.x);
-                    //        }
-                    //        xCount = 0;
-                    //        yCount = 0;
-                    //    }
+                    foreach (Vector2Int d in add_list)
+                    {
+                        foreach (Vector2Int d2 in add_list)
+                        {
+                            if (d.y == xChainTemp) continue;
+                            if (d.x == yChainTemp) continue;
+                            if (d.x == d2.x)
+                            {
+                                yCount++;
+                            }
+                            if (d.y == d2.y)
+                            {
+                                xCount++;
+                            }
+                        }
+                        if (xCount >= 3)
+                        {
+                            xChainTemp = d.y;
+                            typeTemp = type;
+                        }
+                        if (yCount >= 3)
+                        {
+                            yChainTemp = d.x;
+                            typeTemp = type;
+                        }
+                        xCount = 0;
+                        yCount = 0;
+                    }
                     connectBonus += connectBonusTbl[System.Math.Min(add_list.Count, connectBonusTbl.Length - 1)];
                     colorBits |= (1u << type);
                     _erases.AddRange(add_list);
                 }
-                //for (int y2 = 0; y2 < BOARD_HEIGHT; y2++)
-                //{
-                //    for (int x2 = 0; x2 < BOARD_WIDTH; x2++)
-                //    {
-                //        if (_board[y, x] != type) continue;
-                //        foreach (int d in xChainTemp)
-                //        {
-                //            if(d == x2)
-                //            {
-                //                _erases.Add(new Vector2Int(x, y));
-                //            }
-                //        }
-                //        foreach (int d in yChainTemp)
-                //        {
-                //            if (d == y2)
-                //            {
-                //                _erases.Add(new Vector2Int(x, y));
-                //            }
-                //        }
-                //    }
-                //}
-                //xChainTemp.Clear();
-                //yChainTemp.Clear();
             }
         }
+        int reverseX = yChainTemp;
+        reverseX = reverseX < 8 ? reverseX + 8 : reverseX - 8;
+        for (int y = 0; y < BOARD_HEIGHT; y++)
+        {
+            for (int x = 0; x < BOARD_WIDTH; x++)
+            {
+                if (_board[y, x] != typeTemp) continue;
+                //Debug.Log("xChainTemp" + xChainTemp);
+                //Debug.Log("yChainTemp" + yChainTemp);
+                if (xChainTemp == y)
+                {
+                    _erases.Add(new Vector2Int(x, y));
+                }
+                if (yChainTemp == x)
+                {
+                    _erases.Add(new Vector2Int(x, y));
+                }
+                if (reverseX == x)
+                {
+                    _erases.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+        typeTemp = -1;
+        xChainTemp = -1;
+        yChainTemp = -1;
 
         if (chainCount != -1)// 初期化時は得点計算はしない
         {
