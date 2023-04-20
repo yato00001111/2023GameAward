@@ -10,8 +10,8 @@ public class LogicalInput
     {
         Right = 1 << 0,
         Left = 1 << 1,
-        RotR = 1 << 2,
-        RotL = 1 << 3,
+        D = 1 << 2,
+        A = 1 << 3,
         QuickDrop = 1 << 4,
         Down = 1 << 5,
 

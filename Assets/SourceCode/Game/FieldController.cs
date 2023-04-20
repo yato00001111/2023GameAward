@@ -31,9 +31,12 @@ public class FieldController : MonoBehaviour
                                      180.0f, 202.5f, 225.0f, 247.5f, 270.0f, 292.5f, 315.0f, 337.5f, 360.0f, -22.5f};
 
     [SerializeField] GameObject prefabBlock = default!;
+    [SerializeField] PlayerController[] _playerController = { default!, default! };
 
     int[,] _board = new int[BOARD_HEIGHT, BOARD_WIDTH];
+    int[,] _boardDst = new int[BOARD_HEIGHT, BOARD_WIDTH];
     GameObject[,] _Blocks = new GameObject[BOARD_HEIGHT, BOARD_WIDTH];
+    GameObject[,] _BlocksDst = new GameObject[BOARD_HEIGHT, BOARD_WIDTH];
 
     // 追加された得点を保持
     uint _additiveScore = 0;
@@ -53,9 +56,13 @@ public class FieldController : MonoBehaviour
             for (int x = 0; x < BOARD_WIDTH; x++)
             {
                 _board[y, x] = 0;
+                _boardDst[y, x] = 0;
 
                 if (_Blocks[y, x] != null) Destroy(_Blocks[y, x]);
                 _Blocks[y, x] = null;
+                if (_BlocksDst[y, x] != null) Destroy(_BlocksDst[y, x]);
+                _BlocksDst[y, x] = null;
+
             }
         }
     }
@@ -65,13 +72,17 @@ public class FieldController : MonoBehaviour
         ClearAll();
 
         // 全マスに置く
-        //for (int y = 0; y < BOARD_HEIGHT; y++)
+        //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
         //{
         //    for (int x = 0; x < BOARD_WIDTH; x++)
         //    {
         //        Settle(new Vector2Int(x, y), Random.Range(1, 7));
         //    }
         //}
+    }
+
+    public void Update()
+    {
     }
 
     public static bool IsValidated(Vector2Int pos)
@@ -108,6 +119,11 @@ public class FieldController : MonoBehaviour
 
         return true;
     }
+
+    //public bool SettlePos(Vector2Int pos)
+    //{
+
+    //}
 
     // 下が空間となっていて落ちるぷよを検索する
     public bool CheckFall()
@@ -178,7 +194,7 @@ public class FieldController : MonoBehaviour
             }
             //_Blocks[f.Dest, f.X].transform.localRotation = Quaternion.Euler(0, BLOCK_ROTATE[(int)pos.x], 0);// 表示位置の更新
             Vector3 p = new Vector3(0, 0, 0);
-            if((f.Y - pos.y) == 1)
+            if ((f.Y - pos.y) == 1)
             {
                 p = Vector3.Lerp(new Vector3(0, (float)BLOCK_SCALE[f.Y], 0), new Vector3(0, (float)BLOCK_SCALE[(int)pos.y], 0), (dy));
             }
@@ -229,6 +245,8 @@ public class FieldController : MonoBehaviour
         // 最初のぷよから上下左右を見て、同じ種類のぷよがあれば、そのぷよの上下左右も見るということを続けて、同じ種類の繋がっているぷよを抜き出していく
         // 上下左右を見るのは、それらのオフセットのテーブルを用意しておいて、foreach文で4方向を取り出して検索
         List<Vector2Int> add_list = new();
+        List<int> xChainTemp = new();
+        List<int> yChainTemp = new();
         for (int y = 0; y < BOARD_HEIGHT; y++)
         {
             for (int x = 0; x < BOARD_WIDTH; x++)
@@ -266,14 +284,72 @@ public class FieldController : MonoBehaviour
                 add_list.Clear();
                 get_connection(new Vector2Int(x, y));
 
+                //int xCount = 0;
+                //int yCount = 0;
                 if (3 <= add_list.Count)
                 {
+                    //    foreach (Vector2Int d in add_list)
+                    //    {
+                    //        foreach (Vector2Int d2 in add_list)
+                    //        {
+                    //            if(xChainTemp.Count >= 0)
+                    //            {
+                    //                if (d.y == xChainTemp[0]) continue;
+                    //            }
+                    //            if (yChainTemp.Count >= 0)
+                    //            {
+                    //                if (d.x == yChainTemp[0]) continue;
+                    //            }
+                    //            if (d.x == d2.x)
+                    //            {
+                    //                yCount++;
+                    //            }
+                    //            if (d.y == d2.y)
+                    //            {
+                    //                xCount++;
+                    //            }
+                    //        }
+                    //        if(xCount >= 3)
+                    //        {
+                    //            xChainTemp.Add(d.y);
+                    //        }
+                    //        if (yCount >= 3)
+                    //        {
+                    //            yChainTemp.Add(d.x);
+                    //        }
+                    //        xCount = 0;
+                    //        yCount = 0;
+                    //    }
                     connectBonus += connectBonusTbl[System.Math.Min(add_list.Count, connectBonusTbl.Length - 1)];
                     colorBits |= (1u << type);
                     _erases.AddRange(add_list);
                 }
+                //for (int y2 = 0; y2 < BOARD_HEIGHT; y2++)
+                //{
+                //    for (int x2 = 0; x2 < BOARD_WIDTH; x2++)
+                //    {
+                //        if (_board[y, x] != type) continue;
+                //        foreach (int d in xChainTemp)
+                //        {
+                //            if(d == x2)
+                //            {
+                //                _erases.Add(new Vector2Int(x, y));
+                //            }
+                //        }
+                //        foreach (int d in yChainTemp)
+                //        {
+                //            if (d == y2)
+                //            {
+                //                _erases.Add(new Vector2Int(x, y));
+                //            }
+                //        }
+                //    }
+                //}
+                //xChainTemp.Clear();
+                //yChainTemp.Clear();
             }
         }
+
         if (chainCount != -1)// 初期化時は得点計算はしない
         {
             // ボーナス計算
@@ -323,6 +399,132 @@ public class FieldController : MonoBehaviour
         //}
 
         return true;
+    }
+
+    // 9段目にブロックが存在しているか
+    public bool CheckDead()
+    {
+        for (int y = 8; y < BOARD_HEIGHT; y++)
+        {
+            for (int x = 0; x < BOARD_WIDTH; x++)
+            {
+                if (_board[y, x] == 0) continue;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //void SetTransition(Vector2Int pos, int time)
+    //{
+    //    // 補間のために保存しておく
+    //    // 円なので端と端でループするように
+    //    if (is0_15) // x座標0から15
+    //    {
+    //        _last_position.x = 16;
+    //        _last_position.y = _position.y;
+    //        is0_15 = false;
+    //    }
+    //    else if (is15_0) // x座標15から0
+    //    {
+    //        _last_position.x = 17;
+    //        _last_position.y = _position.y;
+    //        is15_0 = false;
+    //    }
+    //    else _last_position = _position;
+
+    //    // 値の更新
+    //    _position = pos;
+
+    //    _animationController.Set(time);
+    //}
+
+    private bool Translate(bool is_right)
+    {
+        // 移動先のX軸の記録用
+
+        var trans = (is_right ? Vector2Int.right : Vector2Int.left);
+
+        for (int y = 0; y < BOARD_HEIGHT; y++)
+        {
+            for (int x = 0; x < BOARD_WIDTH; x++)
+            {
+                if (_board[y, x] == 0) continue;
+
+                // データを変更しておく
+                int posX = x + trans.x;
+                if (posX == -1)
+                {
+                    posX = 15; //x座標の端
+                    //is0_15 = true;
+                }
+                if (posX == 16)
+                {
+                    posX = 0; //x座標の端
+                    //is15_0 = true;
+                }
+                _boardDst[y, posX] = _board[y, x];
+                _BlocksDst[y, posX] = _Blocks[y, x];
+                _BlocksDst[y, posX].transform.localRotation = Quaternion.Euler(0, BLOCK_ROTATE[posX], 0);
+                for(int i=0; i < 2; i++)
+                {
+                    if (_playerController[i].GetPos().x == posX && _playerController[i].GetPos().y <= y)
+                    {
+                        int player_posX = _playerController[i].GetPos().x + trans.x;
+                        if (player_posX == -1)
+                        {
+                            player_posX = 15; //x座標の端
+                        }
+                        if (player_posX == 16)
+                        {
+                            player_posX = 0; //x座標の端
+                        }
+                        _playerController[i].SetPos(new Vector2Int(player_posX, _playerController[i].GetPos().y));
+                    }
+                }
+            }
+        }
+        for (int y = 0; y < BOARD_HEIGHT; y++)
+        {
+            for (int x = 0; x < BOARD_WIDTH; x++)
+            {
+                _board[y, x] = _boardDst[y, x];
+                _boardDst[y, x] = 0;
+                _Blocks[y, x] = _BlocksDst[y, x];
+                _BlocksDst[y, x] = null;
+            }
+        }
+
+        return true;
+    }
+
+    public void Control(LogicalInput _logicalInput)
+    {
+        // アニメ中はキー入力を受け付けない
+        //if (_animationController.Update()) return;
+
+        // 平行移動のキー入力取得
+        if (_logicalInput.IsRepeat(LogicalInput.Key.Right) || _logicalInput.IsRepeat(LogicalInput.Key.D))
+        {
+            if (Translate(true)) return;
+        }
+        if (_logicalInput.IsRepeat(LogicalInput.Key.Left) || _logicalInput.IsRepeat(LogicalInput.Key.A))
+        {
+            if (Translate(false)) return;
+        }
+
+        // Debug用
+        if (Input.GetKey(KeyCode.Z))
+        {
+            for (int y = 0; y < BOARD_HEIGHT - 1; y++)
+            {
+                for (int x = 0; x < BOARD_WIDTH; x++)
+                {
+                    Settle(new Vector2Int(x, y), Random.Range(1, 7));
+                }
+            }
+        }
+
     }
 
     // 得点の受け渡し

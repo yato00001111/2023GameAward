@@ -123,12 +123,12 @@ MonoBehaviour:
   my_renderer: {fileID: 8128024163405224533}
   _materials:
   - {fileID: 0}
-  - {fileID: 2100000, guid: ae18053baa22ace4f9c12e10fa19786b, type: 2}
-  - {fileID: 2100000, guid: fd65d968386675b458caeb718640636d, type: 2}
-  - {fileID: 2100000, guid: 692e98967dd22904d842ff9560d0f170, type: 2}
-  - {fileID: 2100000, guid: 4cd58525f92246d438ab64f436c4da7e, type: 2}
-  - {fileID: 2100000, guid: 4f56b9e9582eea844962bb987eef81e3, type: 2}
-  - {fileID: 2100000, guid: 55baf1a1a881ccc45a39fd479adbcfce, type: 2}
+  - {fileID: 2100000, guid: 06d1955737c8d4040a29d48e110e96b5, type: 2}
+  - {fileID: 2100000, guid: f68a17b6c65e41b4dbff2b84234ef060, type: 2}
+  - {fileID: 2100000, guid: 07fbe6b798440f945b679ee1ce6142f5, type: 2}
+  - {fileID: 2100000, guid: 721562455360cf249a26ce2316203499, type: 2}
+  - {fileID: 2100000, guid: 36edf22ed35dedd4f9edfa1226f3343a, type: 2}
+  - {fileID: 2100000, guid: e487c3786fd26d24aa032e4ca1b22f43, type: 2}
   - {fileID: 0}
 --- !u!4 &2872531840485157746 stripped
 Transform:

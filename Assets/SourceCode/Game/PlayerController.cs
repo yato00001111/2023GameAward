@@ -46,10 +46,9 @@ public class PlayerController : MonoBehaviour
     }
 
     // 新しくぷよをだす
-    public bool Spawn(BlockType axis, BlockType child)
+    public bool Spawn(BlockType axis, BlockType child, Vector2Int position)
     {
         // 初期位置に出せるか確認
-        Vector2Int position = new(0, 9);// 初期位置
         if (!CanMove(position)) return false;
 
         // パラメータの初期化
@@ -60,7 +59,7 @@ public class PlayerController : MonoBehaviour
 
         // ぷよをだす
         _blockController.SetBlockType(axis);
-        _blockController.SetBlockType(child);
+        //_blockController.SetBlockType(child);
 
         _blockController.SetPos(new Vector3Int(_position.x, _position.y, 0));
 
@@ -182,8 +181,16 @@ public class PlayerController : MonoBehaviour
         return true;
     }
 
+    void CheckSide()
+    {
+
+    }
+
     void Control()
     {
+        // 横判定
+        CheckSide();
+
         // 落とす
         if (!Fall(_logicalInput.IsRaw(LogicalInput.Key.Down))) return;// 接地したら終了
 
@@ -191,14 +198,14 @@ public class PlayerController : MonoBehaviour
         if (_animationController.Update()) return;
 
         // 平行移動のキー入力取得
-        if (_logicalInput.IsRepeat(LogicalInput.Key.Right))
-        {
-            if (Translate(true)) return;
-        }
-        if (_logicalInput.IsRepeat(LogicalInput.Key.Left))
-        {
-            if (Translate(false)) return;
-        }
+        //if (_logicalInput.IsRepeat(LogicalInput.Key.Right))
+        //{
+        //    if (Translate(true)) return;
+        //}
+        //if (_logicalInput.IsRepeat(LogicalInput.Key.Left))
+        //{
+        //    if (Translate(false)) return;
+        //}
 
         // クイックドロップのキー入力取得
         if (_logicalInput.IsRelease(LogicalInput.Key.QuickDrop))
@@ -228,6 +235,16 @@ public class PlayerController : MonoBehaviour
 
 
         return p;
+    }
+
+    public Vector2Int GetPos()
+    {
+        return _position;
+    }
+
+    public void SetPos(Vector2Int pos)
+    {
+        _position = pos;
     }
 
     // 得点の受け渡し

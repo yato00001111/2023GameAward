@@ -9,8 +9,8 @@ public class sphereController : MonoBehaviour
     static readonly KeyCode[] key_code_tbl = new KeyCode[(int)LogicalInput.Key.MAX]{
         KeyCode.RightArrow, // Right
         KeyCode.LeftArrow,  // Left
-        KeyCode.X,          // RotR
-        KeyCode.Z,          // RotL
+        KeyCode.D,          // RotR
+        KeyCode.A,          // RotL
         KeyCode.UpArrow,    // QuickDrop
         KeyCode.DownArrow,  // Down
     };
@@ -69,17 +69,23 @@ public class sphereController : MonoBehaviour
             //    angle = new Vector3(0f, -0.5f, 0f);
             //    count = 0;
             //}
-            if (logicalInput.IsRepeat(LogicalInput.Key.Right))
+            if (logicalInput.IsRepeat(LogicalInput.Key.Right) || logicalInput.IsRepeat(LogicalInput.Key.D))
             {
-                isAnimate = true;
-                angle = new Vector3(0f, 0.5f, 0f);
-                count = 0;
+                angle = new Vector3(0f, 22.5f, 0f);
+                transform.Rotate(angle, Space.World);
+
+                //isAnimate = true;
+                //angle = new Vector3(0f, 0.5f, 0f);
+                //count = 0;
             }
-            if (logicalInput.IsRepeat(LogicalInput.Key.Left))
+            if (logicalInput.IsRepeat(LogicalInput.Key.Left) || logicalInput.IsRepeat(LogicalInput.Key.A))
             {
-                isAnimate = true;
-                angle = new Vector3(0f, -0.5f, 0f);
-                count = 0;
+                angle = new Vector3(0f, -22.5f, 0f);
+                transform.Rotate(angle, Space.World);
+
+                //isAnimate = true;
+                //angle = new Vector3(0f, -0.5f, 0f);
+                //count = 0;
             }
         }
 
@@ -105,12 +111,12 @@ public class sphereController : MonoBehaviour
     // 0.5ìxÇ∏Ç¬âÒì]Ç45âÒçsÇ§
     private void Animation()
     {
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 15; i++)
         {
             transform.Rotate(angle, Space.World);
         }
         count++;
-        if (count == 5)
+        if (count == 3)
         {
             isAnimate = false;
         }
