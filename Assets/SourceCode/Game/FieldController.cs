@@ -79,6 +79,33 @@ public class FieldController : MonoBehaviour
         //        Settle(new Vector2Int(x, y), Random.Range(1, 7));
         //    }
         //}
+
+        // Tutorial
+        //Settle(new Vector2Int(0, 0), (int)BlockType.Pink);
+        //Settle(new Vector2Int(1, 0), (int)BlockType.Red);
+        //Settle(new Vector2Int(1, 1), (int)BlockType.Pink);
+        //Settle(new Vector2Int(1, 2), (int)BlockType.Red);
+        //Settle(new Vector2Int(1, 3), (int)BlockType.Blue);
+        //Settle(new Vector2Int(2, 0), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(2, 1), (int)BlockType.Red);
+        //Settle(new Vector2Int(2, 2), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(2, 3), (int)BlockType.Purple);
+        //Settle(new Vector2Int(3, 0), (int)BlockType.Green);
+        //Settle(new Vector2Int(3, 1), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(3, 2), (int)BlockType.Green);
+        //Settle(new Vector2Int(3, 3), (int)BlockType.Pink);
+        //Settle(new Vector2Int(4, 0), (int)BlockType.Blue);
+        //Settle(new Vector2Int(4, 1), (int)BlockType.Green);
+        //Settle(new Vector2Int(4, 2), (int)BlockType.Blue);
+        //Settle(new Vector2Int(4, 3), (int)BlockType.Red);
+        //Settle(new Vector2Int(5, 0), (int)BlockType.Purple);
+        //Settle(new Vector2Int(5, 1), (int)BlockType.Blue);
+        //Settle(new Vector2Int(5, 2), (int)BlockType.Purple);
+        //Settle(new Vector2Int(5, 3), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(6, 0), (int)BlockType.Pink);
+        //Settle(new Vector2Int(6, 1), (int)BlockType.Purple);
+        //Settle(new Vector2Int(6, 2), (int)BlockType.Pink);
+        //Settle(new Vector2Int(6, 3), (int)BlockType.Blue);
     }
 
     public void Update()
