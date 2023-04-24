@@ -67,7 +67,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -1796,7 +1796,6 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       transition_6: 1660580544
-      transition_76: 1784336259
       transition_18: -1898852523
       transition_17: 1646141146
       transition_36: -1256707763
@@ -1863,10 +1862,11 @@ TextureImporter:
       transition_69: 1470856796
       transition_55: -173872866
       transition_19: 2111602242
+      transition_76: 1784336259
       transition_41: -1773127637
       transition_8: -397985526
-      transition_60: 1640448151
       transition_29: -862186212
+      transition_60: 1640448151
       transition_33: -1325920222
       transition_39: 1683967735
       transition_21: -791804721
