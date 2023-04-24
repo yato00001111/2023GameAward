@@ -541,16 +541,16 @@ public class FieldController : MonoBehaviour
         }
 
         // Debug用
-        if (Input.GetKey(KeyCode.Z))
-        {
-            for (int y = 0; y < BOARD_HEIGHT - 1; y++)
-            {
-                for (int x = 0; x < BOARD_WIDTH; x++)
-                {
-                    Settle(new Vector2Int(x, y), Random.Range(1, 7));
-                }
-            }
-        }
+        //if (Input.GetKey(KeyCode.Z))
+        //{
+        //    for (int y = 0; y < BOARD_HEIGHT - 1; y++)
+        //    {
+        //        for (int x = 0; x < BOARD_WIDTH; x++)
+        //        {
+        //            Settle(new Vector2Int(x, y), Random.Range(1, 7));
+        //        }
+        //    }
+        //}
 
     }
 
