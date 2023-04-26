@@ -14,8 +14,11 @@ public class LogicalInput
         A = 1 << 3,
         QuickDrop = 1 << 4,
         Down = 1 << 5,
+        JoyA = 1 << 6,
+        LB = 1 << 7,
+        RB = 1 << 8,
 
-        MAX = 6, // 個数
+        MAX = 9, // 個数
     }
 
     const int KEY_REPEAT_START_TIME = 12; // 押しっぱなしでキーリピートに入るフレーム数
