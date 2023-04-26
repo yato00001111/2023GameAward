@@ -18,11 +18,14 @@ public class Pause : MonoBehaviour
     // ポーズ中かどうかを返す
     bool PositivePauseMenu = false;
 
+    int SelectCount = 0;
+
     // Start is called before the first frame update
     void Start()
     {
         // ポーズ中ではない
         PauseMenu.SetActive(false);
+        SelectUI.SetActive(false);
         SelectUI.transform.position = new Vector3(954, 740, 0);
     }
 
@@ -48,7 +51,7 @@ public class Pause : MonoBehaviour
         if (SelectUI.transform.position.y == 740.0f)
         {
             // Enterキーが押されたら
-            if (Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Return)|| Input.GetKeyDown(KeyCode.Joystick1Button0))
             {
                 // ポーズメニュー非表示
                 PauseMenu.SetActive(false);
@@ -63,7 +66,7 @@ public class Pause : MonoBehaviour
         if (SelectUI.transform.position.y == 540.0f)
         {
             // Enterキーが押されたら
-            if (Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Return)|| Input.GetKeyDown(KeyCode.Joystick1Button0))
             {
                 // リトライ処理
             }
@@ -73,7 +76,7 @@ public class Pause : MonoBehaviour
         if (SelectUI.transform.position.y == 340.0f)
         {
             // Enterキーが押されたら
-            if (Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Return)|| Input.GetKeyDown(KeyCode.Joystick1Button0))
             {
                 SceneManager.LoadScene("Title");
             }
@@ -83,18 +86,28 @@ public class Pause : MonoBehaviour
     // 選択UIの動き
     void ActionSelectUI()
     {
+
+        float StickVertical = Input.GetAxisRaw("L_Stick");
+        float PadVertical = Input.GetAxisRaw("D_Pad");
+
+
         // 下ボタンが押されたら
-        if(Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.DownArrow) || PadVertical < 0)
         {
             // 選択UIを1つ下に
-            SelectUI.transform.position -= new Vector3(0, 200.0f, 0);
+            if (SelectCount == 0) SelectUI.transform.position -= new Vector3(0, 200.0f, 0);
+            SelectCount = 1;
         }
         // 上ボタンが押されたら
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || PadVertical > 0)
         {
             // 選択UIを1つ上に
             SelectUI.transform.position += new Vector3(0, 200.0f, 0);
         }
+
+
+
+
 
         // 選択UIが1番上にあったら
         if (SelectUI.transform.position.y < 340.0f)
@@ -114,10 +127,11 @@ public class Pause : MonoBehaviour
     void Pausing()
     {
         // Pボタンが押されたらポーズ
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Joystick1Button7))
         {
             // ポーズメニュー表示
             PauseMenu.SetActive(true);
+            SelectUI.SetActive(true);
             // ポーズ中である
             PositivePauseMenu = true;
             // 全体の時間を止める
