@@ -25,15 +25,31 @@ public class ActionTitleLight : MonoBehaviour
         LightImage_L = TitleLight_L.GetComponent<Image>();
         LightImage_R = TitleLight_R.GetComponent<Image>();
 
-        SetOpacity(LightImage_L, 1.0f);
-        SetOpacity(LightImage_R, 1.0f);
+        SetOpacity(LightImage_L, 0.0f);
+        SetOpacity(LightImage_R, 0.0f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        LightImage_L.DOFade(0, 2);
-        LightImage_R.DOFade(0, 2);
+        //LightImage_L.DOFade(0, 2);
+        //LightImage_R.DOFade(0, 2);
+
+        // ”‚²‚Æ‚Étrue
+        if (Music.IsJustChangedBeat())
+        {
+            DOTween
+              .To(value => SetOpacity(LightImage_L,value), 0, 0.25f, 0.1f)
+              .SetEase(Ease.InQuad)
+              .SetLoops(2, LoopType.Yoyo)
+              ;
+
+            DOTween
+              .To(value => SetOpacity(LightImage_R, value), 0, 0.25f, 0.1f)
+              .SetEase(Ease.InQuad)
+              .SetLoops(2, LoopType.Yoyo)
+              ;
+        }
     }
 
     void SetOpacity(Image image, float alpha)
