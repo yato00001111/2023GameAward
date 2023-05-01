@@ -9,15 +9,18 @@ public class PlayerController : MonoBehaviour
 
     // 落下制御
     const int FALL_COUNT_UNIT = 120; // ひとマス落下するカウント数
-    const int FALL_COUNT_SPD = 5; // 落下速度
-    const int FALL_COUNT_FAST_SPD = 10; // 高速落下時の速度
-    const int GROUND_FRAMES = 5; // 接地移動可能時間
+    [SerializeField] int FALL_COUNT_SPD = 5; // 落下速度
+    const int FALL_COUNT_FAST_SPD = 13; // 高速落下時の速度
+    const int GROUND_FRAMES = 15; // 接地移動可能時間
 
     int _fallCount = 0;
     int _groundFrame = GROUND_FRAMES;// 接地時間
 
     bool is0_15 = false;
     bool is15_0 = false;
+
+    private bool isPause = false;
+    private bool isQuick = false;
 
     [SerializeField] FieldController fieldController = default!;
     [SerializeField] BlockController _blockController = default!;
@@ -37,6 +40,8 @@ public class PlayerController : MonoBehaviour
     {
         is0_15 = false;
         is15_0 = false;
+        isPause = false;
+        isQuick = false;
         gameObject.SetActive(false);// ぷよの種類が設定されるまで眠る
     }
 
@@ -207,8 +212,9 @@ public class PlayerController : MonoBehaviour
         //    if (Translate(false)) return;
         //}
 
+        if (isQuick) return;
         // クイックドロップのキー入力取得
-        if (_logicalInput.IsRelease(LogicalInput.Key.QuickDrop))
+        if (_logicalInput.IsRelease(LogicalInput.Key.QuickDrop) || _logicalInput.IsRelease(LogicalInput.Key.JoyA))
         {
             QuickDrop();
         }
@@ -216,6 +222,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isPause) return;
+
         // 操作を受けて動かす
         Control();
 
@@ -255,4 +263,15 @@ public class PlayerController : MonoBehaviour
 
         return score;
     }
+
+    public void SetPlayerPause(bool pause)
+    {
+        isPause = pause;
+    }
+
+    public void SetPlayerQuick(bool quick)
+    {
+        isQuick = quick;
+    }
+
 }

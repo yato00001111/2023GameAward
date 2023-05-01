@@ -7,7 +7,7 @@ class NextQueue
 {
     private enum Constants
     {
-        BLOCK_TYPE_MAX = 6,      // Œ»‚ê‚éí—Ş(6ˆÈ‰º)
+        BLOCK_TYPE_MAX = 5,      // Œ»‚ê‚éí—Ş(6ˆÈ‰º)
         BLOCK_NEXT_HISTORIES = 2,// NEXT‚ÌŒÂ”
     };
 
