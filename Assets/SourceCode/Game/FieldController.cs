@@ -56,6 +56,13 @@ public class FieldController : MonoBehaviour
     bool isEffect = true;
     [SerializeField] private int _eraseTime = 25;
 
+    //SE
+    AudioSource audioSource;
+    public AudioClip se_block;
+    public AudioClip se_erase;
+    public AudioClip se_kaiten;
+    private bool isKaiten = false;
+
     private void ClearAll()
     {
         for (int y = 0; y < BOARD_HEIGHT; y++)
@@ -78,8 +85,11 @@ public class FieldController : MonoBehaviour
     {
         ClearAll();
 
+        audioSource = GetComponent<AudioSource>();
+
         isControl = true;
         _animationController.Set(1);
+        isKaiten = false;
 
         // 全マスに置く
         //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
@@ -127,6 +137,8 @@ public class FieldController : MonoBehaviour
         _Blocks[pos.y, pos.x] = Instantiate(prefabBlock, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.Euler(0, BLOCK_ROTATE[pos.x], 0));
         _Blocks[pos.y, pos.x].transform.localScale = new Vector3(BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y]);
         _Blocks[pos.y, pos.x].transform.GetChild(0).GetComponent<BlockController>().SetBlockType((BlockType)val);
+
+        audioSource.PlayOneShot(se_block);
 
         return true;
     }
@@ -411,6 +423,7 @@ public class FieldController : MonoBehaviour
                 int type = _board[d.y, d.x];
                 _Blocks[d.y, d.x].transform.GetChild(1).GetComponent<EffectController>().PlayEffect(type);
             }
+            audioSource.PlayOneShot(se_erase);
             isEffect = false;
         }
         if (_eraseFrames > _eraseTime)
@@ -524,6 +537,11 @@ public class FieldController : MonoBehaviour
             }
         }
 
+        if (!isKaiten)
+        {
+            //audioSource.PlayOneShot(se_kaiten);
+            isKaiten = true;
+        }
         return true;
     }
 
@@ -542,6 +560,16 @@ public class FieldController : MonoBehaviour
             _logicalInput.IsRepeat(LogicalInput.Key.LB))
         {
             if (Translate(false)) return;
+        }
+        if (_logicalInput.IsRelease(LogicalInput.Key.Right) || _logicalInput.IsRelease(LogicalInput.Key.D) ||
+            _logicalInput.IsRelease(LogicalInput.Key.RB))
+        {
+            isKaiten = false;
+        }
+        if (_logicalInput.IsRelease(LogicalInput.Key.Left) || _logicalInput.IsRelease(LogicalInput.Key.A) ||
+            _logicalInput.IsRelease(LogicalInput.Key.LB))
+        {
+            isKaiten = false;
         }
 
         // Debug用

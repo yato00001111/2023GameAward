@@ -11,6 +11,13 @@ public class GameDirector : MonoBehaviour
     [SerializeField] PlayDirector playDirector = default!;
     GameObject _message = null;
 
+    //SE
+    AudioSource audioSource;
+    public AudioClip se_gameover;
+    private double FadeOutSeconds = 1.0;
+    bool IsFadeOut = true;
+    double FadeDeltaTime = 0;
+
     // 画面にでる演出メッセージの表示
     void CreateMessage(string message)
     {
@@ -25,6 +32,9 @@ public class GameDirector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        IsFadeOut = true;
+        FadeDeltaTime = 0;
         StartCoroutine("GameFlow");
     }
 
@@ -43,6 +53,17 @@ public class GameDirector : MonoBehaviour
         }
 
         CreateMessage("Game Over");
+        audioSource.PlayOneShot(se_gameover);
+        if (IsFadeOut)
+        {
+            FadeDeltaTime += Time.deltaTime;
+            if (FadeDeltaTime > FadeOutSeconds)
+            {
+                FadeDeltaTime = FadeOutSeconds;
+                IsFadeOut = false;
+            }
+            audioSource.volume = (float)(FadeDeltaTime / FadeOutSeconds);
+        }
 
         while (!Input.anyKey)// 何か押すのを待つ
         {

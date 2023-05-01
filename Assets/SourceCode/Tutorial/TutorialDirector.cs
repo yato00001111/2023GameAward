@@ -12,6 +12,7 @@ public class TutorialDirector : MonoBehaviour
     [SerializeField] GameObject[] ScoreText = default!;
     [SerializeField] T_PlayDirector TplayDirector = default!;
     [SerializeField] PlayerController _playerController = default!;
+    [SerializeField] private Animator animator;
     FieldController _fieldController = default!;
     GameObject _message = null;
 
@@ -31,6 +32,7 @@ public class TutorialDirector : MonoBehaviour
     {
         _fieldController = TplayDirector.GetComponent<FieldController>();
         arrow.SetActive(false);
+        //animator.SetTrigger("IN_Animation");
         StartCoroutine("TutorialFlow");
     }
 
@@ -59,6 +61,7 @@ public class TutorialDirector : MonoBehaviour
 
         CreateMessage("RBで回転させましょう");
         arrow.SetActive(true);
+        _playerController.SetPlayerQuick(true);
         TplayDirector.EnableSpawn(true);// プレイ開始
         _message.transform.localPosition = new Vector3(-430, 350, 0);
         while (!Input.GetKeyDown(KeyCode.RightArrow) && !Input.GetKeyDown(KeyCode.Joystick1Button5))
@@ -92,7 +95,9 @@ public class TutorialDirector : MonoBehaviour
             yield return null;
         }
 
-        //yield return new WaitForSeconds(2.0f);
+        animator.SetTrigger("OUT_Animation");
+
+        yield return new WaitForSeconds(3.5f);
         SceneManager.LoadScene("GameScene");
     }
 }

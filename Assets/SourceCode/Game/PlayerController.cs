@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     bool is15_0 = false;
 
     private bool isPause = false;
+    private bool isQuick = false;
 
     [SerializeField] FieldController fieldController = default!;
     [SerializeField] BlockController _blockController = default!;
@@ -40,6 +41,7 @@ public class PlayerController : MonoBehaviour
         is0_15 = false;
         is15_0 = false;
         isPause = false;
+        isQuick = false;
         gameObject.SetActive(false);// ぷよの種類が設定されるまで眠る
     }
 
@@ -210,6 +212,7 @@ public class PlayerController : MonoBehaviour
         //    if (Translate(false)) return;
         //}
 
+        if (isQuick) return;
         // クイックドロップのキー入力取得
         if (_logicalInput.IsRelease(LogicalInput.Key.QuickDrop) || _logicalInput.IsRelease(LogicalInput.Key.JoyA))
         {
@@ -265,4 +268,10 @@ public class PlayerController : MonoBehaviour
     {
         isPause = pause;
     }
+
+    public void SetPlayerQuick(bool quick)
+    {
+        isQuick = quick;
+    }
+
 }

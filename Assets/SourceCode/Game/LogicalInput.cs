@@ -22,7 +22,7 @@ public class LogicalInput
     }
 
     const int KEY_REPEAT_START_TIME = 12; // 押しっぱなしでキーリピートに入るフレーム数
-    const int KEY_REPEAT_ITERATION_TIME = 2;// キーリピートに入った後の更新フレーム数
+    const int KEY_REPEAT_ITERATION_TIME = 3;// キーリピートに入った後の更新フレーム数
 
     Key inputRaw;// 現在の値
     Key inputTrg;// 入力が入った時の値
