@@ -103,7 +103,7 @@ public class UI_Level : MonoBehaviour
             //***<<ƒŒƒxƒ‹ƒQ[ƒW>>***//
             // •`‰æ‚·‚é
 
-            LevelGauge_Images[]
+            //LevelGauge_Images[]
 
             if (Num == Now_Level - 1)
             {
