@@ -39,7 +39,8 @@ public class FieldController : MonoBehaviour
     GameObject[,] _BlocksDst = new GameObject[BOARD_HEIGHT, BOARD_WIDTH];
 
     AnimationController _animationController = new AnimationController();
-    const int TRANS_TIME = 3; // 移動速度遷移時間
+    const int TRANS_TIME = 5; // 移動速度遷移時間
+    const int HALF_TRANS_TIME = 15; // 移動速度遷移時間
 
     private bool isControl;
 
@@ -55,6 +56,13 @@ public class FieldController : MonoBehaviour
     int _eraseFrames = 0;
     bool isEffect = true;
     [SerializeField] private int _eraseTime = 25;
+
+    //
+    List<FallData> _rots = new();
+    int TransCount = 0;
+    bool isHalfTransR;
+    bool isHalfTransL;
+
 
     //SE
     AudioSource audioSource;
@@ -90,6 +98,8 @@ public class FieldController : MonoBehaviour
         isControl = true;
         _animationController.Set(1);
         isKaiten = false;
+        isHalfTransR = false;
+        isHalfTransL = false;
 
         // 全マスに置く
         //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
@@ -482,6 +492,7 @@ public class FieldController : MonoBehaviour
     private bool Translate(bool is_right)
     {
         _animationController.Set(TRANS_TIME);
+        _rots.Clear();
 
         // 移動先のX軸の記録用
         var trans = (is_right ? Vector2Int.right : Vector2Int.left);
@@ -494,6 +505,9 @@ public class FieldController : MonoBehaviour
 
                 // データを変更しておく
                 int posX = x + trans.x;
+                _rots.Add(new FallData(x, y, posX));
+                int posX2 = x + trans.x * 2;
+
                 if (posX == -1)
                 {
                     posX = 15; //x座標の端
@@ -504,23 +518,69 @@ public class FieldController : MonoBehaviour
                     posX = 0; //x座標の端
                     //is15_0 = true;
                 }
+                if (posX2 == -1)
+                {
+                    posX2 = 15; //x座標の端
+                }
+                if (posX2 == 16)
+                {
+                    posX2 = 0; //x座標の端
+                }
                 _boardDst[y, posX] = _board[y, x];
+
                 _BlocksDst[y, posX] = _Blocks[y, x];
-                _BlocksDst[y, posX].transform.localRotation = Quaternion.Euler(0, BLOCK_ROTATE[posX], 0);
-                for(int i=0; i < 2; i++)
+
+                for (int i=0; i < 2; i++)
                 {
                     if (_playerController[i].GetPos().x == posX && _playerController[i].GetPos().y <= y)
                     {
-                        int player_posX = _playerController[i].GetPos().x + trans.x;
-                        if (player_posX == -1)
+                        if (is_right)
                         {
-                            player_posX = 15; //x座標の端
+                            _playerController[i].SetisTransR(true);
+                            //if (i == 0)
+                            //{
+                            //    if(_playerController[1].GetPos().x == posX2)
+                            //    {
+                            //        _playerController[1].SetisTransR(true);
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    if (_playerController[0].GetPos().x == posX2)
+                            //    {
+                            //        _playerController[0].SetisTransR(true);
+                            //    }
+                            //}
                         }
-                        if (player_posX == 16)
+                        if (!is_right)
                         {
-                            player_posX = 0; //x座標の端
+                            _playerController[i].SetisTransL(true);
+                            //if (i == 0)
+                            //{
+                            //    if (_playerController[1].GetPos().x == posX2)
+                            //    {
+                            //        _playerController[1].SetisTransL(true);
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    if (_playerController[0].GetPos().x == posX2)
+                            //    {
+                            //        _playerController[0].SetisTransL(true);
+                            //    }
+                            //}
                         }
-                        _playerController[i].SetPos(new Vector2Int(player_posX, _playerController[i].GetPos().y));
+                        //int player_posX = _playerController[i].GetPos().x + trans.x;
+                        //if (player_posX == -1)
+                        //{
+                        //    player_posX = 15; //x座標の端
+                        //}
+                        //if (player_posX == 16)
+                        //{
+                        //    player_posX = 0; //x座標の端
+                        //}
+                        //_playerController[i].SetPos(new Vector2Int(player_posX, _playerController[i].GetPos().y));
+                        //_playerController[i].SetLastPos(new Vector2Int(_playerController[i].GetPos().x, _playerController[i].GetPos().y));
                     }
                 }
             }
@@ -545,128 +605,220 @@ public class FieldController : MonoBehaviour
         return true;
     }
 
+    //private bool HalfTranslate()
+    //{
+    //    _animationController.Set(HALF_TRANS_TIME);
+    //    _rots.Clear();
+
+    //    // 移動先のX軸の記録用
+    //    var trans = new Vector2Int(8, 0);
+
+    //    for (int y = 0; y < BOARD_HEIGHT; y++)
+    //    {
+    //        for (int x = 0; x < BOARD_WIDTH; x++)
+    //        {
+    //            if (_board[y, x] == 0) continue;
+
+    //            // データを変更しておく
+    //            int posX;
+    //            if (x < 8) posX = x + trans.x;
+    //            else posX = x - trans.x;
+
+
+    //            _rots.Add(new FallData(x, y, posX));
+
+    //            if (posX == -1)
+    //            {
+    //                posX = 15; //x座標の端
+    //                //is0_15 = true;
+    //            }
+    //            if (posX == 16)
+    //            {
+    //                posX = 0; //x座標の端
+    //                //is15_0 = true;
+    //            }
+    //            _boardDst[y, posX] = _board[y, x];
+
+    //            _BlocksDst[y, posX] = _Blocks[y, x];
+
+    //            for (int i = 0; i < 2; i++)
+    //            {
+    //                float p_pos = _playerController[i].GetPos().x;
+
+    //                if(p_pos < 8)
+    //                {
+    //                    if(p_pos == x + 1 && _playerController[i].GetPos().y <= y)
+    //                    {
+    //                        _playerController[i].SetisHalfTrans(true);
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    if (p_pos == x - 1 && _playerController[i].GetPos().y <= y)
+    //                    {
+    //                        _playerController[i].SetisHalfTrans(true);
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    for (int y = 0; y < BOARD_HEIGHT; y++)
+    //    {
+    //        for (int x = 0; x < BOARD_WIDTH; x++)
+    //        {
+    //            _board[y, x] = _boardDst[y, x];
+    //            _boardDst[y, x] = 0;
+
+    //            _Blocks[y, x] = _BlocksDst[y, x];
+    //            _BlocksDst[y, x] = null;
+    //        }
+    //    }
+
+    //    if (!isKaiten)
+    //    {
+    //        //audioSource.PlayOneShot(se_kaiten);
+    //        isKaiten = true;
+    //    }
+    //    return true;
+    //}
+    int delay = 0;
+    private bool HalfTranslate(bool is_right)
+    {
+        if (_animationController.Update()) return true;
+        if (TransCount < 8)
+        {
+            delay++;
+            //if(delay > 3)
+            {
+                Translate(is_right);
+                TransCount++;
+                delay = 0;
+            }
+        }
+        
+        return true;
+    }
+
     public void Control(LogicalInput _logicalInput)
     {
+        if (isHalfTransR) HalfTranslate(true);
+        if (isHalfTransL) HalfTranslate(false);
+        if (TransCount == 8) 
+        {
+            TransCount = 0;
+            isHalfTransR = false;
+            isHalfTransL = false;
+            for (int i = 0; i < 2; i++)
+            {
+                _playerController[i].SetisHalfTrans(false);
+            }
+        }
         // アニメ中はキー入力を受け付けない
-        //if (_animationController.Update()) return;
+        if (_animationController.Update()) return;
 
-        // 平行移動のキー入力取得
-        if (_logicalInput.IsRepeat(LogicalInput.Key.Right) || _logicalInput.IsRepeat(LogicalInput.Key.D) ||
-            _logicalInput.IsRepeat(LogicalInput.Key.RB))
+
+
+        if (!isHalfTransR && !isHalfTransL)
         {
-            if (Translate(true)) return;
-        }
-        if (_logicalInput.IsRepeat(LogicalInput.Key.Left) || _logicalInput.IsRepeat(LogicalInput.Key.A) ||
-            _logicalInput.IsRepeat(LogicalInput.Key.LB))
-        {
-            if (Translate(false)) return;
-        }
-        if (_logicalInput.IsRelease(LogicalInput.Key.Right) || _logicalInput.IsRelease(LogicalInput.Key.D) ||
-            _logicalInput.IsRelease(LogicalInput.Key.RB))
-        {
-            isKaiten = false;
-        }
-        if (_logicalInput.IsRelease(LogicalInput.Key.Left) || _logicalInput.IsRelease(LogicalInput.Key.A) ||
-            _logicalInput.IsRelease(LogicalInput.Key.LB))
-        {
-            isKaiten = false;
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    _playerController[i].SetisHalfTrans(true);
+                }
+                isHalfTransR = true;
+                return;
+            }
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    _playerController[i].SetisHalfTrans(true);
+                }
+                isHalfTransL = true;
+                return;
+            }
+            // 平行移動のキー入力取得
+            if (_logicalInput.IsRepeat(LogicalInput.Key.Right) || _logicalInput.IsRepeat(LogicalInput.Key.D) ||
+                _logicalInput.IsRepeat(LogicalInput.Key.RB))
+            {
+                if (Translate(true)) return;
+            }
+            if (_logicalInput.IsRepeat(LogicalInput.Key.Left) || _logicalInput.IsRepeat(LogicalInput.Key.A) ||
+                _logicalInput.IsRepeat(LogicalInput.Key.LB))
+            {
+                if (Translate(false)) return;
+            }
+            if (_logicalInput.IsRelease(LogicalInput.Key.Right) || _logicalInput.IsRelease(LogicalInput.Key.D) ||
+                _logicalInput.IsRelease(LogicalInput.Key.RB))
+            {
+                isKaiten = false;
+            }
+            if (_logicalInput.IsRelease(LogicalInput.Key.Left) || _logicalInput.IsRelease(LogicalInput.Key.A) ||
+                _logicalInput.IsRelease(LogicalInput.Key.LB))
+            {
+                isKaiten = false;
+            }
         }
 
         // Debug用
-        if (Input.GetKey(KeyCode.Z))
-        {
-            for (int y = 0; y < BOARD_HEIGHT - 1; y++)
-            {
-                for (int x = 0; x < BOARD_WIDTH; x++)
-                {
-                    Settle(new Vector2Int(x, y), Random.Range(1, 6));
-                }
-            }
-        }
+        //if (Input.GetKey(KeyCode.Z))
+        //{
+        //    for (int y = 0; y < BOARD_HEIGHT - 1; y++)
+        //    {
+        //        for (int x = 0; x < BOARD_WIDTH; x++)
+        //        {
+        //            Settle(new Vector2Int(x, y), Random.Range(1, 6));
+        //        }
+        //    }
+        //}
     }
 
     public void AnimeTrans()
     {
-        //        float anim_rate = _animationController.GetNormalized();
-        //        Debug.Log("anim_rate" + anim_rate);
-
-        //        for (int y = 0; y < BOARD_HEIGHT; y++)
-        //        {
-        //            for (int x = 0; x < BOARD_WIDTH; x++)
-        //            {
-        //                _board[y, x] = _boardDst[y, x];
-        //                _boardDst[y, x] = 0;
-        //                Vector3 p = Vector3.Lerp(
-        //new Vector3((float)_BlocksDst[y, x].transform.localRotation.y, 0, 0.0f),
-        //new Vector3((float)_Blocks[y, x].transform.localRotation.y, 0, 0.0f), anim_rate);
-
-        //                _Blocks[y, x] = _BlocksDst[y, x];
-        //                _BlocksDst[y, x] = null;
-        //            }
-        //        }
-
         float anim_rate = _animationController.GetNormalized();
-        Vector3 p = new Vector3(0,0,0);
-        //if (isTrans)
-        //    {
-        //        if (_animationController.Update())
-        //        {
-        //            for (int y = 0; y < BOARD_HEIGHT; y++)
-        //            {
-        //                for (int x = 0; x < BOARD_WIDTH; x++)
-        //                {
-        //                    if (!_Blocks[y, x]) continue;
-        //                    if (!_BlocksDst[y, x]) continue;
-        //                    Debug.Log("dad");
-        //                    Debug.Log(_BlocksDst[y, x].transform.localRotation.y);
-        //                    Debug.Log(_Blocks[y, x].transform.localRotation.y);
-        //                    p = Vector3.Lerp(
-        //new Vector3((float)_BlocksDst[y, x].transform.localRotation.y, 0, 0.0f),
-        //new Vector3((float)_Blocks[y, x].transform.localRotation.y, 0, 0.0f), anim_rate);
-        //                    _Blocks[y, x].transform.localRotation = Quaternion.Euler(0, p.x, 0);
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (isTrans)
-        //            {
-        //                for (int y = 0; y < BOARD_HEIGHT; y++)
-        //                {
-        //                    for (int x = 0; x < BOARD_WIDTH; x++)
-        //                    {
-        //                        _board[y, x] = _boardDst[y, x];
-        //                        _boardDst[y, x] = 0;
-        //                        _Blocks[y, x] = _BlocksDst[y, x];
-        //                        _BlocksDst[y, x] = null;
-        //                    }
-        //                }
-        //                isTrans = false;
-        //            }
-        //        }
-        //    }
+        //for (int i = 0; i < 2; i++)
+        //{
+        //    _playerController[i].SetAnimLate(anim_rate);
+        //}
 
-        //if (isTrans)
+        float[,] LerpRot = new float[BOARD_HEIGHT, BOARD_WIDTH];
+
+        float rot;
+        for (int i = _rots.Count - 1; 0 <= i; i--)// ループ中で削除しても安全なように後ろから検索
         {
-            if (_animationController.Update())
-            {
-                for (int y = 0; y < BOARD_HEIGHT; y++)
-                {
-                    for (int x = 0; x < BOARD_WIDTH; x++)
-                    {
-                        _board[y, x] = _boardDst[y, x];
-                        _boardDst[y, x] = 0;
+            FallData r = _rots[i];
+            //Vector3 pos;
+            //pos.z = 0;
+            //pos.y = r.Dest;
+            //pos.x = r.X;
 
-                        _Blocks[y, x] = _BlocksDst[y, x];
-                        _BlocksDst[y, x] = null;
-                    }
-                }
-            }
-            else
+            if (anim_rate <= 0)
             {
-
+                _rots.RemoveAt(i);
             }
-            
+
+            if (r.Dest == -1) rot = Mathf.Lerp(BLOCK_ROTATE[17], BLOCK_ROTATE[r.X], anim_rate);
+            else if (r.Dest == 16) rot = Mathf.Lerp(BLOCK_ROTATE[16], BLOCK_ROTATE[r.X], anim_rate);
+            else rot = Mathf.Lerp(BLOCK_ROTATE[r.Dest], BLOCK_ROTATE[r.X], anim_rate);
+            //Debug.Log("r.Y" + r.Y);
+            //Debug.Log("r.Dest" + r.Dest);
+            //Debug.Log("anim_rate" + anim_rate);
+
+            int destX;
+            if (r.Dest == -1)
+            {
+                destX = 15; //x座標の端
+                            //is0_15 = true;
+            }
+            else if (r.Dest == 16)
+            {
+                destX = 0; //x座標の端
+                            //is15_0 = true;
+            }
+            else destX = r.Dest;
+            _Blocks[r.Y, destX].transform.localRotation = Quaternion.Euler(0, rot, 0);// 表示位置の更新
+
         }
     }
 
@@ -675,7 +827,7 @@ public class FieldController : MonoBehaviour
         if (isControl)
         {
             Control(_logicalInput);
-            //AnimeTrans();
+            AnimeTrans();
         }
     }
 

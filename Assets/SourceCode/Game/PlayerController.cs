@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     // 移動制御
-    const int TRANS_TIME = 3; // 移動速度遷移時間
+    const int TRANS_TIME = 5; // 移動速度遷移時間
+    const int HALF_TRANS_TIME = 15; // 移動速度遷移時間
 
     // 落下制御
     const int FALL_COUNT_UNIT = 120; // ひとマス落下するカウント数
@@ -29,6 +30,13 @@ public class PlayerController : MonoBehaviour
 
     AnimationController _animationController = new AnimationController();
     Vector2Int _last_position; // 遷移前の位置
+    float anim_rate;
+
+    bool isTransR;
+    bool isTransL;
+    bool isHalfTrans;
+    [SerializeField] PlayerController _OtherPlayer = default!;
+
 
     LogicalInput _logicalInput = null;
 
@@ -42,6 +50,10 @@ public class PlayerController : MonoBehaviour
         is15_0 = false;
         isPause = false;
         isQuick = false;
+        isTransR = false;
+        isTransL = false;
+        isHalfTrans = false;
+        anim_rate = 1;
         gameObject.SetActive(false);// ぷよの種類が設定されるまで眠る
     }
 
@@ -104,6 +116,9 @@ public class PlayerController : MonoBehaviour
         _position = pos;
 
         _animationController.Set(time);
+
+        isTransR = false;
+        isTransL = false;
     }
 
     private bool Translate(bool is_right)
@@ -123,12 +138,41 @@ public class PlayerController : MonoBehaviour
             is15_0 = true;
         }
 
+        // 横判定
+        CheckSide(pos, is_right);
+
         // 実際に移動
         //_position = pos;
-        SetTransition(pos, TRANS_TIME);
+        if (isHalfTrans) SetTransition(pos, TRANS_TIME - 3);
+        else SetTransition(pos, TRANS_TIME);
 
         //_blockController.SetPos(new Vector3Int(_position.x, _position.y, 0));
 
+        return true;
+    }
+    private bool HalfTranslate()
+    {
+        Debug.Log("HalfTranslate");
+
+        // 仮想的に移動できるか検証する
+        Vector2Int pos;
+        if (_position.x < 8) pos = _position + new Vector2Int(8, 0);
+        else pos = _position + new Vector2Int(-8, 0);
+        if (!CanMove(pos)) return false;
+        // 円なので端と端でループするように
+        if (pos.x == -1)
+        {
+            pos.x = 15; //x座標の端
+            is0_15 = true;
+        }
+        if (pos.x == 16)
+        {
+            pos.x = 0; //x座標の端
+            is15_0 = true;
+        }
+
+        // 実際に移動
+        SetTransition(pos, HALF_TRANS_TIME);
         return true;
     }
 
@@ -186,31 +230,42 @@ public class PlayerController : MonoBehaviour
         return true;
     }
 
-    void CheckSide()
+    void CheckSide(Vector2Int pos, bool is_right)
     {
-
+        if(_OtherPlayer.GetPos().x == pos.x)
+        {
+            if(is_right)_OtherPlayer.SetisTransR(true);
+            if(!is_right)_OtherPlayer.SetisTransL(true);
+        }
     }
 
     void Control()
     {
-        // 横判定
-        CheckSide();
-
         // 落とす
         if (!Fall(_logicalInput.IsRaw(LogicalInput.Key.Down))) return;// 接地したら終了
 
         // アニメ中はキー入力を受け付けない
         if (_animationController.Update()) return;
 
-        // 平行移動のキー入力取得
-        //if (_logicalInput.IsRepeat(LogicalInput.Key.Right))
+        //if(isHalfTrans)
         //{
-        //    if (Translate(true)) return;
+        //    if (HalfTranslate()) return;
         //}
-        //if (_logicalInput.IsRepeat(LogicalInput.Key.Left))
-        //{
-        //    if (Translate(false)) return;
-        //}
+        if (isTransR)
+        {
+            // 平行移動のキー入力取得
+            //if (_logicalInput.IsRepeat(LogicalInput.Key.Right))
+            {
+                if (Translate(true)) return;
+            }
+        }
+        if(isTransL)
+        {
+            //if (_logicalInput.IsRepeat(LogicalInput.Key.Left))
+            {
+                if (Translate(false)) return;
+            }
+        }
 
         if (isQuick) return;
         // クイックドロップのキー入力取得
@@ -229,8 +284,12 @@ public class PlayerController : MonoBehaviour
 
         // 表示
         Vector3 dy = Vector3.up * (float)_fallCount / (float)FALL_COUNT_UNIT;
-        float anim_rate = _animationController.GetNormalized();
+        anim_rate = _animationController.GetNormalized();
+        //Debug.Log("anim_rate" + anim_rate);
+        //Debug.Log("_position" + _position);
+        //Debug.Log("_last_position" + _last_position);
         _blockController.SetPosInterpolate(_position, _last_position, anim_rate, dy.y);
+        //_blockController.SetRotInterpolate(_position, _last_position, anim_rate);
     }
 
 
@@ -253,6 +312,26 @@ public class PlayerController : MonoBehaviour
     public void SetPos(Vector2Int pos)
     {
         _position = pos;
+    }
+    public void SetLastPos(Vector2Int pos)
+    {
+        _last_position = pos;
+    }
+    public void SetAnimLate(float rate)
+    {
+        anim_rate = rate;
+    }
+    public void SetisTransR(bool transR)
+    {
+        isTransR = transR;
+    }
+    public void SetisTransL(bool transL)
+    {
+        isTransL = transL;
+    }
+    public void SetisHalfTrans(bool trans)
+    {
+        isHalfTrans = trans;
     }
 
     // 得点の受け渡し

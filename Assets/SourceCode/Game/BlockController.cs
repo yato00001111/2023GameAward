@@ -90,4 +90,12 @@ public class BlockController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, p.x, 0);
         transform.localScale = new Vector3(p.y, p.y, p.y);
     }
+
+    public void SetRotInterpolate(Vector2Int pos, Vector2Int pos_last, float rate)
+    {
+        float rot = Mathf.Lerp(BLOCK_ROTATE[pos.x], BLOCK_ROTATE[pos_last.x], rate);
+
+        transform.localRotation = Quaternion.Euler(0, rot, 0);
+    }
+
 }

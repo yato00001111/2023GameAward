@@ -39,7 +39,7 @@ public class sphereController : MonoBehaviour
     }
 
     // ‰ñ“]ƒAƒjƒ[ƒVƒ‡ƒ“’†‚©‚Ç‚¤‚©
-    bool isAnimate;
+    //bool isAnimate;
     // ‰ñ“]‚ÌŠp“x
     Vector3 angle;
     // ‰ñ“]‰ñ”
@@ -139,7 +139,7 @@ public class sphereController : MonoBehaviour
         count++;
         if (count == 3)
         {
-            isAnimate = false;
+            //isAnimate = false;
         }
     }
 
