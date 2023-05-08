@@ -23,7 +23,7 @@ public class Result : MonoBehaviour
 
     // トランジション
     [SerializeField]
-    Result_Transition _transition;
+    GameObject _transition;
 
     // タイマー
     private float _Timer = 0f;
@@ -32,14 +32,14 @@ public class Result : MonoBehaviour
     private void Start()
     {
         // 遷移アニメーション開始
-        _transition.Start_INanimation();
+        _transition.GetComponent<Result_Transition>().Start_INanimation(_transition.GetComponent<Animator>());
     }
 
     // 更新処理
     public void Update()
     {
         // 遷移アニメーションが終わっていて　全てのカウントが終わっていなかったら
-        if (_transition.GetEndOUTTransition() && 
+        if (_transition.GetComponent<Result_Transition>().GetEndOUTTransition() && 
             !_Score.transform.GetChild(1).GetComponent<ScoreNumber>().GetEndCount() &&
             !_Level.transform.GetChild(1).GetComponent<LevelNumber>().GetEndCount() &&
             !_Combo.transform.GetChild(1).GetComponent<ComboNumber>().GetEndCount() &&
@@ -70,11 +70,11 @@ public class Result : MonoBehaviour
             )
         {
             // 遷移アニメーション再生
-            _transition.Start_OUTanimation();
+            _transition.GetComponent<Result_Transition>().Start_OUTanimation(_transition.GetComponent<Animator>());
         }
 
         // 遷移アニメーションが終わったら
-        if (_transition.GetEndINTransition())
+        if (_transition.GetComponent<Result_Transition>().GetEndINTransition())
         {
             // シーン遷移
             //SceneManager.LoadScene("ResultScene");

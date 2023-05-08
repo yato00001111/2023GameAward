@@ -5,7 +5,7 @@ using UnityEngine;
 public class Result_Transition : MonoBehaviour
 {
     // アニメーション
-    private Animator anime;
+    //private Animator anime;
 
     // インアニメーション終了
     private bool _End_INTransition = false;
@@ -17,17 +17,17 @@ public class Result_Transition : MonoBehaviour
     void Start()
     {
         // アニメーション取得
-        anime = gameObject.GetComponent<Animator>();
+        //anime = gameObject.GetComponent<Animator>();
     }
 
     // フェードインアニメーション再生
-    public void Start_INanimation()
+    public void Start_INanimation(Animator anime)
     {
         anime.SetTrigger("IN_Animation");
     }
 
     // フェードアウトアニメーション再生
-    public void Start_OUTanimation()
+    public void Start_OUTanimation(Animator anime)
     {
         anime.SetTrigger("OUT_Animation");
     }
