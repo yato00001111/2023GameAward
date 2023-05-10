@@ -38,6 +38,11 @@ public class FieldController : MonoBehaviour
     GameObject[,] _Blocks = new GameObject[BOARD_HEIGHT, BOARD_WIDTH];
     GameObject[,] _BlocksDst = new GameObject[BOARD_HEIGHT, BOARD_WIDTH];
 
+    AnimationController _animationController = new AnimationController();
+    const int TRANS_TIME = 3; // 移動速度遷移時間
+
+    private bool isControl;
+
     // 追加された得点を保持
     uint _additiveScore = 0;
 
@@ -48,6 +53,15 @@ public class FieldController : MonoBehaviour
     // 削除する際の一次的変数
     List<Vector2Int> _erases = new();
     int _eraseFrames = 0;
+    bool isEffect = true;
+    [SerializeField] private int _eraseTime = 25;
+
+    //SE
+    AudioSource audioSource;
+    public AudioClip se_block;
+    public AudioClip se_erase;
+    public AudioClip se_kaiten;
+    private bool isKaiten = false;
 
     private void ClearAll()
     {
@@ -71,6 +85,12 @@ public class FieldController : MonoBehaviour
     {
         ClearAll();
 
+        audioSource = GetComponent<AudioSource>();
+
+        isControl = true;
+        _animationController.Set(1);
+        isKaiten = false;
+
         // 全マスに置く
         //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
         //{
@@ -80,32 +100,6 @@ public class FieldController : MonoBehaviour
         //    }
         //}
 
-        // Tutorial
-        //Settle(new Vector2Int(0, 0), (int)BlockType.Pink);
-        //Settle(new Vector2Int(1, 0), (int)BlockType.Red);
-        //Settle(new Vector2Int(1, 1), (int)BlockType.Pink);
-        //Settle(new Vector2Int(1, 2), (int)BlockType.Red);
-        //Settle(new Vector2Int(1, 3), (int)BlockType.Blue);
-        //Settle(new Vector2Int(2, 0), (int)BlockType.Yellow);
-        //Settle(new Vector2Int(2, 1), (int)BlockType.Red);
-        //Settle(new Vector2Int(2, 2), (int)BlockType.Yellow);
-        //Settle(new Vector2Int(2, 3), (int)BlockType.Purple);
-        //Settle(new Vector2Int(3, 0), (int)BlockType.Green);
-        //Settle(new Vector2Int(3, 1), (int)BlockType.Yellow);
-        //Settle(new Vector2Int(3, 2), (int)BlockType.Green);
-        //Settle(new Vector2Int(3, 3), (int)BlockType.Pink);
-        //Settle(new Vector2Int(4, 0), (int)BlockType.Blue);
-        //Settle(new Vector2Int(4, 1), (int)BlockType.Green);
-        //Settle(new Vector2Int(4, 2), (int)BlockType.Blue);
-        //Settle(new Vector2Int(4, 3), (int)BlockType.Red);
-        //Settle(new Vector2Int(5, 0), (int)BlockType.Purple);
-        //Settle(new Vector2Int(5, 1), (int)BlockType.Blue);
-        //Settle(new Vector2Int(5, 2), (int)BlockType.Purple);
-        //Settle(new Vector2Int(5, 3), (int)BlockType.Yellow);
-        //Settle(new Vector2Int(6, 0), (int)BlockType.Pink);
-        //Settle(new Vector2Int(6, 1), (int)BlockType.Purple);
-        //Settle(new Vector2Int(6, 2), (int)BlockType.Pink);
-        //Settle(new Vector2Int(6, 3), (int)BlockType.Blue);
     }
 
     public void Update()
@@ -143,6 +137,8 @@ public class FieldController : MonoBehaviour
         _Blocks[pos.y, pos.x] = Instantiate(prefabBlock, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.Euler(0, BLOCK_ROTATE[pos.x], 0));
         _Blocks[pos.y, pos.x].transform.localScale = new Vector3(BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y]);
         _Blocks[pos.y, pos.x].transform.GetChild(0).GetComponent<BlockController>().SetBlockType((BlockType)val);
+
+        audioSource.PlayOneShot(se_block);
 
         return true;
     }
@@ -254,10 +250,11 @@ public class FieldController : MonoBehaviour
     };
 
     static readonly Vector2Int[] search_tbl = new Vector2Int[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-    // 消えるぷよを検索する（同じ色を上下左右に見つけていく。見つけたらフラグを立てて再計算しない）
+    // 消えるブロックを検索する（同じ色を上下左右に見つけていく。見つけたらフラグを立てて再計算しない）
     public bool CheckErase(int chainCount)
     {
         _eraseFrames = 0;
+        isEffect = true;
         _erases.Clear();
 
         uint[] isChecked = new uint[BOARD_HEIGHT];// メモリを多く使うのは無駄なのでビット処理
@@ -401,29 +398,45 @@ public class FieldController : MonoBehaviour
     {
         _eraseFrames++;
 
-        // 1から増えてちょっとしたら最大に大きくなったあと小さくなって消える
-        float t = _eraseFrames * Time.deltaTime;
-        t = 1.0f - 10.0f * ((t - 0.1f) * (t - 0.1f) - 0.1f * 0.1f);
+        //// 1から増えてちょっとしたら最大に大きくなったあと小さくなって消える
+        //float t = _eraseFrames * Time.deltaTime;
+        //t = 1.0f - 10.0f * ((t - 0.1f) * (t - 0.1f) - 0.1f * 0.1f);
 
         // 大きさが負ならおしまい
-        if (t <= 0.0f)
+        //if (_eraseFrames >= 30.0f)
+        //{
+        //    // データとゲームオブジェクトをここで消す
+        //    foreach (Vector2Int d in _erases)
+        //    {
+        //        Destroy(_Blocks[d.y, d.x]);
+        //        _Blocks[d.y, d.x] = null;
+        //        _board[d.y, d.x] = 0;
+        //    }
+
+        //    return false;
+        //}
+
+        if(isEffect)
         {
-            // データとゲームオブジェクトをここで消す
+            foreach (Vector2Int d in _erases)
+            {
+                int type = _board[d.y, d.x];
+                _Blocks[d.y, d.x].transform.GetChild(1).GetComponent<EffectController>().PlayEffect(type);
+            }
+            audioSource.PlayOneShot(se_erase);
+            isEffect = false;
+        }
+        if (_eraseFrames > _eraseTime)
+        {
             foreach (Vector2Int d in _erases)
             {
                 Destroy(_Blocks[d.y, d.x]);
                 _Blocks[d.y, d.x] = null;
                 _board[d.y, d.x] = 0;
-            }
 
+            }
             return false;
         }
-
-        // モデルの大きさを変える
-        //foreach (Vector2Int d in _erases)
-        //{
-        //    _Blocks[d.y, d.x].transform.localScale = Vector3.one * t;
-        //}
 
         return true;
     }
@@ -468,8 +481,9 @@ public class FieldController : MonoBehaviour
 
     private bool Translate(bool is_right)
     {
-        // 移動先のX軸の記録用
+        _animationController.Set(TRANS_TIME);
 
+        // 移動先のX軸の記録用
         var trans = (is_right ? Vector2Int.right : Vector2Int.left);
 
         for (int y = 0; y < BOARD_HEIGHT; y++)
@@ -517,11 +531,17 @@ public class FieldController : MonoBehaviour
             {
                 _board[y, x] = _boardDst[y, x];
                 _boardDst[y, x] = 0;
+
                 _Blocks[y, x] = _BlocksDst[y, x];
                 _BlocksDst[y, x] = null;
             }
         }
 
+        if (!isKaiten)
+        {
+            //audioSource.PlayOneShot(se_kaiten);
+            isKaiten = true;
+        }
         return true;
     }
 
@@ -531,27 +551,132 @@ public class FieldController : MonoBehaviour
         //if (_animationController.Update()) return;
 
         // 平行移動のキー入力取得
-        if (_logicalInput.IsRepeat(LogicalInput.Key.Right) || _logicalInput.IsRepeat(LogicalInput.Key.D))
+        if (_logicalInput.IsRepeat(LogicalInput.Key.Right) || _logicalInput.IsRepeat(LogicalInput.Key.D) ||
+            _logicalInput.IsRepeat(LogicalInput.Key.RB))
         {
             if (Translate(true)) return;
         }
-        if (_logicalInput.IsRepeat(LogicalInput.Key.Left) || _logicalInput.IsRepeat(LogicalInput.Key.A))
+        if (_logicalInput.IsRepeat(LogicalInput.Key.Left) || _logicalInput.IsRepeat(LogicalInput.Key.A) ||
+            _logicalInput.IsRepeat(LogicalInput.Key.LB))
         {
             if (Translate(false)) return;
         }
+        if (_logicalInput.IsRelease(LogicalInput.Key.Right) || _logicalInput.IsRelease(LogicalInput.Key.D) ||
+            _logicalInput.IsRelease(LogicalInput.Key.RB))
+        {
+            isKaiten = false;
+        }
+        if (_logicalInput.IsRelease(LogicalInput.Key.Left) || _logicalInput.IsRelease(LogicalInput.Key.A) ||
+            _logicalInput.IsRelease(LogicalInput.Key.LB))
+        {
+            isKaiten = false;
+        }
 
         // Debug用
-        //if (Input.GetKey(KeyCode.Z))
-        //{
-        //    for (int y = 0; y < BOARD_HEIGHT - 1; y++)
-        //    {
-        //        for (int x = 0; x < BOARD_WIDTH; x++)
+        if (Input.GetKey(KeyCode.Z))
+        {
+            for (int y = 0; y < BOARD_HEIGHT - 1; y++)
+            {
+                for (int x = 0; x < BOARD_WIDTH; x++)
+                {
+                    Settle(new Vector2Int(x, y), Random.Range(1, 6));
+                }
+            }
+        }
+    }
+
+    public void AnimeTrans()
+    {
+        //        float anim_rate = _animationController.GetNormalized();
+        //        Debug.Log("anim_rate" + anim_rate);
+
+        //        for (int y = 0; y < BOARD_HEIGHT; y++)
         //        {
-        //            Settle(new Vector2Int(x, y), Random.Range(1, 7));
+        //            for (int x = 0; x < BOARD_WIDTH; x++)
+        //            {
+        //                _board[y, x] = _boardDst[y, x];
+        //                _boardDst[y, x] = 0;
+        //                Vector3 p = Vector3.Lerp(
+        //new Vector3((float)_BlocksDst[y, x].transform.localRotation.y, 0, 0.0f),
+        //new Vector3((float)_Blocks[y, x].transform.localRotation.y, 0, 0.0f), anim_rate);
+
+        //                _Blocks[y, x] = _BlocksDst[y, x];
+        //                _BlocksDst[y, x] = null;
+        //            }
+        //        }
+
+        float anim_rate = _animationController.GetNormalized();
+        Vector3 p = new Vector3(0,0,0);
+        //if (isTrans)
+        //    {
+        //        if (_animationController.Update())
+        //        {
+        //            for (int y = 0; y < BOARD_HEIGHT; y++)
+        //            {
+        //                for (int x = 0; x < BOARD_WIDTH; x++)
+        //                {
+        //                    if (!_Blocks[y, x]) continue;
+        //                    if (!_BlocksDst[y, x]) continue;
+        //                    Debug.Log("dad");
+        //                    Debug.Log(_BlocksDst[y, x].transform.localRotation.y);
+        //                    Debug.Log(_Blocks[y, x].transform.localRotation.y);
+        //                    p = Vector3.Lerp(
+        //new Vector3((float)_BlocksDst[y, x].transform.localRotation.y, 0, 0.0f),
+        //new Vector3((float)_Blocks[y, x].transform.localRotation.y, 0, 0.0f), anim_rate);
+        //                    _Blocks[y, x].transform.localRotation = Quaternion.Euler(0, p.x, 0);
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (isTrans)
+        //            {
+        //                for (int y = 0; y < BOARD_HEIGHT; y++)
+        //                {
+        //                    for (int x = 0; x < BOARD_WIDTH; x++)
+        //                    {
+        //                        _board[y, x] = _boardDst[y, x];
+        //                        _boardDst[y, x] = 0;
+        //                        _Blocks[y, x] = _BlocksDst[y, x];
+        //                        _BlocksDst[y, x] = null;
+        //                    }
+        //                }
+        //                isTrans = false;
+        //            }
         //        }
         //    }
-        //}
 
+        //if (isTrans)
+        {
+            if (_animationController.Update())
+            {
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    for (int x = 0; x < BOARD_WIDTH; x++)
+                    {
+                        _board[y, x] = _boardDst[y, x];
+                        _boardDst[y, x] = 0;
+
+                        _Blocks[y, x] = _BlocksDst[y, x];
+                        _BlocksDst[y, x] = null;
+                    }
+                }
+            }
+            else
+            {
+
+            }
+            
+        }
+    }
+
+    public void TransUpdate(LogicalInput _logicalInput)
+    {
+        if (isControl)
+        {
+            Control(_logicalInput);
+            //AnimeTrans();
+        }
     }
 
     // 得点の受け渡し
@@ -561,5 +686,98 @@ public class FieldController : MonoBehaviour
         _additiveScore = 0;
 
         return score;
+    }
+
+    public void SetControl(bool control)
+    {
+        isControl = control;
+    }
+    public bool GetControl()
+    {
+        return isControl;
+    }
+
+    public void SetTutorial()
+    {
+        // Tutorial
+        Settle(new Vector2Int(0, 0), (int)BlockType.Purple);
+
+        Settle(new Vector2Int(1, 0), (int)BlockType.Red);
+        Settle(new Vector2Int(1, 1), (int)BlockType.Purple);
+        Settle(new Vector2Int(1, 2), (int)BlockType.Red);
+        Settle(new Vector2Int(1, 3), (int)BlockType.Green);
+
+        Settle(new Vector2Int(2, 0), (int)BlockType.Yellow);
+        Settle(new Vector2Int(2, 1), (int)BlockType.Red);
+        Settle(new Vector2Int(2, 2), (int)BlockType.Yellow);
+        Settle(new Vector2Int(2, 3), (int)BlockType.Blue);
+
+        Settle(new Vector2Int(3, 0), (int)BlockType.Green);
+        Settle(new Vector2Int(3, 1), (int)BlockType.Yellow);
+        Settle(new Vector2Int(3, 2), (int)BlockType.Green);
+        Settle(new Vector2Int(3, 3), (int)BlockType.Purple);
+
+        Settle(new Vector2Int(4, 0), (int)BlockType.Blue);
+        Settle(new Vector2Int(4, 1), (int)BlockType.Green);
+        Settle(new Vector2Int(4, 2), (int)BlockType.Blue);
+        Settle(new Vector2Int(4, 3), (int)BlockType.Red);
+
+        Settle(new Vector2Int(5, 0), (int)BlockType.Purple);
+        Settle(new Vector2Int(5, 1), (int)BlockType.Blue);
+        Settle(new Vector2Int(5, 2), (int)BlockType.Purple);
+        Settle(new Vector2Int(5, 3), (int)BlockType.Yellow);
+
+        Settle(new Vector2Int(6, 0), (int)BlockType.Red);
+        Settle(new Vector2Int(6, 1), (int)BlockType.Purple);
+        Settle(new Vector2Int(6, 2), (int)BlockType.Red);
+        Settle(new Vector2Int(6, 3), (int)BlockType.Purple);
+
+        Settle(new Vector2Int(7, 0), (int)BlockType.Yellow);
+        Settle(new Vector2Int(7, 1), (int)BlockType.Red);
+        Settle(new Vector2Int(7, 2), (int)BlockType.Yellow);
+        Settle(new Vector2Int(7, 3), (int)BlockType.Blue);
+        Settle(new Vector2Int(7, 4), (int)BlockType.Yellow);
+        Settle(new Vector2Int(7, 5), (int)BlockType.Blue);
+        Settle(new Vector2Int(7, 6), (int)BlockType.Blue);
+
+        Settle(new Vector2Int(8, 0), (int)BlockType.Green);
+        Settle(new Vector2Int(8, 1), (int)BlockType.Yellow);
+        Settle(new Vector2Int(8, 2), (int)BlockType.Green);
+        Settle(new Vector2Int(8, 3), (int)BlockType.Purple);
+
+        Settle(new Vector2Int(9, 0), (int)BlockType.Blue);
+        Settle(new Vector2Int(9, 1), (int)BlockType.Green);
+        Settle(new Vector2Int(9, 2), (int)BlockType.Blue);
+        Settle(new Vector2Int(9, 3), (int)BlockType.Red);
+
+        Settle(new Vector2Int(10, 0), (int)BlockType.Purple);
+        Settle(new Vector2Int(10, 1), (int)BlockType.Blue);
+        Settle(new Vector2Int(10, 2), (int)BlockType.Purple);
+        Settle(new Vector2Int(10, 3), (int)BlockType.Yellow);
+
+        Settle(new Vector2Int(11, 0), (int)BlockType.Red);
+        Settle(new Vector2Int(11, 1), (int)BlockType.Purple);
+        Settle(new Vector2Int(11, 2), (int)BlockType.Red);
+        Settle(new Vector2Int(11, 3), (int)BlockType.Green);
+
+        Settle(new Vector2Int(12, 0), (int)BlockType.Yellow);
+        Settle(new Vector2Int(12, 1), (int)BlockType.Red);
+        Settle(new Vector2Int(12, 2), (int)BlockType.Yellow);
+        Settle(new Vector2Int(12, 3), (int)BlockType.Blue);
+
+        Settle(new Vector2Int(13, 0), (int)BlockType.Green);
+        Settle(new Vector2Int(13, 1), (int)BlockType.Yellow);
+        Settle(new Vector2Int(13, 2), (int)BlockType.Green);
+        Settle(new Vector2Int(13, 3), (int)BlockType.Purple);
+
+        Settle(new Vector2Int(14, 0), (int)BlockType.Blue);
+        Settle(new Vector2Int(14, 1), (int)BlockType.Green);
+        Settle(new Vector2Int(14, 2), (int)BlockType.Blue);
+        Settle(new Vector2Int(14, 3), (int)BlockType.Red);
+
+        Settle(new Vector2Int(15, 0), (int)BlockType.Yellow);
+        Settle(new Vector2Int(15, 1), (int)BlockType.Blue);
+        Settle(new Vector2Int(15, 2), (int)BlockType.Yellow);
+        Settle(new Vector2Int(15, 3), (int)BlockType.Yellow);
     }
 }

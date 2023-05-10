@@ -93,6 +93,9 @@ public class PlayDirector : MonoBehaviour
         KeyCode.A,          // A
         KeyCode.UpArrow,    // QuickDrop
         KeyCode.DownArrow,  // Down
+        KeyCode.Joystick1Button0,  // A
+        KeyCode.Joystick1Button4,  // LB
+        KeyCode.Joystick1Button5,  // RB
     };
 
     // ì¸óÕÇéÊÇËçûÇﬁ
@@ -137,7 +140,7 @@ public class PlayDirector : MonoBehaviour
         }
         public IState.E_State Update(PlayDirector parent)
         {
-            parent._fieldController.Control(parent._logicalInput);
+            parent._fieldController.TransUpdate(parent._logicalInput);
 
             return parent.player[0].activeSelf || parent.player[1].activeSelf ? IState.E_State.Unchanged : IState.E_State.Falling;
         }

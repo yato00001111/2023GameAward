@@ -1,3 +1,4 @@
+using Effekseer;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,12 +10,12 @@ public enum BlockType
 
     Blue = 1,
     Green = 2,
-    Pink = 3,
-    Purple = 4,
-    Red = 5,
-    Yellow = 6,
+    //Pink = 3,
+    Purple = 3,
+    Red = 4,
+    Yellow = 5,
 
-    Invalid = 7,
+    Invalid = 6,
 };
 
 public class BlockController : MonoBehaviour
@@ -45,6 +46,7 @@ public class BlockController : MonoBehaviour
     [SerializeField, Header("位置が原点の親オブジェクト")] GameObject parentObject;
     [SerializeField] Renderer my_renderer = default!;// 自分自身のマテリアルを登録しておく(GetComponentをなくす)
     [SerializeField] List<Material> _materials = new();
+
     BlockType _type = BlockType.Invalid;
 
     // Start is called before the first frame update
