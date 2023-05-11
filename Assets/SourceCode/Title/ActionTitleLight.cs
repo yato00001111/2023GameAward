@@ -13,9 +13,6 @@ public class ActionTitleLight : MonoBehaviour
     Image LightImage_L;
     Image LightImage_R;
 
-    float TitleTimer;
-    float Span = 2;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -39,13 +36,13 @@ public class ActionTitleLight : MonoBehaviour
         if (Music.IsJustChangedBeat())
         {
             DOTween
-              .To(value => SetOpacity(LightImage_L,value), 0, 0.25f, 0.1f)
+              .To(value => SetOpacity(LightImage_L,value), 0, 1.0f, 0.1f)
               .SetEase(Ease.InQuad)
               .SetLoops(2, LoopType.Yoyo)
               ;
 
             DOTween
-              .To(value => SetOpacity(LightImage_R, value), 0, 0.25f, 0.1f)
+              .To(value => SetOpacity(LightImage_R, value), 0, 1.0f, 0.1f)
               .SetEase(Ease.InQuad)
               .SetLoops(2, LoopType.Yoyo)
               ;
