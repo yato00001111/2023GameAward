@@ -18,17 +18,19 @@ struct FallData
 public class FieldController : MonoBehaviour
 {
     public const int FALL_FRAME_PER_CELL = 5;// 単位セル当たりの落下フレーム数
-    public const int BOARD_WIDTH = 16;
-    public const int BOARD_HEIGHT = 10;
+    public const int BOARD_WIDTH = 8;
+    public const int BOARD_HEIGHT = 11;
 
     // 縦座標
     // 真ん中の円のスケールが1.5の場合
-    private float[] BLOCK_SCALE = { 0.5733f, 0.6332f, 0.7003f, 0.7664f, 0.8419f, 0.9251f, 1.0100f, 1.10818f, 1.20f, 1.333f, 1.466f, 1.61f };
+    private float[] BLOCK_SCALE = { 0.5733f, 0.6332f, 0.700f, 0.7664f, 0.8419f, 0.9251f, 1.0150f, 1.11f, 1.22f, 1.338f, 1.466f, 1.61f };
     // 真ん中の円のスケールが1.0の場合
     //private float[] BLOCK_SCALE = { 0.3833f, 0.4222f, 0.463f, 0.5055f, 0.5533f, 0.6f, 0.65888f, 0.7222f, 0.80f, 0.8955f };
     // 横座標(360と-22.5fは端に行ったときに周回できるように用意した角度)
-    private float[] BLOCK_ROTATE = { 0, 22.5f, 45.0f, 67.5f, 90.0f, 112.5f, 135.0f, 157.5f,
-                                     180.0f, 202.5f, 225.0f, 247.5f, 270.0f, 292.5f, 315.0f, 337.5f, 360.0f, -22.5f};
+    //private float[] BLOCK_ROTATE = { 0, 22.5f, 45.0f, 67.5f, 90.0f, 112.5f, 135.0f, 157.5f,
+    //                                 180.0f, 202.5f, 225.0f, 247.5f, 270.0f, 292.5f, 315.0f, 337.5f, 360.0f, -22.5f};
+    private float[] BLOCK_ROTATE = { -22.5f, 22.5f,  67.5f,  112.5f, 157.5f,
+                                     202.5f, 247.5f, 292.5f, 337.5f, -67.5f};
 
     [SerializeField] GameObject prefabBlock = default!;
     [SerializeField] PlayerController[] _playerController = { default!, default! };
@@ -126,8 +128,8 @@ public class FieldController : MonoBehaviour
     public bool CanSettle(Vector2Int pos)
     {
         // 円なので端で座標ループ
-        if (pos.x == -1) pos.x = 15;
-        if (pos.x == 16) pos.x = 0;
+        if (pos.x == -1) pos.x = BOARD_WIDTH - 1;
+        if (pos.x == BOARD_WIDTH) pos.x = 0;
         if (!IsValidated(pos)) return false;
 
         // 配列の値が埋まっていないか(0になっていないか) 
@@ -279,9 +281,9 @@ public class FieldController : MonoBehaviour
         // 最初のぷよから上下左右を見て、同じ種類のぷよがあれば、そのぷよの上下左右も見るということを続けて、同じ種類の繋がっているぷよを抜き出していく
         // 上下左右を見るのは、それらのオフセットのテーブルを用意しておいて、foreach文で4方向を取り出して検索
         List<Vector2Int> add_list = new();
-        int xChainTemp = -1;
-        int yChainTemp = -1;
-        int typeTemp = -1;
+        //int xChainTemp = -1;
+        //int yChainTemp = -1;
+        //int typeTemp = -1;
         for (int y = 0; y < BOARD_HEIGHT; y++)
         {
             for (int x = 0; x < BOARD_WIDTH; x++)
@@ -304,8 +306,8 @@ public class FieldController : MonoBehaviour
                     {
                         Vector2Int target = pos + d;
                         // ぷよが移動できる範囲にいるかつ同じ種類かつまだ検索していない
-                        if (target.x == -1) target.x = 15;
-                        if (target.x == 16) target.x = 0;
+                        if (target.x == -1) target.x = BOARD_WIDTH - 1;
+                        if (target.x == BOARD_WIDTH) target.x = 0;
                         if (target.x < 0 || BOARD_WIDTH <= target.x ||
                             target.y < 0 || BOARD_HEIGHT <= target.y) continue;// 範囲外
                         if (_board[target.y, target.x] != type) continue;// 色違い
@@ -319,70 +321,70 @@ public class FieldController : MonoBehaviour
                 add_list.Clear();
                 get_connection(new Vector2Int(x, y));
 
-                int xCount = 0;
-                int yCount = 0;
+                //int xCount = 0;
+                //int yCount = 0;
                 if (3 <= add_list.Count)
                 {
-                    foreach (Vector2Int d in add_list)
-                    {
-                        foreach (Vector2Int d2 in add_list)
-                        {
-                            if (d.y == xChainTemp) continue;
-                            if (d.x == yChainTemp) continue;
-                            if (d.x == d2.x)
-                            {
-                                yCount++;
-                            }
-                            if (d.y == d2.y)
-                            {
-                                xCount++;
-                            }
-                        }
-                        if (xCount >= 3)
-                        {
-                            xChainTemp = d.y;
-                            typeTemp = type;
-                        }
-                        if (yCount >= 3)
-                        {
-                            yChainTemp = d.x;
-                            typeTemp = type;
-                        }
-                        xCount = 0;
-                        yCount = 0;
-                    }
+                    //foreach (Vector2Int d in add_list)
+                    //{
+                    //    foreach (Vector2Int d2 in add_list)
+                    //    {
+                    //        if (d.y == xChainTemp) continue;
+                    //        if (d.x == yChainTemp) continue;
+                    //        if (d.x == d2.x)
+                    //        {
+                    //            yCount++;
+                    //        }
+                    //        if (d.y == d2.y)
+                    //        {
+                    //            xCount++;
+                    //        }
+                    //    }
+                    //    if (xCount >= 3)
+                    //    {
+                    //        xChainTemp = d.y;
+                    //        typeTemp = type;
+                    //    }
+                    //    if (yCount >= 3)
+                    //    {
+                    //        yChainTemp = d.x;
+                    //        typeTemp = type;
+                    //    }
+                    //    xCount = 0;
+                    //    yCount = 0;
+                    //}
                     connectBonus += connectBonusTbl[System.Math.Min(add_list.Count, connectBonusTbl.Length - 1)];
                     colorBits |= (1u << type);
                     _erases.AddRange(add_list);
                 }
             }
         }
-        int reverseX = yChainTemp;
-        reverseX = reverseX < 8 ? reverseX + 8 : reverseX - 8;
-        for (int y = 0; y < BOARD_HEIGHT; y++)
-        {
-            for (int x = 0; x < BOARD_WIDTH; x++)
-            {
-                if (_board[y, x] != typeTemp) continue;
-                //Debug.Log("xChainTemp" + xChainTemp);
-                //Debug.Log("yChainTemp" + yChainTemp);
-                if (xChainTemp == y)
-                {
-                    _erases.Add(new Vector2Int(x, y));
-                }
-                if (yChainTemp == x)
-                {
-                    _erases.Add(new Vector2Int(x, y));
-                }
-                if (reverseX == x)
-                {
-                    _erases.Add(new Vector2Int(x, y));
-                }
-            }
-        }
-        typeTemp = -1;
-        xChainTemp = -1;
-        yChainTemp = -1;
+        //int reverseX = yChainTemp;
+        //reverseX = reverseX < 8 ? reverseX + 8 : reverseX - 8;
+        //for (int y = 0; y < BOARD_HEIGHT; y++)
+        //{
+        //    for (int x = 0; x < BOARD_WIDTH; x++)
+        //    {
+        //        if (_board[y, x] != typeTemp) continue;
+        //        //Debug.Log("xChainTemp" + xChainTemp);
+        //        //Debug.Log("yChainTemp" + yChainTemp);
+        //        if (xChainTemp == y)
+        //        {
+        //            _erases.Add(new Vector2Int(x, y));
+        //        }
+        //        if (yChainTemp == x)
+        //        {
+        //            _erases.Add(new Vector2Int(x, y));
+        //        }
+        //        if (reverseX == x)
+        //        {
+        //            _erases.Add(new Vector2Int(x, y));
+        //        }
+        //    }
+        //}
+        //typeTemp = -1;
+        //xChainTemp = -1;
+        //yChainTemp = -1;
 
         if (chainCount != -1)// 初期化時は得点計算はしない
         {
@@ -426,16 +428,16 @@ public class FieldController : MonoBehaviour
         //    return false;
         //}
 
-        if(isEffect)
-        {
-            foreach (Vector2Int d in _erases)
-            {
-                int type = _board[d.y, d.x];
-                _Blocks[d.y, d.x].transform.GetChild(1).GetComponent<EffectController>().PlayEffect(type);
-            }
-            audioSource.PlayOneShot(se_erase);
-            isEffect = false;
-        }
+        //if(isEffect)
+        //{
+        //    foreach (Vector2Int d in _erases)
+        //    {
+        //        int type = _board[d.y, d.x];
+        //        _Blocks[d.y, d.x].transform.GetChild(1).GetComponent<EffectController>().PlayEffect(type);
+        //    }
+        //    audioSource.PlayOneShot(se_erase);
+        //    isEffect = false;
+        //}
         if (_eraseFrames > _eraseTime)
         {
             foreach (Vector2Int d in _erases)
@@ -506,26 +508,18 @@ public class FieldController : MonoBehaviour
                 // データを変更しておく
                 int posX = x + trans.x;
                 _rots.Add(new FallData(x, y, posX));
-                int posX2 = x + trans.x * 2;
 
                 if (posX == -1)
                 {
-                    posX = 15; //x座標の端
+                    posX = BOARD_WIDTH - 1; //x座標の端
                     //is0_15 = true;
                 }
-                if (posX == 16)
+                if (posX == BOARD_WIDTH)
                 {
                     posX = 0; //x座標の端
                     //is15_0 = true;
                 }
-                if (posX2 == -1)
-                {
-                    posX2 = 15; //x座標の端
-                }
-                if (posX2 == 16)
-                {
-                    posX2 = 0; //x座標の端
-                }
+
                 _boardDst[y, posX] = _board[y, x];
 
                 _BlocksDst[y, posX] = _Blocks[y, x];
@@ -798,8 +792,8 @@ public class FieldController : MonoBehaviour
                 _rots.RemoveAt(i);
             }
 
-            if (r.Dest == -1) rot = Mathf.Lerp(BLOCK_ROTATE[17], BLOCK_ROTATE[r.X], anim_rate);
-            else if (r.Dest == 16) rot = Mathf.Lerp(BLOCK_ROTATE[16], BLOCK_ROTATE[r.X], anim_rate);
+            if (r.Dest == -1) rot = Mathf.Lerp(BLOCK_ROTATE[BOARD_WIDTH + 1], BLOCK_ROTATE[r.X], anim_rate);
+            else if (r.Dest == BOARD_WIDTH) rot = Mathf.Lerp(BLOCK_ROTATE[BOARD_WIDTH], BLOCK_ROTATE[r.X], anim_rate);
             else rot = Mathf.Lerp(BLOCK_ROTATE[r.Dest], BLOCK_ROTATE[r.X], anim_rate);
             //Debug.Log("r.Y" + r.Y);
             //Debug.Log("r.Dest" + r.Dest);
@@ -808,10 +802,10 @@ public class FieldController : MonoBehaviour
             int destX;
             if (r.Dest == -1)
             {
-                destX = 15; //x座標の端
+                destX = BOARD_WIDTH - 1; //x座標の端
                             //is0_15 = true;
             }
-            else if (r.Dest == 16)
+            else if (r.Dest == BOARD_WIDTH)
             {
                 destX = 0; //x座標の端
                             //is15_0 = true;

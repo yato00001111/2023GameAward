@@ -25,6 +25,9 @@ interface IState
 [RequireComponent(typeof(FieldController))]
 public class PlayDirector : MonoBehaviour
 {
+    public const int BOARD_WIDTH = 8;
+    public const int BOARD_HEIGHT = 11;
+
     [SerializeField] GameObject[] player = { default!, default! };
     PlayerController[] _playerController = new PlayerController[2];
     LogicalInput _logicalInput = new();
@@ -225,10 +228,12 @@ public class PlayDirector : MonoBehaviour
 
     bool Spawn(Vector2Int next)
     {
-        Vector2Int position = new(Random.Range(0, 16), 9);// èâä˙à íu
+        //Vector2Int position = new(Random.Range(0, BOARD_WIDTH), 9);// èâä˙à íu
+        Vector2Int position = new(6, 9);// èâä˙à íu
 
-        return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
-            _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x < 8 ? position.x + 8 : position.x - 8, position.y));
+        //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
+        //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
+        return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[1], position) ;
     }
 
     void SetScore(uint score)

@@ -8,6 +8,9 @@ public class PlayerController : MonoBehaviour
     const int TRANS_TIME = 5; // 移動速度遷移時間
     const int HALF_TRANS_TIME = 15; // 移動速度遷移時間
 
+    public const int BOARD_WIDTH = 8;
+    public const int BOARD_HEIGHT = 11;
+
     // 落下制御
     const int FALL_COUNT_UNIT = 120; // ひとマス落下するカウント数
     [SerializeField] int FALL_COUNT_SPD = 5; // 落下速度
@@ -24,7 +27,7 @@ public class PlayerController : MonoBehaviour
     private bool isQuick = false;
 
     [SerializeField] FieldController fieldController = default!;
-    [SerializeField] BlockController _blockController = default!;
+    [SerializeField] BlockController[] _blockControllers = new BlockController[2] { default!, default! };
 
     Vector2Int _position;// blockの位置
 
@@ -74,17 +77,22 @@ public class PlayerController : MonoBehaviour
         _fallCount = 0;
         _groundFrame = GROUND_FRAMES;
 
-        // ぷよをだす
-        _blockController.SetBlockType(axis);
-        //_blockController.SetBlockType(child);
+        _blockControllers[0].SetBlockType(axis);
+        _blockControllers[1].SetBlockType(child);
 
-        _blockController.SetPos(new Vector3Int(_position.x, _position.y, 0));
+        _blockControllers[0].SetPos(new Vector3Int(_position.x, _position.y, 0));
+        Vector2Int posChild = CalcChildPuyoPos(_position);
+        _blockControllers[1].SetPos(new Vector3Int(posChild.x, posChild.y - 1, 0));
 
         gameObject.SetActive(true);
 
         return true;
     }
 
+    private static Vector2Int CalcChildPuyoPos(Vector2Int pos)
+    {
+        return pos + new Vector2Int(0, 1);
+    }
 
     private bool CanMove(Vector2Int pos)
     {
@@ -100,13 +108,13 @@ public class PlayerController : MonoBehaviour
         // 円なので端と端でループするように
         if (is0_15) // x座標0から15
         {
-            _last_position.x = 16;
+            _last_position.x = BOARD_WIDTH;
             _last_position.y = _position.y;
             is0_15 = false;
         }
         else if (is15_0) // x座標15から0
         {
-            _last_position.x = 17;
+            _last_position.x = BOARD_WIDTH + 1;
             _last_position.y = _position.y;
             is15_0 = false;
         }
@@ -129,17 +137,17 @@ public class PlayerController : MonoBehaviour
         // 円なので端と端でループするように
         if (pos.x == -1)
         {
-            pos.x = 15; //x座標の端
+            pos.x = BOARD_WIDTH - 1; //x座標の端
             is0_15 = true;
         }
-        if (pos.x == 16)
+        if (pos.x == BOARD_WIDTH)
         {
             pos.x = 0; //x座標の端
             is15_0 = true;
         }
 
         // 横判定
-        CheckSide(pos, is_right);
+        //CheckSide(pos, is_right);
 
         // 実際に移動
         //_position = pos;
@@ -179,8 +187,10 @@ public class PlayerController : MonoBehaviour
     void Settle()
     {
         // 直接接地
-        bool is_set0 = fieldController.Settle(_position, (int)_blockController.GetBlockType());
+        bool is_set0 = fieldController.Settle(_position, (int)_blockControllers[0].GetBlockType());
         Debug.Assert(is_set0);// 置いたのは空いていた場所のはず
+        bool is_set1 = fieldController.Settle(CalcChildPuyoPos(_position), (int)_blockControllers[1].GetBlockType());
+        Debug.Assert(is_set1);// 置いたのは空いていた場所のはず
 
         gameObject.SetActive(false);
     }
@@ -288,7 +298,8 @@ public class PlayerController : MonoBehaviour
         //Debug.Log("anim_rate" + anim_rate);
         //Debug.Log("_position" + _position);
         //Debug.Log("_last_position" + _last_position);
-        _blockController.SetPosInterpolate(_position, _last_position, anim_rate, dy.y);
+        _blockControllers[0].SetPosInterpolate(_position, _last_position, anim_rate, dy.y);
+        _blockControllers[1].SetPosInterpolate(CalcChildPuyoPos(_position), CalcChildPuyoPos(_last_position), anim_rate, dy.y);
         //_blockController.SetRotInterpolate(_position, _last_position, anim_rate);
     }
 
