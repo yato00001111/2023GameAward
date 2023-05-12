@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class ActionTitleLogo : MonoBehaviour
 {
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +24,8 @@ public class ActionTitleLogo : MonoBehaviour
               .SetEase(Ease.InQuad)
               .SetLoops(2, LoopType.Yoyo)
               ;
+
+
         }
     }
 

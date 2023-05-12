@@ -3671,7 +3671,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1518921322}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d9f4bbf3f870df45b6322e7019fe036, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c1fd9946dbed954bb003fccbebb8d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PlayOnStart: 1
@@ -3683,7 +3683,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 6effe99e81e2fb64c9f237509e46a5d4, type: 3}
     Meters:
     - StartBar: 0
-      Tempo: 120
+      Tempo: 108
       UnitPerBeat: 4
       UnitPerBar: 16
       Numerator: 4
@@ -3696,7 +3696,7 @@ MonoBehaviour:
       Beat: 0
       Unit: 0
     ExitPointTiming:
-      Bar: 188
+      Bar: 1
       Beat: 0
       Unit: 0
     LoopStartTiming:
@@ -3704,7 +3704,7 @@ MonoBehaviour:
       Beat: 0
       Unit: 0
     LoopEndTiming:
-      Bar: 188
+      Bar: 1
       Beat: 0
       Unit: 0
     Transition:

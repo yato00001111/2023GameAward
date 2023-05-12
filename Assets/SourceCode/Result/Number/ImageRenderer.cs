@@ -42,7 +42,7 @@ public class ImageRenderer : MonoBehaviour
 
     // 更新処理
      public void _Update(int Number)
-    {
+     {
         // フレームレートを60固定
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
