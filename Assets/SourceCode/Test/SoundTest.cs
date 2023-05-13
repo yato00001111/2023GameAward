@@ -18,6 +18,18 @@ public class SoundTest : MonoBehaviour
     // 拍に来た時点で起動するタイマー
     public float BeatTimer;
 
+    public bool PenaltyFlag;
+
+    // 偶数ビート
+    public bool EvenBeat;
+    // 奇数ビート
+    public bool OddBeat;
+
+    public int BeatCount;
+    bool Pena1;
+    bool Pena2;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,12 +38,17 @@ public class SoundTest : MonoBehaviour
         BeatTimer = 0.0f;
         PlayFlag = false;
 
+        PenaltyFlag = false;
+        BeatCount = 0;
+        OddBeat = false;
+        EvenBeat = false;
+
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         TestText.text = addText.ToString();
 
@@ -41,38 +58,91 @@ public class SoundTest : MonoBehaviour
         {
             // ゲーム開始フラグ起動
             FirstBeat = true;
+            BeatCount += 1;
             //addText += 1;
         }
-        // 拍 32frame 拍
 
         // ゲームが起動したら拍間の時間を計る
-        //if (FirstBeat) BeatTimer++;
         if (FirstBeat) BeatTimer += Time.deltaTime;
 
-        // 拍の前後0.048フレームは操作を受け付ける
-        if ((BeatTimer > 0.000f && BeatTimer < 0.112f))// || (BeatTimer > 0.448f && BeatTimer < 0.56f))
+        // 拍の前後0.15フレームは操作を受け付ける
+        if (!PenaltyFlag)
         {
-            PlayFlag = true;
-        }
-        else if((BeatTimer > 0.448f && BeatTimer < 0.56f))
-        {
-            PlayFlag = true;
-        }
-        else
-        {
-            PlayFlag = false;
+            if (BeatTimer > 0.0f && BeatTimer < 0.15f)
+            {
+                PlayFlag = true;
+            }
+            if (BeatTimer > 0.45f && BeatTimer < 0.6f)
+            {
+                PlayFlag = true;
+            }
+            else
+            {
+                PlayFlag = false;
+            }
         }
 
         // 次の拍に行ったらタイマーをリセット
-        if (BeatTimer > 0.56f)
+        if (BeatTimer > 0.6f)
         {
             BeatTimer = 0.0f;
         }
 
-
-
+        PenaltyMethod();
 
         // 仮置き 指定フレームだけ操作可能
         if (PlayFlag && Input.GetMouseButtonDown(0)) addText += 1;
     }
+
+
+    void PenaltyMethod()
+    {
+        // もし操作可能フレーム以外で操作が行われたら
+        if (!PlayFlag && Input.GetMouseButtonDown(0))
+        {
+            // ペナルティ処理
+            PenaltyFlag = true;
+        }
+
+        // 現在の拍が奇数が偶数かを判定
+        if (BeatCount % 2 == 0)
+        {
+            EvenBeat = true;
+            OddBeat = false;
+        }
+        else
+        {
+            OddBeat = true;
+            EvenBeat = false;
+        }
+
+
+        // もし拍が偶数の時にペナルティが発生したら
+        if (PenaltyFlag && EvenBeat)
+        {
+            // 偶数用ペナルティフラグを立てる
+            Pena2 = true;
+        }
+        // もし拍が奇数の時にペナルティが発生したら
+        if (PenaltyFlag && OddBeat)
+        {
+            // 奇数用ペナルティフラグを立てる
+            Pena1 = true;
+        }
+
+        // もしペナルティ(偶数)が発生していたら奇数時に解除
+        if (Pena2 && OddBeat)
+        {
+            PenaltyFlag = false;
+            Pena2 = false;
+        }
+        // その逆
+        if (Pena1 && EvenBeat)
+        {
+            PenaltyFlag = false;
+            Pena1 = false;
+        }
+    }
 }
+// SceneGameBGM 拍間0.6frame
+// TitleBGM     拍間0.56frame
