@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Result_Transition : MonoBehaviour
+public class ResultTransition : MonoBehaviour
 {
     // アニメーション
-    //private Animator anime;
+    private Animator anime;
 
     // インアニメーション終了
     private bool _End_INTransition = false;
@@ -17,17 +17,17 @@ public class Result_Transition : MonoBehaviour
     void Start()
     {
         // アニメーション取得
-        //anime = gameObject.GetComponent<Animator>();
+        anime = gameObject.GetComponent<Animator>();
     }
 
     // フェードインアニメーション再生
-    public void Start_INanimation(Animator anime)
+    public void Start_INanimation()
     {
         anime.SetTrigger("IN_Animation");
     }
 
     // フェードアウトアニメーション再生
-    public void Start_OUTanimation(Animator anime)
+    public void Start_OUTanimation()
     {
         anime.SetTrigger("OUT_Animation");
     }
