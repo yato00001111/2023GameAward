@@ -44,6 +44,16 @@ public class PlayDirector : MonoBehaviour
 
     bool _canSpawn = false;
 
+    // 音に合わせた操作
+    // 1拍目到達通知
+    private bool FirstBeat = false;
+
+    // 操作可能フラグ
+    public bool PlayFlag;
+    // 拍に来た時点で起動するタイマー
+    public float BeatTimer;
+
+
     // 状態管理
     IState.E_State _current_state = IState.E_State.Falling;
     static readonly IState[] states = new IState[(int)IState.E_State.MAX]{
@@ -79,6 +89,10 @@ public class PlayDirector : MonoBehaviour
         InitializeState();
 
         SetScore(0);
+
+        BeatTimer = 0.0f;
+        PlayFlag = false;
+
     }
 
     void UpdateNextsView()
@@ -143,7 +157,8 @@ public class PlayDirector : MonoBehaviour
         }
         public IState.E_State Update(PlayDirector parent)
         {
-            parent._fieldController.TransUpdate(parent._logicalInput);
+            //if(parent.PlayFlag)
+                parent._fieldController.TransUpdate(parent._logicalInput);
 
             return parent.player[0].activeSelf || parent.player[1].activeSelf ? IState.E_State.Unchanged : IState.E_State.Falling;
         }
@@ -214,6 +229,42 @@ public class PlayDirector : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        // 拍に合わせた操作
+        // 拍ごとにtrue
+        {
+            if (Music.IsJustChangedBeat())
+            {
+                // ゲーム開始フラグ起動
+                FirstBeat = true;
+                //addText += 1;
+            }
+            // 拍 32frame 拍
+
+            // ゲームが起動したら拍間の時間を計る
+            //if (FirstBeat) BeatTimer++;
+            if (FirstBeat) BeatTimer += Time.deltaTime;
+
+            // 拍の前後0.048フレームは操作を受け付ける
+            if ((BeatTimer > 0.000f && BeatTimer < 0.112f))// || (BeatTimer > 0.448f && BeatTimer < 0.56f))
+            {
+                PlayFlag = true;
+            }
+            else if ((BeatTimer > 0.448f && BeatTimer < 0.56f))
+            {
+                PlayFlag = true;
+            }
+            else
+            {
+                PlayFlag = false;
+            }
+
+            // 次の拍に行ったらタイマーをリセット
+            if (BeatTimer > 0.56f)
+            {
+                BeatTimer = 0.0f;
+            }
+        }
+
         // 入力を取り込む
         UpdateInput();
 
