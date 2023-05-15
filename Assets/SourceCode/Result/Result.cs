@@ -127,8 +127,8 @@ public class Result : MonoBehaviour
     // スキップ処理
     private void Skip()
     {
-        // 左クリックしたとき
-        if(Input.GetMouseButtonDown(0))
+        // 左クリックしたとき または　コントローラーのＡが押されたら
+        if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button0))
         {
             // 関数の配列の中から _SkipCount の数値に応じて　呼び出し関数、<=関数の引数　を変更して関数を呼ぶ
             SkipFunctions[(_SkipCount % 2)](OBJList[(int)_SkipCount / 2]); 
