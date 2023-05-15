@@ -22,6 +22,9 @@ public class UI_Dead_Gauge : MonoBehaviour
     [SerializeField]
     private float Dead_Gauge_ScaleX;                      // 死亡ゲージUI画像の横幅変数
 
+    [SerializeField]
+    private bool Is_Disappear_Phase_Flag;                 // 消えるフェーズフラグ
+
     // Start is called before the first frame update
     void Start()
     {
