@@ -400,6 +400,7 @@ public class PlayDirector : MonoBehaviour
     void SetScore(uint score)
     {
         _score = score;
+
         textScore.text = _score.ToString();
     }
     void AddScore(uint score)
