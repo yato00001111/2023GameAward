@@ -26,7 +26,7 @@ interface IState
 public class PlayDirector : MonoBehaviour
 {
     public const int BOARD_WIDTH = 8;
-    public const int BOARD_HEIGHT = 11;
+    public const int BOARD_HEIGHT = 20;
 
     [SerializeField] GameObject[] player = { default!, default! };
     PlayerController[] _playerController = new PlayerController[2];
@@ -50,8 +50,19 @@ public class PlayDirector : MonoBehaviour
 
     // 操作可能フラグ
     public bool PlayFlag;
+    public bool PenaltyFlag;
+    public int PenaltyCount;
+
     // 拍に来た時点で起動するタイマー
     public float BeatTimer;
+    // 偶数ビート
+    public bool EvenBeat;
+    // 奇数ビート
+    public bool OddBeat;
+
+    public int BeatCount;
+    bool Pena1;
+    bool Pena2;
 
 
     // 状態管理
@@ -92,7 +103,13 @@ public class PlayDirector : MonoBehaviour
 
         BeatTimer = 0.0f;
         PlayFlag = false;
+        PenaltyCount = 0;
+        PenaltyFlag = false;
+        BeatCount = 0;
+        OddBeat = false;
+        EvenBeat = false;
 
+        StartCoroutine("BeatPlay");
     }
 
     void UpdateNextsView()
@@ -226,43 +243,136 @@ public class PlayDirector : MonoBehaviour
         }
     }
 
+    void PenaltyMethod()
+    {
+        // もし操作可能フレーム以外で操作が行われたら
+        if (!PlayFlag)
+        {
+            if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                // ペナルティ処理
+                PenaltyFlag = true;
+            }
+        }
+
+        // 現在の拍が奇数が偶数かを判定
+        if (BeatCount % 2 == 0)
+        {
+            EvenBeat = true;
+            OddBeat = false;
+        }
+        else
+        {
+            OddBeat = true;
+            EvenBeat = false;
+        }
+
+
+        // もし拍が偶数の時にペナルティが発生したら
+        if (PenaltyFlag && EvenBeat)
+        {
+            // 偶数用ペナルティフラグを立てる
+            Pena2 = true;
+        }
+        // もし拍が奇数の時にペナルティが発生したら
+        if (PenaltyFlag && OddBeat)
+        {
+            // 奇数用ペナルティフラグを立てる
+            Pena1 = true;
+        }
+
+        // もしペナルティ(偶数)が発生していたら奇数時に解除
+        if (Pena2 && OddBeat)
+        {
+            PenaltyFlag = false;
+            Pena2 = false;
+        }
+        // その逆
+        if (Pena1 && EvenBeat)
+        {
+            PenaltyFlag = false;
+            Pena1 = false;
+        }
+    }
+
+    private IEnumerator BeatPlay()
+    {
+        while (true)
+        {
+            PlayFlag = true;
+            if (PenaltyFlag)
+            {
+                PlayFlag = false;
+                PenaltyCount++;
+            }
+            yield return new WaitForSeconds(0.15f);
+            PlayFlag = false;
+            yield return new WaitForSeconds(0.3f);
+            PlayFlag = true;
+            if(PenaltyFlag)
+            {
+                PlayFlag = false;
+                PenaltyCount++;
+            }
+            yield return new WaitForSeconds(0.15f);
+        }
+
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
         // 拍に合わせた操作
         // 拍ごとにtrue
+        //{
+        //    // 拍ごとにtrue
+        //    if (Music.IsJustChangedBeat())
+        //    {
+        //        // ゲーム開始フラグ起動
+        //        FirstBeat = true;
+        //        //addText += 1;
+        //    }
+
+        //    // ゲームが起動したら拍間の時間を計る
+        //    if (FirstBeat) BeatTimer += Time.deltaTime;
+
+        //    // 拍の前後0.15フレームは操作を受け付ける
+        //    if (!PenaltyFlag)
+        //    {
+        //        if (BeatTimer > 0.0f && BeatTimer < 0.15f)
+        //        {
+        //            PlayFlag = true;
+        //        }
+        //        else if (BeatTimer > 0.45f && BeatTimer < 0.6f)
+        //        {
+        //            PlayFlag = true;
+        //        }
+        //        else
+        //        {
+        //            PlayFlag = false;
+        //        }
+        //    }
+
+        //    // 次の拍に行ったらタイマーをリセット
+        //    if (BeatTimer > 0.6f)
+        //    {
+        //        BeatTimer = 0.0f;
+        //        BeatCount += 1;
+        //    }
+        //}
+        //PenaltyMethod();
+        if (!PlayFlag)
         {
-            if (Music.IsJustChangedBeat())
+            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
             {
-                // ゲーム開始フラグ起動
-                FirstBeat = true;
-                //addText += 1;
+                // ペナルティ処理
+                PenaltyFlag = true;
             }
-            // 拍 32frame 拍
-
-            // ゲームが起動したら拍間の時間を計る
-            //if (FirstBeat) BeatTimer++;
-            if (FirstBeat) BeatTimer += Time.deltaTime;
-
-            // 拍の前後0.048フレームは操作を受け付ける
-            if ((BeatTimer > 0.000f && BeatTimer < 0.112f))// || (BeatTimer > 0.448f && BeatTimer < 0.56f))
-            {
-                PlayFlag = true;
-            }
-            else if ((BeatTimer > 0.448f && BeatTimer < 0.56f))
-            {
-                PlayFlag = true;
-            }
-            else
-            {
-                PlayFlag = false;
-            }
-
-            // 次の拍に行ったらタイマーをリセット
-            if (BeatTimer > 0.56f)
-            {
-                BeatTimer = 0.0f;
-            }
+        }
+        if (PenaltyCount ==2)
+        {
+            PenaltyFlag = false;
+            PenaltyCount = 0;
         }
 
         // 入力を取り込む
@@ -280,7 +390,7 @@ public class PlayDirector : MonoBehaviour
     bool Spawn(Vector2Int next)
     {
         //Vector2Int position = new(Random.Range(0, BOARD_WIDTH), 9);// 初期位置
-        Vector2Int position = new(6, 9);// 初期位置
+        Vector2Int position = new(6, 18);// 初期位置
 
         //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
         //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
@@ -299,6 +409,11 @@ public class PlayDirector : MonoBehaviour
     void SetChainScore(int score)
     {
         chainScore.text = score.ToString();
+    }
+
+    public bool GetPlayFlag()
+    {
+        return PlayFlag;
     }
 
     public void EnableSpawn(bool enable)

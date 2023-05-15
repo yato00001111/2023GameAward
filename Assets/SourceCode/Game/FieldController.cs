@@ -19,11 +19,11 @@ public class FieldController : MonoBehaviour
 {
     public const int FALL_FRAME_PER_CELL = 5;// 単位セル当たりの落下フレーム数
     public const int BOARD_WIDTH = 8;
-    public const int BOARD_HEIGHT = 11;
+    public const int BOARD_HEIGHT = 20;
 
     // 縦座標
     // 真ん中の円のスケールが1.5の場合
-    private float[] BLOCK_SCALE = { 0.5733f, 0.6332f, 0.700f, 0.7664f, 0.8419f, 0.9251f, 1.0150f, 1.11f, 1.22f, 1.338f, 1.466f, 1.61f };
+    private float[] BLOCK_SCALE = { 0.5733f, 0.6332f, 0.700f, 0.7664f, 0.8419f, 0.9251f, 1.0150f, 1.11f, 1.22f, 1.338f, 1.466f, 1.605f, 1.76f, 1.93f, 2.11f, 2.31f, 2.53f, 2.77f, 3.03f, 3.32f };
     // 真ん中の円のスケールが1.0の場合
     //private float[] BLOCK_SCALE = { 0.3833f, 0.4222f, 0.463f, 0.5055f, 0.5533f, 0.6f, 0.65888f, 0.7222f, 0.80f, 0.8955f };
     // 横座標(360と-22.5fは端に行ったときに周回できるように用意した角度)
@@ -34,6 +34,7 @@ public class FieldController : MonoBehaviour
 
     [SerializeField] GameObject prefabBlock = default!;
     [SerializeField] PlayerController[] _playerController = { default!, default! };
+    [SerializeField] PlayDirector playDirector = default!;
 
     int[,] _board = new int[BOARD_HEIGHT, BOARD_WIDTH];
     int[,] _boardDst = new int[BOARD_HEIGHT, BOARD_WIDTH];
@@ -679,7 +680,7 @@ public class FieldController : MonoBehaviour
     private bool HalfTranslate(bool is_right)
     {
         if (_animationController.Update()) return true;
-        if (TransCount < 8)
+        if (TransCount < 4)
         {
             delay++;
             //if(delay > 3)
@@ -697,7 +698,7 @@ public class FieldController : MonoBehaviour
     {
         if (isHalfTransR) HalfTranslate(true);
         if (isHalfTransL) HalfTranslate(false);
-        if (TransCount == 8) 
+        if (TransCount == 4) 
         {
             TransCount = 0;
             isHalfTransR = false;
@@ -736,22 +737,26 @@ public class FieldController : MonoBehaviour
             if (_logicalInput.IsRepeat(LogicalInput.Key.Right) || _logicalInput.IsRepeat(LogicalInput.Key.D) ||
                 _logicalInput.IsRepeat(LogicalInput.Key.RB))
             {
-                if (Translate(true)) return;
+                if(playDirector.GetPlayFlag())
+                    if (Translate(true)) return;
             }
             if (_logicalInput.IsRepeat(LogicalInput.Key.Left) || _logicalInput.IsRepeat(LogicalInput.Key.A) ||
                 _logicalInput.IsRepeat(LogicalInput.Key.LB))
             {
-                if (Translate(false)) return;
+                if (playDirector.GetPlayFlag())
+                    if (Translate(false)) return;
             }
             if (_logicalInput.IsRelease(LogicalInput.Key.Right) || _logicalInput.IsRelease(LogicalInput.Key.D) ||
                 _logicalInput.IsRelease(LogicalInput.Key.RB))
             {
-                isKaiten = false;
+                if (playDirector.GetPlayFlag())
+                    isKaiten = false;
             }
             if (_logicalInput.IsRelease(LogicalInput.Key.Left) || _logicalInput.IsRelease(LogicalInput.Key.A) ||
                 _logicalInput.IsRelease(LogicalInput.Key.LB))
             {
-                isKaiten = false;
+                if (playDirector.GetPlayFlag())
+                    isKaiten = false;
             }
         }
 

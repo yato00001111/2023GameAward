@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     const int HALF_TRANS_TIME = 15; // 移動速度遷移時間
 
     public const int BOARD_WIDTH = 8;
-    public const int BOARD_HEIGHT = 11;
+    public const int BOARD_HEIGHT = 20;
 
     // 落下制御
     const int FALL_COUNT_UNIT = 120; // ひとマス落下するカウント数
@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] FieldController fieldController = default!;
     [SerializeField] BlockController[] _blockControllers = new BlockController[2] { default!, default! };
+    [SerializeField] PlayDirector playDirector = default!;
 
     Vector2Int _position;// blockの位置
 
@@ -281,7 +282,8 @@ public class PlayerController : MonoBehaviour
         // クイックドロップのキー入力取得
         if (_logicalInput.IsRelease(LogicalInput.Key.QuickDrop) || _logicalInput.IsRelease(LogicalInput.Key.JoyA))
         {
-            QuickDrop();
+            if (playDirector.GetPlayFlag())
+                QuickDrop();
         }
     }
 
