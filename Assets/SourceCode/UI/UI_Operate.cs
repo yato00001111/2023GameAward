@@ -31,6 +31,8 @@ public class UI_Operate : MonoBehaviour
     private RectTransform Operate3_Image_Rect;          // ”¼‰ñ“]‘€ì•û–@UI‰æ‘œ‚ÌRectTransform
 
 
+
+
     // Start is called before the first frame update
     void Start()
     {

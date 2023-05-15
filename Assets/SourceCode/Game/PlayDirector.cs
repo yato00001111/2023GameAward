@@ -66,6 +66,8 @@ public class PlayDirector : MonoBehaviour
     bool Pena2;
 
 
+    public UI_NextBlock_Direction ui_NextBlock_Direction;
+
     // 状態管理
     IState.E_State _current_state = IState.E_State.Falling;
     static readonly IState[] states = new IState[(int)IState.E_State.MAX]{
@@ -83,6 +85,7 @@ public class PlayDirector : MonoBehaviour
         // プロジェクト設定から0にしてある
         //QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
+
     }
 
     // Start is called before the first frame update
@@ -169,6 +172,8 @@ public class PlayDirector : MonoBehaviour
                 return IState.E_State.GameOver;
             }
             parent.Spawn(parent._nextQueue.Update());
+
+            
 
             parent.UpdateNextsView();
             return IState.E_State.Unchanged;
@@ -356,7 +361,7 @@ public class PlayDirector : MonoBehaviour
     {
         //Vector2Int position = new(Random.Range(0, BOARD_WIDTH), 9);// 初期位置
         Vector2Int position = new(6, 18);// 初期位置
-
+        ui_NextBlock_Direction.ResetNextBlockAnimation();
         //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
         //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
         return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[1], position) ;
