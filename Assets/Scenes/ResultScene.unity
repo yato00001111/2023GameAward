@@ -1208,6 +1208,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7257123909970385425, guid: 3e8e9212b33b5554ba8253136646f137,
+        type: 3}
+      propertyPath: anime
+      value: 
+      objectReference: {fileID: 1918047170}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e8e9212b33b5554ba8253136646f137, type: 3}
 --- !u!1 &1322299329
@@ -1639,6 +1644,12 @@ MonoBehaviour:
 --- !u!224 &1918047169 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6362888108305125612, guid: 3e8e9212b33b5554ba8253136646f137,
+    type: 3}
+  m_PrefabInstance: {fileID: 1246999695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1918047170 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6362888108305125603, guid: 3e8e9212b33b5554ba8253136646f137,
     type: 3}
   m_PrefabInstance: {fileID: 1246999695}
   m_PrefabAsset: {fileID: 0}

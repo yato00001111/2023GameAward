@@ -5,6 +5,7 @@ using UnityEngine;
 public class ResultTransition : MonoBehaviour
 {
     // アニメーション
+    [SerializeField]
     private Animator anime;
 
     // インアニメーション終了
@@ -12,13 +13,6 @@ public class ResultTransition : MonoBehaviour
 
     // アウトアニメーション終了
     private bool _End_OUTTransition = false;
-
-    // 初期化
-    void Start()
-    {
-        // アニメーション取得
-        anime = gameObject.GetComponent<Animator>();
-    }
 
     // フェードインアニメーション再生
     public void Start_INanimation()
