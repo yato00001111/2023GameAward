@@ -1,5 +1,76 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1641939874866002252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2097879829363848020}
+  - component: {fileID: 2781436902289706534}
+  - component: {fileID: 5339539549822003754}
+  m_Layer: 0
+  m_Name: yokoeffect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2097879829363848020
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641939874866002252}
+  m_LocalRotation: {x: 0, y: 0.77162457, z: 0, w: 0.63607824}
+  m_LocalPosition: {x: 0, y: -1.66, z: 0}
+  m_LocalScale: {x: 2.68, y: 2.68, z: 2.62}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 5710766109023045438}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 101, z: 0}
+--- !u!114 &2781436902289706534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641939874866002252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84195a5ca740f2247acc936840c74d02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tantaiEffects:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: df68c2c678abb3c498f6e9adee906acc, type: 2}
+  - {fileID: 11400000, guid: e05624e669513754db299258fb2ee93b, type: 2}
+  - {fileID: 11400000, guid: 84c3f39bfdd0ddb449a994b54b0b64b8, type: 2}
+  - {fileID: 11400000, guid: a7032e010df59684cb52c64e92733b95, type: 2}
+  - {fileID: 11400000, guid: 249afa000013e514dac8e6c067e60070, type: 2}
+  - {fileID: 0}
+--- !u!114 &5339539549822003754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641939874866002252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d396bcb8480c24eb784eebe6096a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TimingOfUpdate: 0
+  EmitterScale: 1
+  TimeScale: 0
+  effectAsset: {fileID: 11400000, guid: 01d443ac36ce3bc43baa622816cbdf44, type: 2}
+  playOnStart: 0
+  isLooping: 0
 --- !u!1 &2959018625782195459
 GameObject:
   m_ObjectHideFlags: 0
@@ -29,9 +100,82 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2872531840485157746}
+  - {fileID: 1249845070845521327}
+  - {fileID: 2097879829363848020}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7372896198612375676
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1249845070845521327}
+  - component: {fileID: 4668883029449764456}
+  - component: {fileID: 5111864618161549277}
+  m_Layer: 0
+  m_Name: effect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1249845070845521327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7372896198612375676}
+  m_LocalRotation: {x: 0, y: 0.77162457, z: 0, w: 0.63607824}
+  m_LocalPosition: {x: 0, y: -1.66, z: 0}
+  m_LocalScale: {x: 2.68, y: 2.68, z: 2.62}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5710766109023045438}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 101, z: 0}
+--- !u!114 &4668883029449764456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7372896198612375676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84195a5ca740f2247acc936840c74d02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tantaiEffects:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: df68c2c678abb3c498f6e9adee906acc, type: 2}
+  - {fileID: 11400000, guid: e05624e669513754db299258fb2ee93b, type: 2}
+  - {fileID: 11400000, guid: 84c3f39bfdd0ddb449a994b54b0b64b8, type: 2}
+  - {fileID: 11400000, guid: a7032e010df59684cb52c64e92733b95, type: 2}
+  - {fileID: 11400000, guid: 249afa000013e514dac8e6c067e60070, type: 2}
+  - {fileID: 0}
+--- !u!114 &5111864618161549277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7372896198612375676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d396bcb8480c24eb784eebe6096a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TimingOfUpdate: 0
+  EmitterScale: 0
+  TimeScale: 0
+  effectAsset: {fileID: 11400000, guid: e05624e669513754db299258fb2ee93b, type: 2}
+  playOnStart: 0
+  isLooping: 0
 --- !u!1001 &8823000921687805223
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39,6 +183,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5710766109023045438}
     m_Modifications:
+    - target: {fileID: 773795043749795698, guid: 7e3ca842eb76fbb4ab8b38c21231559c,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 06d1955737c8d4040a29d48e110e96b5, type: 2}
     - target: {fileID: 6749999648590046805, guid: 7e3ca842eb76fbb4ab8b38c21231559c,
         type: 3}
       propertyPath: m_RootOrder
@@ -125,7 +274,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 2100000, guid: 06d1955737c8d4040a29d48e110e96b5, type: 2}
   - {fileID: 2100000, guid: f68a17b6c65e41b4dbff2b84234ef060, type: 2}
-  - {fileID: 2100000, guid: 07fbe6b798440f945b679ee1ce6142f5, type: 2}
   - {fileID: 2100000, guid: 721562455360cf249a26ce2316203499, type: 2}
   - {fileID: 2100000, guid: 36edf22ed35dedd4f9edfa1226f3343a, type: 2}
   - {fileID: 2100000, guid: e487c3786fd26d24aa032e4ca1b22f43, type: 2}

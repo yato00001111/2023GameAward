@@ -5,10 +5,10 @@ using UnityEngine;
 public class DebugCube : MonoBehaviour
 {
     float x = -8;
-    void Update()
+    void FixedUpdate()
     {
         Vector3 p = new Vector3(x, 4, 0);
-        x += 0.01f;
+        x += 0.1f;
         transform.position = p;
     }
 }
