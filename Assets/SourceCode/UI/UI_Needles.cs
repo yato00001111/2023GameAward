@@ -18,6 +18,8 @@ public class UI_Needles : MonoBehaviour
     [SerializeField]                               
     private RectTransform Needle_Gauge_Image_Rect; // 針ゲージUI画像のRectTransform
     [SerializeField]
+    private Image Needle_Gauge_Image_Color;        // 針ゲージUI画像のColor
+    [SerializeField]
     private float Needle_Gauge_Image_AngleZ;       // 針ゲージUI画像のRectTransformの"Z"回転値
     [SerializeField]
     private float Needle_Gauge_Image_RotateZ;      // 針ゲージUI画像のRectTransformの初回Rotate"Z"値
@@ -44,6 +46,10 @@ public class UI_Needles : MonoBehaviour
 
     [SerializeField]
     private RectTransform Rhythm_Image_Rect;       // リズムUI画像のRectTransform
+    [SerializeField]
+    private bool Succeed_Flag;                     // リズム操作成功真偽フラグ
+    [SerializeField]
+    private float Save_Succeed_Time;               // リズム操作成功時の時間
 
 
     [SerializeField]
@@ -79,6 +85,8 @@ public class UI_Needles : MonoBehaviour
         Needle_Gauge_ElapsedTime = 0.0f;
         // 針ゲージが変化中真偽フラグを初期化する
         Needle_Gauge_Is_Changing = false;
+        // 針ゲージUI画像のColorを初期化する
+        Needle_Gauge_Image_Color.color = new Color(1, 1, 1, 1);
 
         // リズムゲージUI画像のRectTransformの"X"移動値を初期化する
         Rhythm_Gauge_Image_PosX = 300.0f;
@@ -95,6 +103,10 @@ public class UI_Needles : MonoBehaviour
         // リズムゲージの移動カウントを初期化する
         Rhythm_Transition_Count = 0;
 
+        // リズム操作成功真偽フラグを初期化する
+        Succeed_Flag = false;
+        // リズム操作成功時の時間を初期化する
+        Save_Succeed_Time = 0.0f;
 
         // ゲーム開始直後の拍のタイミング
         GameStart_ClapCount = 5;
@@ -181,23 +193,57 @@ public class UI_Needles : MonoBehaviour
         if (Music.IsJustChangedBeat())
         {
             DOTween
-              .To(value => OnScale(value), 0, 1, 0.1f)
-              .SetEase(Ease.InQuad)
-              .SetLoops(2, LoopType.Yoyo)
-              ;
-
-
+              .To(value => OnScale(value), 0, 1, 0.1f) .SetEase(Ease.InQuad) .SetLoops(2, LoopType.Yoyo);
         }
 
+        //***************************************//
+        //***<< 操作成功 or 操作失敗　の演出>>***//
+        //***************************************//
+
+        // "成功"
+        if      ((Rhythm_Gauge_Image_Rect.anchoredPosition.x >= -50.0f && Rhythm_Gauge_Image_Rect.anchoredPosition.x <= 50.0f) && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)))
+        {
+            // 操作成功にする
+            Succeed_Flag = true;
+            // 現在の時間を保存する
+            Save_Succeed_Time = Current_Time;
+            // 演出
+            DOTween
+              .To(value => OnScale(value), 0, 1, 0.1f).SetEase(Ease.InQuad).SetLoops(2, LoopType.Yoyo);
+            Needle_Gauge_Image_Color.color = new Color(0.4f, 1, 1, 1);
+
+        }
+        // "失敗"
+        else if ((Rhythm_Gauge_Image_Rect.anchoredPosition.x < -50.0f || Rhythm_Gauge_Image_Rect.anchoredPosition.x > 50.0f) && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A))) 
+        {
+            Needle_Gauge_Image_Color.color = new Color(1, 0.45f, 0.4f, 1);
+        }
+        // キー入力が離れたら色を元に戻す
+        else if(Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyUp(KeyCode.A))
+        {
+            Needle_Gauge_Image_Color.color = new Color(1, 1, 1, 1);
+        }
+
+        // 操作成功から一定時間経過したら
+        if (Succeed_Flag && Current_Time >= Save_Succeed_Time + (Clap_Time / 2.0f)) 
+        {
+            Succeed_Flag = false;
+        }
+
+
         // 現在の時間を確認用タイマー起動
-        Current_Time = 1.0f * Time.deltaTime;
+        Current_Time += 1.0f * Time.deltaTime;
     }
 
-    // オブジェクトのスケールを変更
+
+
+
+
+    // リズムUI画像のスケールを変更
     private void OnScale(float value)
     {
-        var scale = Mathf.Lerp(1, 1.2f, value);
-        Rhythm_Image_Rect.localScale = new Vector3(scale, scale, scale);
+        var Scale = Mathf.Lerp(1, Succeed_Flag ? 1.7f : 1.2f, value);
+        Rhythm_Image_Rect.localScale = new Vector3(Scale, Scale, Scale);
     }
 
     // 拍の間隔の秒数を取得する関数
@@ -236,28 +282,28 @@ public class UI_Needles : MonoBehaviour
         if      (count == 0) 
         {
             var Position = Mathf.Lerp(0.0f, -300.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 432.0f - 200.0f);
+            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
             if (Position == -300.0f) Rhythm_Transition_Count = 1;
         }
         else if (count == 1)
         {
             var Position = Mathf.Lerp(-300.0f, 0.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 432.0f - 200.0f);
+            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
             if (Position == 0.0f || Music.IsJustChangedBeat()) Rhythm_Transition_Count = 2;
         }
         else if (count == 2)
         {
             var Position = Mathf.Lerp(0.0f, 300.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 432.0f - 200.0f);
+            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
             if (Position == 300.0f) Rhythm_Transition_Count = 3;
         }
         else if (count == 3)
         {
             var Position = Mathf.Lerp(300.0f, 0.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 432.0f - 200.0f);
+            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
             if (Position == 0.0f || Music.IsJustChangedBeat()) Rhythm_Transition_Count = 0;
         }
