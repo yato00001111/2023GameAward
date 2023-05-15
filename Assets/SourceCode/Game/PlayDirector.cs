@@ -28,6 +28,7 @@ public class PlayDirector : MonoBehaviour
     public const int BOARD_WIDTH = 8;
     public const int BOARD_HEIGHT = 20;
 
+    [SerializeField] GameObject beatTest = default!;
     [SerializeField] GameObject[] player = { default!, default! };
     PlayerController[] _playerController = new PlayerController[2];
     LogicalInput _logicalInput = new();
@@ -322,45 +323,9 @@ public class PlayDirector : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        // 拍に合わせた操作
-        // 拍ごとにtrue
-        //{
-        //    // 拍ごとにtrue
-        //    if (Music.IsJustChangedBeat())
-        //    {
-        //        // ゲーム開始フラグ起動
-        //        FirstBeat = true;
-        //        //addText += 1;
-        //    }
+        if (PlayFlag) beatTest.SetActive(true);
+        if (!PlayFlag) beatTest.SetActive(false);
 
-        //    // ゲームが起動したら拍間の時間を計る
-        //    if (FirstBeat) BeatTimer += Time.deltaTime;
-
-        //    // 拍の前後0.15フレームは操作を受け付ける
-        //    if (!PenaltyFlag)
-        //    {
-        //        if (BeatTimer > 0.0f && BeatTimer < 0.15f)
-        //        {
-        //            PlayFlag = true;
-        //        }
-        //        else if (BeatTimer > 0.45f && BeatTimer < 0.6f)
-        //        {
-        //            PlayFlag = true;
-        //        }
-        //        else
-        //        {
-        //            PlayFlag = false;
-        //        }
-        //    }
-
-        //    // 次の拍に行ったらタイマーをリセット
-        //    if (BeatTimer > 0.6f)
-        //    {
-        //        BeatTimer = 0.0f;
-        //        BeatCount += 1;
-        //    }
-        //}
-        //PenaltyMethod();
         if (!PlayFlag)
         {
             if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
