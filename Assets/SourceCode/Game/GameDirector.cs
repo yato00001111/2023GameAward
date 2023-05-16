@@ -40,7 +40,7 @@ public class GameDirector : MonoBehaviour
 
     private IEnumerator GameFlow()
     {
-        CreateMessage("Ready?");
+        //CreateMessage("Ready?");
 
         yield return new WaitForSeconds(2.0f);
         Destroy(_message); _message = null;

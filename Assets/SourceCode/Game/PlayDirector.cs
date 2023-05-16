@@ -303,24 +303,38 @@ public class PlayDirector : MonoBehaviour
 
     private IEnumerator BeatPlay()
     {
+        int count = 0;
         while (true)
         {
-            PlayFlag = true;
-            if (PenaltyFlag)
+            if (count == 0)
+            {
+                PlayFlag = true;
+                if (PenaltyFlag)
+                {
+                    PlayFlag = false;
+                    PenaltyCount++;
+                }
+            }
+            yield return new WaitForFixedUpdate();
+            // 0.02ïbå„
+            count++;
+            if (count == 10)
             {
                 PlayFlag = false;
-                PenaltyCount++;
             }
-            yield return new WaitForSeconds(0.15f);
-            PlayFlag = false;
-            yield return new WaitForSeconds(0.3f);
-            PlayFlag = true;
-            if(PenaltyFlag)
+            if (count == 20)
             {
-                PlayFlag = false;
-                PenaltyCount++;
+                PlayFlag = true;
+                if (PenaltyFlag)
+                {
+                    PlayFlag = false;
+                    PenaltyCount++;
+                }
             }
-            yield return new WaitForSeconds(0.15f);
+            if (count == 30)
+            {
+                count = 0;
+            }
         }
 
     }

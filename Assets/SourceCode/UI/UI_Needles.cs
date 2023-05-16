@@ -7,56 +7,76 @@ using DG.Tweening;
 public class UI_Needles : MonoBehaviour
 {
     [SerializeField]
-    private float Clap_Time;                       // 拍の間隔の秒数
-                                                   
-    [SerializeField]                               
-    private float Current_Time;                    // 確認用現在のタイム
-                                                   
-    [SerializeField]                               
-    private int Clap_Count;                        // 拍のカウント変数
-                                                   
-    [SerializeField]                               
-    private RectTransform Needle_Gauge_Image_Rect; // 針ゲージUI画像のRectTransform
+    private float Clap_Time;                           // 拍の間隔の秒数
+                                                       
+    [SerializeField]                                   
+    private float Current_Time;                        // 確認用現在のタイム
+                                                       
+    [SerializeField]                                   
+    private int Clap_Count;                            // 拍のカウント変数
+
     [SerializeField]
-    private Image Needle_Gauge_Image_Color;        // 針ゲージUI画像のColor
-    [SerializeField]
-    private float Needle_Gauge_Image_AngleZ;       // 針ゲージUI画像のRectTransformの"Z"回転値
-    [SerializeField]
-    private float Needle_Gauge_Image_RotateZ;      // 針ゲージUI画像のRectTransformの初回Rotate"Z"値
-    [SerializeField]
-    private float Save_AngleZ;                     // 前回の"Z"回転値を保存する変数
-    [SerializeField]
-    private int Needle_Gauge_Number;               // 針ゲージの現在の角度番号
-    [SerializeField]
-    private float Needle_Gauge_ElapsedTime;        // 針ゲージの経過時間
-    [SerializeField]                               
-    private bool Needle_Gauge_Is_Changing;         // 針ゲージが変化中真偽フラグ
+    private RectTransform Needle_Gauge_Image_Rect;     // 針ゲージUI画像のRectTransform
+    [SerializeField]                                   
+    private float Needle_Gauge_Image_AngleZ;           // 針ゲージUI画像のRectTransformの"Z"回転値
+    [SerializeField]                                   
+    private float Needle_Gauge_Image_RotateZ;          // 針ゲージUI画像のRectTransformの初回Rotate"Z"値
+    [SerializeField]                                   
+    private float Save_AngleZ;                         // 前回の"Z"回転値を保存する変数
+    [SerializeField]                                   
+    private int Needle_Gauge_Number;                   // 針ゲージの現在の角度番号
+    [SerializeField]                                   
+    private float Needle_Gauge_ElapsedTime;            // 針ゲージの経過時間
+    [SerializeField]                                   
+    private bool Needle_Gauge_Is_Changing;             // 針ゲージが変化中真偽フラグ
 
 
     [SerializeField]
-    private RectTransform Rhythm_Gauge_Image_Rect; // リズムゲージUI画像のRectTransform
-    [SerializeField]
-    private float Rhythm_Gauge_Image_PosX;         // リズムゲージUI画像のRectTransformの"X"移動値
-    [SerializeField]
-    private float Rhythm_Gauge_ElapsedTime;        // リズムゲージの経過時間
-    [SerializeField]
-    private bool  Rhythm_Gauge_Is_Changing;        // リズムゲージが変化中真偽フラグ
-    [SerializeField]
-    private int   Rhythm_Transition_Count;         // リズムゲージの移動カウント
+    private RectTransform[] Rhythm_Gauge_Image_Rect    // リズムゲージUI画像のRectTransform
+        = new RectTransform[3];                        
+    [SerializeField]                                   
+    private GameObject[] Rhythm_Gauge_Image_OBJ        // リズムゲージUI画像のRectTransform
+        = new GameObject[3];                           
+    [SerializeField]                                   
+    private float Rhythm_Gauge_Image_PosX;             // リズムゲージUI画像のRectTransformの"X"移動値
+    [SerializeField]                                   
+    private float Rhythm_Gauge_ElapsedTime;            // リズムゲージの経過時間
+    [SerializeField]                                   
+    private bool  Rhythm_Gauge_Is_Changing;            // リズムゲージが変化中真偽フラグ
+    [SerializeField]                                   
+    private int   Rhythm_Transition_Count;             // リズムゲージの移動カウント
+                                                       
+    [SerializeField]                                   
+    private RectTransform Rhythm_Image_Rect;           // リズムUI画像のRectTransform
+    [SerializeField]                                   
+    private bool Succeed_Flag;                         // リズム操作成功真偽フラグ
+    [SerializeField]                                   
+    private float Save_Succeed_Time;                   // リズム操作成功時の時間
+                                                       
+                                                       
+    [SerializeField]                                   
+    private RectTransform Phase_Gauge_Image_Rect;      // フェーズゲージUI画像のRectTransform
+                                                       
+    [SerializeField]                                   
+    private int GameStart_ClapCount;                   // ゲーム開始直後の拍のタイミング
+                                                       
+    [SerializeField]                                   
+    private AudioSource Game_BGM;                      // ゲームのBGM
+                                                       
+    [SerializeField]                                   
+    private bool Beat_Flag;                            // 拍のタイミングフラグ
+                                                       
+    [SerializeField]                                   
+    public UI_CountDown uI_CountDown;                  // ゲーム開始カウントダウンスクリプト
+                                                       
+    [SerializeField]                                   
+    public UI_Dead_Gauge uI_Dead_Gauge;                // 死亡ゲージスクリプト
+                                                       
+    [SerializeField]                                   
+    private bool _Disappear_Phase_Flag;                // 消えるフェーズフラグ
 
     [SerializeField]
-    private RectTransform Rhythm_Image_Rect;       // リズムUI画像のRectTransform
-    [SerializeField]
-    private bool Succeed_Flag;                     // リズム操作成功真偽フラグ
-    [SerializeField]
-    private float Save_Succeed_Time;               // リズム操作成功時の時間
-
-
-    [SerializeField]
-    private RectTransform Phase_Gauge_Image_Rect;  // フェーズゲージUI画像のRectTransform
-
-    [SerializeField]
-    private int GameStart_ClapCount;               // ゲーム開始直後の拍のタイミング
+    private bool Disappear_Roatet_End_Flag;            // 消えるフェーズの360回転の終了フラグ
 
 
     // Start is called before the first frame update
@@ -85,17 +105,22 @@ public class UI_Needles : MonoBehaviour
         Needle_Gauge_ElapsedTime = 0.0f;
         // 針ゲージが変化中真偽フラグを初期化する
         Needle_Gauge_Is_Changing = false;
-        // 針ゲージUI画像のColorを初期化する
-        Needle_Gauge_Image_Color.color = new Color(1, 1, 1, 1);
 
         // リズムゲージUI画像のRectTransformの"X"移動値を初期化する
         Rhythm_Gauge_Image_PosX = 300.0f;
-        // リズムゲージUI画像のRectTransformの回転値を初期化する
+        // リズムゲージUI画像のRectTransformの位置を初期化する
         Vector3 Pos;
-        Pos.x =    0.0f;
-        Pos.y =  432.0f;
-        Pos.z = -200.0f;
-        Rhythm_Gauge_Image_Rect.anchoredPosition = Pos;
+        for (int Num = 0; Num < 3; Num++) 
+        {
+            Pos.x = 0.0f;
+            Pos.y = 432.0f;
+            Pos.z = -200.0f;
+            Rhythm_Gauge_Image_Rect[Num].anchoredPosition = Pos;
+        }
+        // リズムゲージの存在真偽を初期化する
+        Rhythm_Gauge_Image_OBJ[0].SetActive(true);
+        Rhythm_Gauge_Image_OBJ[1].SetActive(false);
+        Rhythm_Gauge_Image_OBJ[2].SetActive(false);
         // リズムゲージの経過時間を初期化する
         Rhythm_Gauge_ElapsedTime = 0.0f;
         // リズムゲージが変化中真偽フラグを初期化する
@@ -110,9 +135,42 @@ public class UI_Needles : MonoBehaviour
 
         // ゲーム開始直後の拍のタイミング
         GameStart_ClapCount = 5;
+
+        // 拍のタイミングフラグを初期化する
+        Beat_Flag = false;
+
+        // 消えるフェーズの準備フラグを初期化する
+        _Disappear_Phase_Flag = false;
+
+        // 消えるフェーズの360回転の終了フラグを初期化する
+        Disappear_Roatet_End_Flag = false;
+
+        // スタートコルチン
+        StartCoroutine("BeatPlay");
     }
 
+    private void Awake()
+    {
+        // 目標フレームレートを60に設定
+        Application.targetFrameRate = 60; 
+    }
 
+    private IEnumerator BeatPlay()
+    {
+        int Count = 0;
+        Beat_Flag = true;
+        while (true)
+        {
+            yield return new WaitForFixedUpdate();
+            // 0.02秒後
+            Count++;
+            if (Count == 30)
+            {
+                Beat_Flag = true;
+                Count = 0;
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -136,6 +194,12 @@ public class UI_Needles : MonoBehaviour
             // 以後、Clap_Timeが拍と拍までの秒数になる
         }
 
+        // 常に0.6秒に調整する
+        Clap_Time = 0.6f;
+
+        // 最初に詰まる為、スクリプト側から再生する
+        if (Clap_Count == 2) Game_BGM.Play();
+
         // フラグが立っている間は"Lerp"で動かす
         if (Needle_Gauge_Is_Changing)
         {
@@ -148,11 +212,11 @@ public class UI_Needles : MonoBehaviour
             UI_Rotate(Current_Value);
 
             // 上限値まで行けばフラグ終了
-            if (Current_Time >= 1f) Needle_Gauge_Is_Changing = false;
+            if (Current_Time >= 1f || _Disappear_Phase_Flag) Needle_Gauge_Is_Changing = false;
         }
 
         // 針ゲージUI画像を回転させる & ゲーム開始直後の拍のタイミング
-        if (Music.IsJustChangedBeat() && Clap_Count > GameStart_ClapCount)   
+        if (Beat_Flag && Clap_Count > GameStart_ClapCount && uI_CountDown.GetGameStartFlag() && !_Disappear_Phase_Flag)      
         {
             // 変化を開始する
             Needle_Gauge_Is_Changing = true;
@@ -182,7 +246,7 @@ public class UI_Needles : MonoBehaviour
             }
         }
         // リズムゲージUI画像を移動させる & ゲーム開始直後の拍のタイミング
-        if (Music.IsJustChangedBeat() && Clap_Count > GameStart_ClapCount) 
+        if (Beat_Flag && Clap_Count > GameStart_ClapCount && uI_CountDown.GetGameStartFlag())  
         {
             // 変化を開始する
             Rhythm_Gauge_Is_Changing = true;
@@ -190,10 +254,10 @@ public class UI_Needles : MonoBehaviour
         }
 
         // リズム画像のリズム演出
-        if (Music.IsJustChangedBeat())
+        if (Beat_Flag && !Succeed_Flag) 
         {
             DOTween
-              .To(value => OnScale(value), 0, 1, 0.1f) .SetEase(Ease.InQuad) .SetLoops(2, LoopType.Yoyo);
+              .To(value => OnScale(value), 0, 1, 0.1f).SetEase(Ease.InQuad).SetLoops(2, LoopType.Yoyo);
         }
 
         //***************************************//
@@ -201,7 +265,8 @@ public class UI_Needles : MonoBehaviour
         //***************************************//
 
         // "成功"
-        if      ((Rhythm_Gauge_Image_Rect.anchoredPosition.x >= -50.0f && Rhythm_Gauge_Image_Rect.anchoredPosition.x <= 50.0f) && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)))
+        if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (Rhythm_Gauge_Image_Rect[0].anchoredPosition.x >= -50.0f && Rhythm_Gauge_Image_Rect[0].anchoredPosition.x <= 50.0f)
+            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)))
         {
             // 操作成功にする
             Succeed_Flag = true;
@@ -210,18 +275,25 @@ public class UI_Needles : MonoBehaviour
             // 演出
             DOTween
               .To(value => OnScale(value), 0, 1, 0.1f).SetEase(Ease.InQuad).SetLoops(2, LoopType.Yoyo);
-            Needle_Gauge_Image_Color.color = new Color(0.4f, 1, 1, 1);
+            Rhythm_Gauge_Image_OBJ[0].SetActive(false);
+            Rhythm_Gauge_Image_OBJ[1].SetActive(false);
+            Rhythm_Gauge_Image_OBJ[2].SetActive(true);
 
         }
         // "失敗"
-        else if ((Rhythm_Gauge_Image_Rect.anchoredPosition.x < -50.0f || Rhythm_Gauge_Image_Rect.anchoredPosition.x > 50.0f) && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A))) 
+        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (Rhythm_Gauge_Image_Rect[0].anchoredPosition.x < -50.0f || Rhythm_Gauge_Image_Rect[0].anchoredPosition.x > 50.0f)
+            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)))
         {
-            Needle_Gauge_Image_Color.color = new Color(1, 0.45f, 0.4f, 1);
+            Rhythm_Gauge_Image_OBJ[0].SetActive(false);
+            Rhythm_Gauge_Image_OBJ[1].SetActive(true);
+            Rhythm_Gauge_Image_OBJ[2].SetActive(false);
         }
         // キー入力が離れたら色を元に戻す
-        else if(Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyUp(KeyCode.A))
+        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyUp(KeyCode.A)) 
         {
-            Needle_Gauge_Image_Color.color = new Color(1, 1, 1, 1);
+            Rhythm_Gauge_Image_OBJ[0].SetActive(true);
+            Rhythm_Gauge_Image_OBJ[1].SetActive(false);
+            Rhythm_Gauge_Image_OBJ[2].SetActive(false);
         }
 
         // 操作成功から一定時間経過したら
@@ -230,13 +302,24 @@ public class UI_Needles : MonoBehaviour
             Succeed_Flag = false;
         }
 
+        // 消えるフェーズ用の回転処理
+        if (uI_Dead_Gauge.GetIsDisappearPhaseFlag() && _Disappear_Phase_Flag && !Disappear_Roatet_End_Flag)  
+        {
+            // タイマー起動
+            Needle_Gauge_ElapsedTime += Time.deltaTime;
+            float Current_Time  = Mathf.Clamp01(Needle_Gauge_ElapsedTime / (Clap_Time * 8));
+            float Current_Value = Mathf.Lerp(0.0f, 1.0f, Current_Time);
+
+            // 回転関数
+            UI_Rotate(Current_Value);
+        }
+
+        // trueのタイミングでfalseにする
+        if (Beat_Flag) Beat_Flag = false;
 
         // 現在の時間を確認用タイマー起動
         Current_Time += 1.0f * Time.deltaTime;
     }
-
-
-
 
 
     // リズムUI画像のスケールを変更
@@ -256,20 +339,43 @@ public class UI_Needles : MonoBehaviour
     // 針ゲージUIを回転させる関数
     private void UI_Rotate(float timer)
     {
-        var Angle = Mathf.Lerp(Save_AngleZ, Save_AngleZ - Needle_Gauge_Image_AngleZ, timer);
+        var Angle = Mathf.Lerp(Save_AngleZ, Save_AngleZ - ((uI_Dead_Gauge.GetIsDisappearPhaseFlag() && _Disappear_Phase_Flag) ? 360.0f : Needle_Gauge_Image_AngleZ), timer);
         Needle_Gauge_Image_Rect.eulerAngles = new Vector3(Needle_Gauge_Image_Rect.eulerAngles.x, 0f, Angle);
-
         // 角度(Angle)を-180～180度の範囲に正規化する
         var NormalizedAngleZ = Mathf.Repeat(Angle + 180, 360) - 180;
 
         // 45度回転したら 又は 拍のタイミングが来たら強制終了
-        if (Angle == Save_AngleZ - Needle_Gauge_Image_AngleZ || Music.IsJustChangedBeat()) 
+        if (!_Disappear_Phase_Flag && (Angle == Save_AngleZ - Needle_Gauge_Image_AngleZ || Beat_Flag)) 
         {
             // 再度現在の角度を保存する
             Save_AngleZ = Save_AngleZ - Needle_Gauge_Image_AngleZ;
             // 現在の角度番号を設定する
             if (Needle_Gauge_Number == 7) Needle_Gauge_Number = 0;
             else                          Needle_Gauge_Number++;
+        }
+
+        // 針の角度番号設定
+        if(_Disappear_Phase_Flag)
+        {
+            if      (Angle <= -157.5f && Angle > Save_AngleZ - 45.0f * 1) Needle_Gauge_Number = 0;
+            else if (Angle <= -202.5f && Angle > Save_AngleZ - 45.0f * 2) Needle_Gauge_Number = 1;
+            else if (Angle <= -247.5  && Angle > Save_AngleZ - 45.0f * 3) Needle_Gauge_Number = 2;
+            else if (Angle <= -292.5f && Angle > Save_AngleZ - 45.0f * 4) Needle_Gauge_Number = 3;
+            else if (Angle <= -337.5f && Angle > Save_AngleZ - 45.0f * 5) Needle_Gauge_Number = 4;
+            else if (Angle <= -382.5f && Angle > Save_AngleZ - 45.0f * 6) Needle_Gauge_Number = 5;
+            else if (Angle <= -427.5f && Angle > Save_AngleZ - 45.0f * 7) Needle_Gauge_Number = 6;
+            else if (Angle <= -472.5f && Angle > Save_AngleZ - 45.0f * 8) Needle_Gauge_Number = 7;
+        }
+
+        // 360度回転したら強制終了
+        if (_Disappear_Phase_Flag && (Angle == Save_AngleZ - 360.0f)) 
+        {
+            // 再度現在の角度を保存する
+            Save_AngleZ = Save_AngleZ - 360.0f;
+            // 消えるフェーズの360回転の終了フラグを立てる
+            Disappear_Roatet_End_Flag = true;
+            // 角度番号リセット
+            Needle_Gauge_Number = 0;
         }
     }
 
@@ -282,30 +388,54 @@ public class UI_Needles : MonoBehaviour
         if      (count == 0) 
         {
             var Position = Mathf.Lerp(0.0f, -300.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
+            for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
             if (Position == -300.0f) Rhythm_Transition_Count = 1;
         }
         else if (count == 1)
         {
             var Position = Mathf.Lerp(-300.0f, 0.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
+            for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
-            if (Position == 0.0f || Music.IsJustChangedBeat()) Rhythm_Transition_Count = 2;
+            if (Position == 0.0f || Beat_Flag) Rhythm_Transition_Count = 2;
         }
         else if (count == 2)
         {
             var Position = Mathf.Lerp(0.0f, 300.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
+            for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
             if (Position == 300.0f) Rhythm_Transition_Count = 3;
         }
         else if (count == 3)
         {
             var Position = Mathf.Lerp(300.0f, 0.0f, timer);
-            Rhythm_Gauge_Image_Rect.anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
+            for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
-            if (Position == 0.0f || Music.IsJustChangedBeat()) Rhythm_Transition_Count = 0;
+            if (Position == 0.0f || Beat_Flag) Rhythm_Transition_Count = 0;
         }
     }
+
+    // 針の位置を"0"番目の位置に設定する関数
+    public void SetNeedlePos()
+    {
+        // 回転値固定
+        Vector3 Angle;
+        Angle.x = Needle_Gauge_Image_Rect.eulerAngles.x;
+        Angle.y = 0.0f;
+        Angle.z = Needle_Gauge_Image_RotateZ;
+        Needle_Gauge_Image_Rect.eulerAngles = Angle;
+        // 角度保存する
+        Save_AngleZ = Needle_Gauge_Image_RotateZ;
+        // カウントリセット
+        Needle_Gauge_Number = 0;
+        // 消えるフェーズフラグを立てる
+        _Disappear_Phase_Flag = true;
+        // タイマーリセット
+        Needle_Gauge_ElapsedTime = 0.0f;
+        // 消えるフェーズの360回転の終了フラグをリセット
+        Disappear_Roatet_End_Flag = false;
+    }
+
+    // 消えるフェーズフラグをリセットする
+    public void ResetDisappearPhaseFlag() { _Disappear_Phase_Flag = false; }
 }
