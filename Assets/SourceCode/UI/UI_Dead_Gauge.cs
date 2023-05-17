@@ -126,7 +126,7 @@ public class UI_Dead_Gauge : MonoBehaviour
         {
             // 演出
             DOTween
-              .To(value => OnScale(value, Scale_Change_Count * 0.125f), 0, 1, 1.0f).SetEase(Ease.InOutQuad);
+              .To(value => OnScale(value, Scale_Change_Count * 0.125f), 0, 1, 0.25f).SetEase(Ease.InOutQuad);
         }
 
         // 消えるフェーズに入ったら消えるフェーズフラグを立てる
