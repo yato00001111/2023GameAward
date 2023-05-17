@@ -128,10 +128,10 @@ public class T_PlayDirector : MonoBehaviour
         public T_IState.E_State Initialize(T_PlayDirector parent)
         {
             //if (!parent.Spawn(parent._nextQueue.Update()))
-            if (parent._fieldController.CheckDead())
-            {
-                return T_IState.E_State.GameOver;
-            }
+            //if (parent._fieldController.CheckDead())
+            //{
+            //    return T_IState.E_State.GameOver;
+            //}
             parent.Spawn(parent._nextQueue.Update());
 
             parent.UpdateNextsView();

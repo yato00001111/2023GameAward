@@ -13,11 +13,11 @@ public class PlayerController : MonoBehaviour
 
     // 落下制御
     const int FALL_COUNT_UNIT = 120; // ひとマス落下するカウント数
-    [SerializeField] int FALL_COUNT_SPD = 5; // 落下速度
+    [SerializeField] float FALL_COUNT_SPD = 5; // 落下速度
     const int FALL_COUNT_FAST_SPD = 13; // 高速落下時の速度
     const int GROUND_FRAMES = 15; // 接地移動可能時間
 
-    int _fallCount = 0;
+    float _fallCount = 0;
     int _groundFrame = GROUND_FRAMES;// 接地時間
 
     bool is0_15 = false;
@@ -214,7 +214,8 @@ public class PlayerController : MonoBehaviour
 
     bool Fall(bool is_fast)
     {
-        _fallCount -= is_fast ? FALL_COUNT_FAST_SPD : FALL_COUNT_SPD;
+        //_fallCount -= is_fast ? FALL_COUNT_FAST_SPD : FALL_COUNT_SPD;
+        _fallCount -= FALL_COUNT_SPD;
 
         // ブロックを飛び越えたら、行けるのかチェック
         while (_fallCount < 0)// ブロックが飛ぶ可能性がないこともない気がするので複数落下に対応
@@ -250,6 +251,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void ChangeColor()
+    {
+        var temp0 = _blockControllers[0].GetBlockType();
+        var temp1 = _blockControllers[1].GetBlockType();
+        _blockControllers[0].SetBlockType(temp1);
+        _blockControllers[1].SetBlockType(temp0);
+    }
+
     void Control()
     {
         // 落とす
@@ -277,10 +286,15 @@ public class PlayerController : MonoBehaviour
                 if (Translate(false)) return;
             }
         }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (playDirector.GetPlayFlag())
+                ChangeColor();
+        }
 
         if (isQuick) return;
         // クイックドロップのキー入力取得
-        if (_logicalInput.IsRelease(LogicalInput.Key.QuickDrop) || _logicalInput.IsRelease(LogicalInput.Key.JoyA))
+        if (_logicalInput.IsTrigger(LogicalInput.Key.QuickDrop) || _logicalInput.IsTrigger(LogicalInput.Key.JoyA))
         {
             if (playDirector.GetPlayFlag())
                 QuickDrop();

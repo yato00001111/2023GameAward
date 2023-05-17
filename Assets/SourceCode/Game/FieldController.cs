@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 struct FallData
 {
@@ -35,6 +36,7 @@ public class FieldController : MonoBehaviour
     [SerializeField] GameObject prefabBlock = default!;
     [SerializeField] PlayerController[] _playerController = { default!, default! };
     [SerializeField] PlayDirector playDirector = default!;
+    [SerializeField] UI_Needles needles = default!;
 
     int[,] _board = new int[BOARD_HEIGHT, BOARD_WIDTH];
     int[,] _boardDst = new int[BOARD_HEIGHT, BOARD_WIDTH];
@@ -58,7 +60,9 @@ public class FieldController : MonoBehaviour
     List<Vector2Int> _erases = new();
     int _eraseFrames = 0;
     bool isEffect = true;
-    [SerializeField] private int _eraseTime = 25;
+    [SerializeField] private int _eraseTime = 10;
+    [SerializeField] public int _eraseCount;
+    [SerializeField] private int _needleEraseCount;
 
     //
     List<FallData> _rots = new();
@@ -66,14 +70,19 @@ public class FieldController : MonoBehaviour
     bool isHalfTransR;
     bool isHalfTransL;
 
+    //　ノルマ
+    [SerializeField] public int _normaCount;
 
     //SE
     AudioSource audioSource;
-    public AudioClip se_block;
+    public AudioClip se_block_landing;
     public AudioClip se_erase;
+    public AudioClip[] se_erase_block;
     public AudioClip se_kaiten;
     private bool isKaiten = false;
 
+    int needleX;
+    int tempType;
     private void ClearAll()
     {
         for (int y = 0; y < BOARD_HEIGHT; y++)
@@ -103,6 +112,11 @@ public class FieldController : MonoBehaviour
         isKaiten = false;
         isHalfTransR = false;
         isHalfTransL = false;
+        _eraseCount = 0;
+        _needleEraseCount = 0;
+        _normaCount = 0;
+        needleX = -1;
+        tempType = 0;
 
         // 全マスに置く
         //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
@@ -151,7 +165,7 @@ public class FieldController : MonoBehaviour
         _Blocks[pos.y, pos.x].transform.localScale = new Vector3(BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y], BLOCK_SCALE[pos.y]);
         _Blocks[pos.y, pos.x].transform.GetChild(0).GetComponent<BlockController>().SetBlockType((BlockType)val);
 
-        audioSource.PlayOneShot(se_block);
+        audioSource.PlayOneShot(se_block_landing);
 
         return true;
     }
@@ -404,13 +418,14 @@ public class FieldController : MonoBehaviour
             if (puyoCount == 0) _additiveScore += 1800;// 全消しボーナス
         }
 
+        _eraseCount = _erases.Count;
+        if(_eraseCount != 0) _normaCount = _eraseCount / 3;
         return _erases.Count != 0;
     }
 
     public bool Erase()
     {
         _eraseFrames++;
-
         //// 1から増えてちょっとしたら最大に大きくなったあと小さくなって消える
         //float t = _eraseFrames * Time.deltaTime;
         //t = 1.0f - 10.0f * ((t - 0.1f) * (t - 0.1f) - 0.1f * 0.1f);
@@ -439,58 +454,87 @@ public class FieldController : MonoBehaviour
         //    audioSource.PlayOneShot(se_erase);
         //    isEffect = false;
         //}
-        if (_eraseFrames > _eraseTime)
-        {
-            foreach (Vector2Int d in _erases)
-            {
-                Destroy(_Blocks[d.y, d.x]);
-                _Blocks[d.y, d.x] = null;
-                _board[d.y, d.x] = 0;
+        //if (_eraseFrames > _eraseTime)
+        //{
+        //    foreach (Vector2Int d in _erases)
+        //    {
+        //        Destroy(_Blocks[d.y, d.x]);
+        //        _Blocks[d.y, d.x] = null;
+        //        _board[d.y, d.x] = 0;
 
+        //    }
+        //    return false;
+        //}
+
+        //return true;
+
+        foreach (Vector2Int d in _erases)
+        {
+            if(needles.GetCurrentNumber() == d.x)
+            {
+                if (_Blocks[d.y, d.x] == null) continue;
+                //DelayDestroy(d.x, d.y);
+                if (isEffect)
+                {
+                    int type = _board[d.y, d.x];
+                    _Blocks[d.y, d.x].transform.Find("effect").GetComponent<EffectController>().PlayEffect(type);
+                }
+                //if (_eraseFrames > _eraseTime)
+                {
+                    Destroy(_Blocks[d.y, d.x]);
+                    _Blocks[d.y, d.x] = null;
+                    _board[d.y, d.x] = 0;
+                    _needleEraseCount++;
+                }
             }
+        }
+        if (_needleEraseCount == _eraseCount)
+        {
+            _needleEraseCount = 0;
             return false;
         }
-
         return true;
     }
 
+    private async void DelayDestroy(int x, int y)
+    {
+        _Blocks[y, x].transform.Find("effect").GetComponent<EffectController>().PlayEffect(_board[y, x]);
+        await Task.Delay(500);
+        Destroy(_Blocks[y, x]);
+        _Blocks[y, x] = null;
+        _board[y, x] = 0;
+    }
+
     // 9段目にブロックが存在しているか
-    public bool CheckDead()
+    public void CheckDead()
     {
         for (int y = 8; y < BOARD_HEIGHT; y++)
         {
             for (int x = 0; x < BOARD_WIDTH; x++)
             {
                 if (_board[y, x] == 0) continue;
-                return true;
+                DelayDestroy(x, y);
+
             }
         }
-        return false;
     }
 
-    //void SetTransition(Vector2Int pos, int time)
-    //{
-    //    // 補間のために保存しておく
-    //    // 円なので端と端でループするように
-    //    if (is0_15) // x座標0から15
-    //    {
-    //        _last_position.x = 16;
-    //        _last_position.y = _position.y;
-    //        is0_15 = false;
-    //    }
-    //    else if (is15_0) // x座標15から0
-    //    {
-    //        _last_position.x = 17;
-    //        _last_position.y = _position.y;
-    //        is15_0 = false;
-    //    }
-    //    else _last_position = _position;
+    public void EraseBlockSound()
+    {     
+        foreach (Vector2Int d in _erases)
+        {
+            if (needles.GetCurrentNumber() == d.x)
+            {
+                if (needleX == needles.GetCurrentNumber()) continue;
+                needleX = needles.GetCurrentNumber();
+                //if (tempType == _board[d.y, d.x]) continue;
+                tempType = _board[d.y, d.x];
+                Debug.Log("type" + tempType);
+                audioSource.PlayOneShot(se_erase_block[tempType]);
+            }
+        }
 
-    //    // 値の更新
-    //    _position = pos;
-
-    //    _animationController.Set(time);
-    //}
+    }
 
     private bool Translate(bool is_right)
     {
@@ -532,50 +576,11 @@ public class FieldController : MonoBehaviour
                         if (is_right)
                         {
                             _playerController[i].SetisTransR(true);
-                            //if (i == 0)
-                            //{
-                            //    if(_playerController[1].GetPos().x == posX2)
-                            //    {
-                            //        _playerController[1].SetisTransR(true);
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    if (_playerController[0].GetPos().x == posX2)
-                            //    {
-                            //        _playerController[0].SetisTransR(true);
-                            //    }
-                            //}
                         }
                         if (!is_right)
                         {
                             _playerController[i].SetisTransL(true);
-                            //if (i == 0)
-                            //{
-                            //    if (_playerController[1].GetPos().x == posX2)
-                            //    {
-                            //        _playerController[1].SetisTransL(true);
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    if (_playerController[0].GetPos().x == posX2)
-                            //    {
-                            //        _playerController[0].SetisTransL(true);
-                            //    }
-                            //}
                         }
-                        //int player_posX = _playerController[i].GetPos().x + trans.x;
-                        //if (player_posX == -1)
-                        //{
-                        //    player_posX = 15; //x座標の端
-                        //}
-                        //if (player_posX == 16)
-                        //{
-                        //    player_posX = 0; //x座標の端
-                        //}
-                        //_playerController[i].SetPos(new Vector2Int(player_posX, _playerController[i].GetPos().y));
-                        //_playerController[i].SetLastPos(new Vector2Int(_playerController[i].GetPos().x, _playerController[i].GetPos().y));
                     }
                 }
             }
@@ -600,82 +605,6 @@ public class FieldController : MonoBehaviour
         return true;
     }
 
-    //private bool HalfTranslate()
-    //{
-    //    _animationController.Set(HALF_TRANS_TIME);
-    //    _rots.Clear();
-
-    //    // 移動先のX軸の記録用
-    //    var trans = new Vector2Int(8, 0);
-
-    //    for (int y = 0; y < BOARD_HEIGHT; y++)
-    //    {
-    //        for (int x = 0; x < BOARD_WIDTH; x++)
-    //        {
-    //            if (_board[y, x] == 0) continue;
-
-    //            // データを変更しておく
-    //            int posX;
-    //            if (x < 8) posX = x + trans.x;
-    //            else posX = x - trans.x;
-
-
-    //            _rots.Add(new FallData(x, y, posX));
-
-    //            if (posX == -1)
-    //            {
-    //                posX = 15; //x座標の端
-    //                //is0_15 = true;
-    //            }
-    //            if (posX == 16)
-    //            {
-    //                posX = 0; //x座標の端
-    //                //is15_0 = true;
-    //            }
-    //            _boardDst[y, posX] = _board[y, x];
-
-    //            _BlocksDst[y, posX] = _Blocks[y, x];
-
-    //            for (int i = 0; i < 2; i++)
-    //            {
-    //                float p_pos = _playerController[i].GetPos().x;
-
-    //                if(p_pos < 8)
-    //                {
-    //                    if(p_pos == x + 1 && _playerController[i].GetPos().y <= y)
-    //                    {
-    //                        _playerController[i].SetisHalfTrans(true);
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    if (p_pos == x - 1 && _playerController[i].GetPos().y <= y)
-    //                    {
-    //                        _playerController[i].SetisHalfTrans(true);
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //    for (int y = 0; y < BOARD_HEIGHT; y++)
-    //    {
-    //        for (int x = 0; x < BOARD_WIDTH; x++)
-    //        {
-    //            _board[y, x] = _boardDst[y, x];
-    //            _boardDst[y, x] = 0;
-
-    //            _Blocks[y, x] = _BlocksDst[y, x];
-    //            _BlocksDst[y, x] = null;
-    //        }
-    //    }
-
-    //    if (!isKaiten)
-    //    {
-    //        //audioSource.PlayOneShot(se_kaiten);
-    //        isKaiten = true;
-    //    }
-    //    return true;
-    //}
     int delay = 0;
     private bool HalfTranslate(bool is_right)
     {

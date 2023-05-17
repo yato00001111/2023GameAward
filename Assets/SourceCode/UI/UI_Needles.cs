@@ -58,6 +58,7 @@ public class UI_Needles : MonoBehaviour
     [SerializeField]
     private int GameStart_ClapCount;               // ゲーム開始直後の拍のタイミング
 
+    bool beat;
 
     // Start is called before the first frame update
     void Start()
@@ -110,9 +111,26 @@ public class UI_Needles : MonoBehaviour
 
         // ゲーム開始直後の拍のタイミング
         GameStart_ClapCount = 5;
+
+        beat = false;
+        StartCoroutine("Beat");
     }
 
-
+    private IEnumerator Beat()
+    {
+        int count = 0;
+        beat = true;
+        while (true)
+        {
+            yield return new WaitForFixedUpdate();
+            count++;
+            if(count == 30)
+            {
+                beat = true;
+                count = 0;
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -190,7 +208,7 @@ public class UI_Needles : MonoBehaviour
         }
 
         // リズム画像のリズム演出
-        if (Music.IsJustChangedBeat())
+        if (beat)
         {
             DOTween
               .To(value => OnScale(value), 0, 1, 0.1f) .SetEase(Ease.InQuad) .SetLoops(2, LoopType.Yoyo);
@@ -233,6 +251,8 @@ public class UI_Needles : MonoBehaviour
 
         // 現在の時間を確認用タイマー起動
         Current_Time += 1.0f * Time.deltaTime;
+
+        if (beat) beat = false;
     }
 
 

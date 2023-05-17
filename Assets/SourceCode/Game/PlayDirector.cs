@@ -28,7 +28,6 @@ public class PlayDirector : MonoBehaviour
     public const int BOARD_WIDTH = 8;
     public const int BOARD_HEIGHT = 20;
 
-    [SerializeField] GameObject beatTest = default!;
     [SerializeField] GameObject[] player = { default!, default! };
     PlayerController[] _playerController = new PlayerController[2];
     LogicalInput _logicalInput = new();
@@ -54,19 +53,11 @@ public class PlayDirector : MonoBehaviour
     public bool PenaltyFlag;
     public int PenaltyCount;
 
-    // 拍に来た時点で起動するタイマー
-    public float BeatTimer;
-    // 偶数ビート
-    public bool EvenBeat;
-    // 奇数ビート
-    public bool OddBeat;
-
-    public int BeatCount;
-    bool Pena1;
-    bool Pena2;
-
-
     public UI_NextBlock_Direction ui_NextBlock_Direction;
+
+    //
+    [SerializeField] private bool _eraseWave;
+    [SerializeField] private bool _stateErase;
 
     // 状態管理
     IState.E_State _current_state = IState.E_State.Falling;
@@ -105,13 +96,12 @@ public class PlayDirector : MonoBehaviour
 
         SetScore(0);
 
-        BeatTimer = 0.0f;
         PlayFlag = false;
         PenaltyCount = 0;
         PenaltyFlag = false;
-        BeatCount = 0;
-        OddBeat = false;
-        EvenBeat = false;
+
+        _eraseWave = false;
+        _stateErase = false;
 
         StartCoroutine("BeatPlay");
     }
@@ -167,13 +157,14 @@ public class PlayDirector : MonoBehaviour
         public IState.E_State Initialize(PlayDirector parent)
         {
             //if (!parent.Spawn(parent._nextQueue.Update()))
-            if (parent._fieldController.CheckDead())
-            {
-                return IState.E_State.GameOver;
-            }
+            //if (parent._fieldController.CheckDead())
+            //if (parent._fieldController.CheckDead())
+            //{
+            //    return IState.E_State.GameOver;
+            //}
             parent.Spawn(parent._nextQueue.Update());
 
-            
+            parent._stateErase = false;
 
             parent.UpdateNextsView();
             return IState.E_State.Unchanged;
@@ -184,6 +175,7 @@ public class PlayDirector : MonoBehaviour
                 parent._fieldController.TransUpdate(parent._logicalInput);
 
             return parent.player[0].activeSelf || parent.player[1].activeSelf ? IState.E_State.Unchanged : IState.E_State.Falling;
+            //return parent.player[0].activeSelf ? IState.E_State.Unchanged : IState.E_State.Waiting;
         }
     }
 
@@ -209,10 +201,12 @@ public class PlayDirector : MonoBehaviour
     {
         public IState.E_State Initialize(PlayDirector parent)
         {
+            parent._fieldController.CheckDead();
+            if (parent.player[0].activeSelf) parent.player[0].SetActive(false);
             // CheckErase-消えるブロックがあればtrue
             if (parent._fieldController.CheckErase(parent._chainCount++))
             {
-                return IState.E_State.Unchanged;// 消すアニメーションに突入
+                return parent._stateErase ? IState.E_State.Unchanged : IState.E_State.Control;// 消すアニメーションに突入
             }
             parent._chainCount = 0;// 連鎖が途切れた
             return parent._canSpawn ? IState.E_State.Control : IState.E_State.Waiting;// 消すものはない
@@ -241,6 +235,13 @@ public class PlayDirector : MonoBehaviour
         Debug.Assert(condition: _current_state is >= 0 and < IState.E_State.MAX);
 
         var next_state = states[(int)_current_state].Update(this);
+
+        if(_eraseWave)
+        {
+            next_state = IState.E_State.Erasing;
+            _stateErase = true;
+            _eraseWave = false;
+        }
         if (next_state != IState.E_State.Unchanged)
         {
             // 次の状態に遷移
@@ -249,78 +250,41 @@ public class PlayDirector : MonoBehaviour
         }
     }
 
-    void PenaltyMethod()
-    {
-        // もし操作可能フレーム以外で操作が行われたら
-        if (!PlayFlag)
-        {
-            if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                // ペナルティ処理
-                PenaltyFlag = true;
-            }
-        }
-
-        // 現在の拍が奇数が偶数かを判定
-        if (BeatCount % 2 == 0)
-        {
-            EvenBeat = true;
-            OddBeat = false;
-        }
-        else
-        {
-            OddBeat = true;
-            EvenBeat = false;
-        }
-
-
-        // もし拍が偶数の時にペナルティが発生したら
-        if (PenaltyFlag && EvenBeat)
-        {
-            // 偶数用ペナルティフラグを立てる
-            Pena2 = true;
-        }
-        // もし拍が奇数の時にペナルティが発生したら
-        if (PenaltyFlag && OddBeat)
-        {
-            // 奇数用ペナルティフラグを立てる
-            Pena1 = true;
-        }
-
-        // もしペナルティ(偶数)が発生していたら奇数時に解除
-        if (Pena2 && OddBeat)
-        {
-            PenaltyFlag = false;
-            Pena2 = false;
-        }
-        // その逆
-        if (Pena1 && EvenBeat)
-        {
-            PenaltyFlag = false;
-            Pena1 = false;
-        }
-    }
 
     private IEnumerator BeatPlay()
     {
+        int count = 0;
         while (true)
         {
-            PlayFlag = true;
-            if (PenaltyFlag)
+            if(count==0)
+            {
+                PlayFlag = true;
+                if (PenaltyFlag)
+                {
+                    PlayFlag = false;
+                    PenaltyCount++;
+                }
+            }
+            yield return new WaitForFixedUpdate();
+            // 0.02秒後
+            count++;
+            if(count == 10)
             {
                 PlayFlag = false;
-                PenaltyCount++;
             }
-            yield return new WaitForSeconds(0.15f);
-            PlayFlag = false;
-            yield return new WaitForSeconds(0.3f);
-            PlayFlag = true;
-            if(PenaltyFlag)
+            if(count == 20)
             {
-                PlayFlag = false;
-                PenaltyCount++;
+                PlayFlag = true;
+                if (PenaltyFlag)
+                {
+                    PlayFlag = false;
+                    PenaltyCount++;
+                }
             }
-            yield return new WaitForSeconds(0.15f);
+            if(count == 30)
+            {
+                count = 0;
+            }
         }
 
     }
@@ -328,9 +292,6 @@ public class PlayDirector : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (PlayFlag) beatTest.SetActive(true);
-        if (!PlayFlag) beatTest.SetActive(false);
-
         if (!PlayFlag)
         {
             if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
@@ -348,13 +309,15 @@ public class PlayDirector : MonoBehaviour
         // 入力を取り込む
         UpdateInput();
 
+        if (!(_current_state == IState.E_State.Erasing)) _fieldController.EraseBlockSound();
+
         UpdateState();
 
 
         AddScore(_playerController[0].popScore());
         AddScore(_playerController[1].popScore());
         AddScore(_fieldController.popScore());
-        SetChainScore(_chainCount);
+        SetChainScore(_fieldController._eraseCount / 3);
     }
 
     bool Spawn(Vector2Int next)
@@ -364,7 +327,7 @@ public class PlayDirector : MonoBehaviour
         ui_NextBlock_Direction.ResetNextBlockAnimation();
         //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
         //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
-        return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[1], position) ;
+        return _playerController[0].Spawn((BlockType)1, (BlockType)2, position) ;
     }
 
     void SetScore(uint score)

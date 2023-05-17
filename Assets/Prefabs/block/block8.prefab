@@ -136,9 +136,82 @@ Transform:
   m_Children:
   - {fileID: 7191332500105250179}
   - {fileID: 8694467188805096673}
+  - {fileID: 3427489997402716591}
+  - {fileID: 4238472544499240944}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5045163813762533129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3427489997402716591}
+  - component: {fileID: 5706946428058133451}
+  - component: {fileID: 1019266780024359177}
+  m_Layer: 0
+  m_Name: effect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3427489997402716591
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5045163813762533129}
+  m_LocalRotation: {x: 0, y: -0.99999815, z: 0, w: 0.0019200024}
+  m_LocalPosition: {x: 0, y: 0.13, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6990243968764763176}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: -179.78, z: 0}
+--- !u!114 &5706946428058133451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5045163813762533129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84195a5ca740f2247acc936840c74d02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tantaiEffects:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 473951d467ebdcc48b4f791c83317b8d, type: 2}
+  - {fileID: 11400000, guid: 5be9b1b427820374cbceb34c5e4e43b4, type: 2}
+  - {fileID: 11400000, guid: e87abae5be6c25343bae63bcb3a9624e, type: 2}
+  - {fileID: 11400000, guid: 79186c5cfb49d25459fb911d77962dd2, type: 2}
+  - {fileID: 11400000, guid: 7d1532bbbd412dc449f4aadf8d0acfe7, type: 2}
+  - {fileID: 0}
+--- !u!114 &1019266780024359177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5045163813762533129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d396bcb8480c24eb784eebe6096a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TimingOfUpdate: 0
+  EmitterScale: 0
+  TimeScale: 0
+  effectAsset: {fileID: 11400000, guid: 473951d467ebdcc48b4f791c83317b8d, type: 2}
+  playOnStart: 0
+  isLooping: 0
 --- !u!1 &5422348822956443011
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,3 +318,74 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 36edf22ed35dedd4f9edfa1226f3343a, type: 2}
   - {fileID: 2100000, guid: e487c3786fd26d24aa032e4ca1b22f43, type: 2}
   - {fileID: 0}
+--- !u!1 &8318542601478525893
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4238472544499240944}
+  - component: {fileID: 6748045056107849139}
+  - component: {fileID: 8933254149861030865}
+  m_Layer: 0
+  m_Name: effect2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4238472544499240944
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8318542601478525893}
+  m_LocalRotation: {x: 0, y: -0.99999815, z: 0, w: 0.0019200024}
+  m_LocalPosition: {x: 0, y: 0.13, z: 0}
+  m_LocalScale: {x: 1.09, y: 1.09, z: 1.09}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 6990243968764763176}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: -179.78, z: 0}
+--- !u!114 &6748045056107849139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8318542601478525893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84195a5ca740f2247acc936840c74d02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tantaiEffects:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 473951d467ebdcc48b4f791c83317b8d, type: 2}
+  - {fileID: 11400000, guid: 5be9b1b427820374cbceb34c5e4e43b4, type: 2}
+  - {fileID: 11400000, guid: e87abae5be6c25343bae63bcb3a9624e, type: 2}
+  - {fileID: 11400000, guid: 79186c5cfb49d25459fb911d77962dd2, type: 2}
+  - {fileID: 11400000, guid: 7d1532bbbd412dc449f4aadf8d0acfe7, type: 2}
+  - {fileID: 0}
+--- !u!114 &8933254149861030865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8318542601478525893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d396bcb8480c24eb784eebe6096a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TimingOfUpdate: 0
+  EmitterScale: 0
+  TimeScale: 0
+  effectAsset: {fileID: 11400000, guid: 473951d467ebdcc48b4f791c83317b8d, type: 2}
+  playOnStart: 0
+  isLooping: 0
