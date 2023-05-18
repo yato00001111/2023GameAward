@@ -283,32 +283,61 @@ public class PlayDirector : MonoBehaviour
         int count = 0;
         while (true)
         {
-            if(count==0)
+            //if(count==0)
+            //{
+            //    PlayFlag = true;
+            //    if (PenaltyFlag)
+            //    {
+            //        PlayFlag = false;
+            //        PenaltyCount++;
+            //    }
+            //}
+            //yield return new WaitForFixedUpdate();
+            //// 0.02ïbå„
+            //count++;
+            //if(count == 10)
+            //{
+            //    PlayFlag = false;
+            //}
+            //if(count == 20)
+            //{
+            //    PlayFlag = true;
+            //    if (PenaltyFlag)
+            //    {
+            //        PlayFlag = false;
+            //        PenaltyCount++;
+            //    }
+            //}
+            //if(count == 30)
+            //{
+            //    count = 0;
+            //}
+            if (count == 0)
             {
-                PlayFlag = true;
+                PlayFlag = false;
                 if (PenaltyFlag)
                 {
-                    PlayFlag = false;
+                    PlayFlag = true;
                     PenaltyCount++;
                 }
             }
             yield return new WaitForFixedUpdate();
             // 0.02ïbå„
             count++;
-            if(count == 10)
-            {
-                PlayFlag = false;
-            }
-            if(count == 20)
+            if (count == 10)
             {
                 PlayFlag = true;
+            }
+            if (count == 20)
+            {
+                PlayFlag = false;
                 if (PenaltyFlag)
                 {
-                    PlayFlag = false;
+                    PlayFlag = true;
                     PenaltyCount++;
                 }
             }
-            if(count == 30)
+            if (count == 30)
             {
                 count = 0;
             }
@@ -356,7 +385,7 @@ public class PlayDirector : MonoBehaviour
         ui_NextBlock_Direction.ResetNextBlockAnimation();
         //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
         //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
-        return _playerController[0].Spawn((BlockType)1, (BlockType)2, position) ;
+        return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[1], position) ;
     }
 
     void SetScore(uint score)
