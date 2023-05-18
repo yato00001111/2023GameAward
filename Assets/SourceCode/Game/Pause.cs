@@ -89,7 +89,14 @@ public class Pause : MonoBehaviour
             // Enterキーが押されたら
             if (Input.GetKeyDown(KeyCode.Return)|| Input.GetKeyDown(KeyCode.Joystick1Button0))
             {
+                // ポーズメニュー非表示
+                PauseMenu.SetActive(false);
+                // ポーズ中ではない
+                PositivePauseMenu = false;
+                // 全体の時間を通常に
+                Time.timeScale = 1;
                 // リトライ処理
+                SceneManager.LoadScene("GameScene");
             }
         }
 
@@ -108,7 +115,7 @@ public class Pause : MonoBehaviour
     void ActionSelectUI()
     {
         PadVertical   = Input.GetAxis("D_Pad");
-        StickVertical = Input.GetAxis("L_Stick");
+        //StickVertical = Input.GetAxis("L_Stick");
 
 
         // 再開を選択中に下ボタンが押されたら
