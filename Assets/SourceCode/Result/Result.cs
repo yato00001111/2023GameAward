@@ -45,8 +45,28 @@ public class Result : MonoBehaviour
     [SerializeField]
     New_Transition _transition;
 
+    // リトライボタン
+    [SerializeField]
+    GameObject RetryButton;
+
+    // タイトルボタン
+    [SerializeField]
+    GameObject TitleButton;
+
     // タイマー
     private float _Timer = 0f;
+
+    // 入力遅延タイマー
+    [SerializeField]
+    private float _lateTimer = 0f;
+
+    // プレイヤーの入力取得
+    [SerializeField, HideInInspector]
+    KeyCode PlayerInput = 0;
+
+    // ボタン押下フラグ
+    [SerializeField]
+    private bool PushFlg = false;
 
     // スキップ関数配列
     public delegate void Delegate(GameObject gameObject);
@@ -87,9 +107,10 @@ public class Result : MonoBehaviour
 
             // タイマーが３秒以上　または　コンボのカウントがスキップされていたら
             if (_Timer > 3f || _SkipCount > 5)
+            {
                 // ジャストタイミングアニメーション再生
                 _Just_Timing.GetComponent<Animator>().SetBool("StartAnimation", true);
-
+            }
 
             // スキップ処理
             Skip();
@@ -105,19 +126,51 @@ public class Result : MonoBehaviour
             _Just_Timing.transform.GetChild(1).GetComponent<Number>().GetEndCount()
             )
         {
-            // マウスの右クリック　または　Bボタンで遷移アニメーション再生
-            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Joystick1Button1))
+            // 遷移ボタン表示
+            RetryButton.SetActive(true);
+            TitleButton.SetActive(true);
+
+            if (_lateTimer > 5f)
             {
+                PushFlg = true;
+            }
+
+            // Aボタン(Retry)が押されたら
+            if (Input.GetKeyDown(KeyCode.Joystick1Button0) && PushFlg)
+            {
+                // 一度だけの制御
+                PushFlg = false;
+
+                PlayerInput = KeyCode.Joystick1Button0;
+
                 // 遷移アニメーション再生
                 _transition.Start_OUTanimation();
             }
+
+            //Bボタン(Title)が押されたら
+            if (Input.GetKeyDown(KeyCode.Joystick1Button1) && PushFlg)
+            {
+                // 一度だけの制御
+                PushFlg = false;
+
+                PlayerInput = KeyCode.Joystick1Button1;
+
+                // 遷移アニメーション再生
+                _transition.Start_OUTanimation();
+            }
+
+            _lateTimer += Time.deltaTime;
         }
 
         // 遷移アニメーションが終わったら
         if (_transition.GetEndOUTTransition())
         {
-            // シーン遷移
-            SceneManager.LoadScene("ResultScene");
+            // プレイヤーの入力に応じて遷移変更
+            if (PlayerInput == KeyCode.Joystick1Button0)
+                SceneManager.LoadScene("GameScene");
+
+            if (PlayerInput == KeyCode.Joystick1Button1)
+                SceneManager.LoadScene("Title");
         }
     }
 
@@ -125,13 +178,14 @@ public class Result : MonoBehaviour
     private void Skip()
     {
         // 左クリックしたとき または　いずれかのボタンを押したとき
-        if(Input.GetMouseButtonDown(0) || 
+        if( 
             Input.GetKeyDown(KeyCode.Joystick1Button0) ||
             Input.GetKeyDown(KeyCode.Joystick1Button1) ||
             Input.GetKeyDown(KeyCode.Joystick1Button2) ||
             Input.GetKeyDown(KeyCode.Joystick1Button3) ||
             Input.GetKeyDown(KeyCode.Joystick1Button4) ||
-            Input.GetKeyDown(KeyCode.Joystick1Button5))
+            Input.GetKeyDown(KeyCode.Joystick1Button5)
+            )
         {
             // 関数の配列の中から _SkipCount の数値に応じて　呼び出し関数、<=関数の引数　を変更して関数を呼ぶ
             SkipFunctions[(_SkipCount % 2)](OBJList[(int)_SkipCount / 2]); 
