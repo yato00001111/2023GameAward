@@ -79,4 +79,10 @@ public class Number : MonoBehaviour
     {
         return _EndCount;
     }
+
+    // •\¦‚·‚é’l‚Ìİ’è
+    public void SetNumber(int value)
+    {
+        _NowNum = value;
+    }
 }

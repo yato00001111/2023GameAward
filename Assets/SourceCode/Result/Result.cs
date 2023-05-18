@@ -105,6 +105,7 @@ public class Result : MonoBehaviour
             _Just_Timing.transform.GetChild(1).GetComponent<Number>().GetEndCount()
             )
         {
+            // マウスの右クリック　または　Bボタンで遷移アニメーション再生
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Joystick1Button1))
             {
                 // 遷移アニメーション再生
@@ -166,5 +167,14 @@ public class Result : MonoBehaviour
             // クリックしすぎてエラーを出さないように制御
             if (_SkipCount < 7) _SkipCount++;
         }
+    }
+
+    // 設定関数
+    public void SetResultNumber(int FinalScore, int Wave, int  Combo, int Just_Timing)
+    {
+        _Score.transform.GetComponent<Number>().SetNumber(FinalScore);
+        _Wave.transform.GetComponent<Number>().SetNumber(Wave);
+        _Combo.transform.GetComponent<Number>().SetNumber(Combo);
+        _Just_Timing.transform.GetComponent<Number>().SetNumber(Just_Timing);
     }
 }
