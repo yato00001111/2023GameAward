@@ -113,7 +113,8 @@ public class Pause : MonoBehaviour
 
         // 再開を選択中に下ボタンが押されたら
         if ((OnReStartFlag && PadVertical < 0) ||
-            (OnReStartFlag && StickVertical < -0.2))
+            (OnReStartFlag && StickVertical < -0.2) ||
+             (OnReStartFlag && Input.GetKeyDown(KeyCode.DownArrow)))
         {
             // リトライボタンを選択中に
             SelectUI.transform.position = new Vector3(956, 540, 0);
@@ -125,7 +126,8 @@ public class Pause : MonoBehaviour
 
         // リトライを選択中に下ボタンが押されたら
         if ((OnRetryFlag && PadVertical < 0)||
-            (OnRetryFlag && StickVertical < -0.2))
+            (OnRetryFlag && StickVertical < -0.2) ||
+             (OnRetryFlag && Input.GetKeyDown(KeyCode.DownArrow)))
         {
             // タイトルを選択中に
             SelectUI.transform.position = new Vector3(956, 340, 0);
@@ -135,7 +137,8 @@ public class Pause : MonoBehaviour
         }
         // リトライ選択中に上ボタンが押されたら
         if ((OnRetryFlag && PadVertical > 0) ||
-            (OnRetryFlag && StickVertical > 0.2))
+            (OnRetryFlag && StickVertical > 0.2)||
+            (OnRetryFlag&&Input.GetKeyDown(KeyCode.UpArrow)))
         {
             // 再開を選択中に
             SelectUI.transform.position = new Vector3(956, 740, 0);
@@ -147,7 +150,8 @@ public class Pause : MonoBehaviour
 
         // タイトルを選択中に上ボタンが押されたら
         if ((OnTitleBackFlag && PadVertical > 0)||
-            (OnTitleBackFlag && StickVertical > 0.2))
+            (OnTitleBackFlag && StickVertical > 0.2) ||
+            (OnTitleBackFlag && Input.GetKeyDown(KeyCode.UpArrow)))
         {
             // リトライを選択中に
             SelectUI.transform.position = new Vector3(956, 540, 0);
@@ -201,7 +205,7 @@ public class Pause : MonoBehaviour
     void Pausing()
     {
         // Pボタンが押されたらポーズ
-        if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Joystick1Button7))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Joystick1Button7))
         {
             // ポーズメニュー表示
             PauseMenu.SetActive(true);
