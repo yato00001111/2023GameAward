@@ -130,7 +130,7 @@ public class Result : MonoBehaviour
             RetryButton.SetActive(true);
             TitleButton.SetActive(true);
 
-            if (_lateTimer > 5f)
+            if (_lateTimer > 3f)
             {
                 PushFlg = true;
             }
