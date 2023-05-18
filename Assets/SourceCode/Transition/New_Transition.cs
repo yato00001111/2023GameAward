@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class ResultTransition : MonoBehaviour
+public class New_Transition : MonoBehaviour
 {
     // アニメーション
     private Animator anime;
