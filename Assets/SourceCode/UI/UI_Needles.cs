@@ -78,7 +78,22 @@ public class UI_Needles : MonoBehaviour
     [SerializeField]
     private bool Disappear_Roatet_End_Flag;            // 消えるフェーズの360回転の終了フラグ
 
+    [SerializeField]
+    private AudioClip SE_Metronome;                    // メトロノーム効果音
     [SerializeField] PlayDirector playDirector = default!;
+
+    [SerializeField]
+    private AudioSource audioSource;                   // オーディオソース
+
+    [SerializeField]
+    private AudioSource BGM_AudioSource;               // BGMのオーディオソース
+
+    [SerializeField]
+    private float BGM_Time;                            // 現在のBGMの時間
+
+    [SerializeField]
+    private float BGM_Length;                          // BGMの長さ
+
 
     [SerializeField] UI_Rythm_Effect uiRythmEffect = default!;
 
@@ -154,6 +169,16 @@ public class UI_Needles : MonoBehaviour
         // 消えるフェーズの360回転の終了フラグを初期化する
         Disappear_Roatet_End_Flag = false;
 
+        //Componentを取得
+        audioSource = GetComponent<AudioSource>();
+
+        // 現在のBGMの時間を初期化する
+        BGM_Time = 0.0f;
+
+        // BGMの長さを初期化する
+        BGM_Length = 0.0f;
+
+
         justTiming = 0;
 
         TriggerFlag = false;
@@ -188,7 +213,6 @@ public class UI_Needles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //********************************************//
         //<<初回のみ拍の間隔を検証して秒数を取得する>>//
         //********************************************//
@@ -196,13 +220,13 @@ public class UI_Needles : MonoBehaviour
             // 拍のタイミングがそれ以外かを取得する
             // "true" ...拍のタイミング真
             // "false"...拍のタイミング偽
-            if (Music.IsJustChangedBeat())
+            if (Beat_Flag)
             {
                 // カウントが" "の時のみ検証開始
                 Clap_Count++;
             }
             // 検証中のみタイマー起動
-            if (Clap_Count == 3) Clap_Time += Time.deltaTime;
+            if (Clap_Count == 2) Clap_Time += Time.deltaTime;
 
             // 以後、Clap_Timeが拍と拍までの秒数になる
         }
@@ -211,7 +235,22 @@ public class UI_Needles : MonoBehaviour
         Clap_Time = 0.6f;
 
         // 最初に詰まる為、スクリプト側から再生する
-        if (Clap_Count == 2) Game_BGM.Play();
+        if (Clap_Count == 3) Game_BGM.Play();
+        // BGMのタイマー起動
+        if (Clap_Count > 3) BGM_Time += Time.deltaTime;
+
+        BGM_Length = Game_BGM.clip.length;
+
+        if (Game_BGM.clip.length <= BGM_Time && Beat_Flag/* && Rhythm_Transition_Count == 0*/)
+        {
+            // 針の移動番号リセット
+            Rhythm_Transition_Count = 0;
+            // BGM再度再生
+            Game_BGM.Play();
+            // タイマーリセット
+            BGM_Time = 0.0f;
+        }
+
 
         // フラグが立っている間は"Lerp"で動かす
         if (Needle_Gauge_Is_Changing)
@@ -267,7 +306,7 @@ public class UI_Needles : MonoBehaviour
         }
 
         // リズム画像のリズム演出
-        if (Beat_Flag && !Succeed_Flag) 
+        if (Rhythm_Gauge_Image_Rect[0].anchoredPosition.x == 0.0f && !Succeed_Flag && uI_CountDown.GetGameStartFlag()) 
         {
             DOTween
               .To(value => OnScale(value), 0, 1, 0.1f).SetEase(Ease.InQuad).SetLoops(2, LoopType.Yoyo);
@@ -416,34 +455,47 @@ public class UI_Needles : MonoBehaviour
         //************************//
         //<<カウントで分岐させる>>//
         //************************//
-        if      (count == 0) 
-        {
-            var Position = Mathf.Lerp(0.0f, -300.0f, timer);
-            for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
-            // 指定位置に到達したらリズムゲージ移動カウント設定
-            if (Position == -300.0f) Rhythm_Transition_Count = 1;
-        }
-        else if (count == 1)
+        if (count == 0)
         {
             var Position = Mathf.Lerp(-300.0f, 0.0f, timer);
             for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
-            if (Position == 0.0f || Beat_Flag) Rhythm_Transition_Count = 2;
+            if (Position == 0.0f) Rhythm_Transition_Count = 1;
         }
-        else if (count == 2)
+        else if (count == 1)
         {
             var Position = Mathf.Lerp(0.0f, 300.0f, timer);
             for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
-            if (Position == 300.0f) Rhythm_Transition_Count = 3;
+            if (Position == 300.0f || Beat_Flag)
+            {
+                //音(Metronome)を鳴らす
+                audioSource.PlayOneShot(SE_Metronome);
+                Rhythm_Transition_Count = 2;
+            }
+
         }
-        else if (count == 3)
+        else if (count == 2)
         {
             var Position = Mathf.Lerp(300.0f, 0.0f, timer);
             for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
             // 指定位置に到達したらリズムゲージ移動カウント設定
-            if (Position == 0.0f || Beat_Flag) Rhythm_Transition_Count = 0;
+            if (Position == 0.0f) Rhythm_Transition_Count = 3;
+
         }
+        else if (count == 3)
+        {
+            var Position = Mathf.Lerp(0.0f, -300.0f, timer);
+            for (int Num = 0; Num < 3; ++Num) Rhythm_Gauge_Image_Rect[Num].anchoredPosition = new Vector3(Position, 632.0f - 200.0f);
+            // 指定位置に到達したらリズムゲージ移動カウント設定
+            if (Position == -300.0f || Beat_Flag)
+            {
+                //音(Metronome)を鳴らす
+                audioSource.PlayOneShot(SE_Metronome);
+                Rhythm_Transition_Count = 0;
+            }
+        }
+
     }
 
     // 針の位置を"0"番目の位置に設定する関数
