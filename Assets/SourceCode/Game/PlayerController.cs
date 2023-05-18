@@ -286,7 +286,7 @@ public class PlayerController : MonoBehaviour
                 if (Translate(false)) return;
             }
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
             if (playDirector.GetPlayFlag())
                 ChangeColor();

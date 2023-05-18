@@ -9,6 +9,7 @@ public class GameDirector : MonoBehaviour
     [SerializeField] GameObject prefabMessage = default!;
     [SerializeField] GameObject gameObjectCanvas = default!;
     [SerializeField] PlayDirector playDirector = default!;
+    [SerializeField] UI_CountDown uiCountDown = default!;
     GameObject _message = null;
 
     //SE
@@ -42,8 +43,14 @@ public class GameDirector : MonoBehaviour
     {
         //CreateMessage("Ready?");
 
-        yield return new WaitForSeconds(2.0f);
-        Destroy(_message); _message = null;
+        //yield return new WaitForSeconds(2.0f);
+        //Destroy(_message); _message = null;
+
+        while(!uiCountDown.GetGameStartFlag())
+        {
+            yield return null;
+        }
+        
 
         playDirector.EnableSpawn(true);// プレイ開始
 
@@ -51,6 +58,7 @@ public class GameDirector : MonoBehaviour
         {
             yield return null;
         }
+
 
         CreateMessage("Game Over");
         audioSource.PlayOneShot(se_gameover);
@@ -70,7 +78,7 @@ public class GameDirector : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(1.0f);
         SceneManager.LoadScene("Title");
     }
 }

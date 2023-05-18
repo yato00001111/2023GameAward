@@ -78,6 +78,10 @@ public class UI_Needles : MonoBehaviour
     [SerializeField]
     private bool Disappear_Roatet_End_Flag;            // 消えるフェーズの360回転の終了フラグ
 
+    [SerializeField] PlayDirector playDirector = default!;
+
+    [SerializeField] UI_Rythm_Effect uiRythmEffect = default!;
+
     bool beat;
 
     // Start is called before the first frame update
@@ -264,10 +268,13 @@ public class UI_Needles : MonoBehaviour
         //***************************************//
         //***<< 操作成功 or 操作失敗　の演出>>***//
         //***************************************//
+        float TrigerInput = Input.GetAxisRaw("Trigger");
 
         // "成功"
-        if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (Rhythm_Gauge_Image_Rect[0].anchoredPosition.x >= -50.0f && Rhythm_Gauge_Image_Rect[0].anchoredPosition.x <= 50.0f)
-            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)))
+        if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (playDirector.GetPlayFlag())
+            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Joystick1Button2) || Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.Joystick1Button5) || TrigerInput < 0.0f || TrigerInput > 0.0f
+            || /*確認用*/ Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.DownArrow)
+            || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow)))
         {
             // 操作成功にする
             Succeed_Flag = true;
@@ -280,17 +287,24 @@ public class UI_Needles : MonoBehaviour
             Rhythm_Gauge_Image_OBJ[1].SetActive(false);
             Rhythm_Gauge_Image_OBJ[2].SetActive(true);
 
+            //
+            uiRythmEffect.PlayEffect(true);
+
         }
         // "失敗"
-        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (Rhythm_Gauge_Image_Rect[0].anchoredPosition.x < -50.0f || Rhythm_Gauge_Image_Rect[0].anchoredPosition.x > 50.0f)
-            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)))
+        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (!playDirector.GetPlayFlag())
+            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Joystick1Button2) || Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.Joystick1Button5) || TrigerInput < 0.0f || TrigerInput > 0.0f || /*確認用*/ Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.DownArrow)
+            || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow)))
         {
             Rhythm_Gauge_Image_OBJ[0].SetActive(false);
             Rhythm_Gauge_Image_OBJ[1].SetActive(true);
             Rhythm_Gauge_Image_OBJ[2].SetActive(false);
+
+            uiRythmEffect.PlayEffect(false);
         }
         // キー入力が離れたら色を元に戻す
-        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyUp(KeyCode.A)) 
+        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyUp(KeyCode.Joystick1Button2) || Input.GetKeyUp(KeyCode.Joystick1Button4) || Input.GetKeyUp(KeyCode.Joystick1Button5) || TrigerInput == 0.0f || /*確認用*/ Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.DownArrow)
+            || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.UpArrow)) 
         {
             Rhythm_Gauge_Image_OBJ[0].SetActive(true);
             Rhythm_Gauge_Image_OBJ[1].SetActive(false);

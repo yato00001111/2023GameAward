@@ -28,6 +28,8 @@ public class PlayDirector : MonoBehaviour
     public const int BOARD_WIDTH = 8;
     public const int BOARD_HEIGHT = 20;
 
+    [SerializeField] UI_Objective_Quota uiObjectiveQuota = default!;
+    [SerializeField] UI_Dead_Gauge uiDeadGauge = default!;
     [SerializeField] GameObject[] player = { default!, default! };
     PlayerController[] _playerController = new PlayerController[2];
     LogicalInput _logicalInput = new();
@@ -59,8 +61,13 @@ public class PlayDirector : MonoBehaviour
     [SerializeField] private bool _eraseWave;
     [SerializeField] private bool _stateErase;
 
+    [SerializeField] private int QuotaCount;
+
+    private bool _gameStart;
+    private bool _gameOver;
+
     // 状態管理
-    IState.E_State _current_state = IState.E_State.Falling;
+    IState.E_State _current_state = IState.E_State.Waiting;
     static readonly IState[] states = new IState[(int)IState.E_State.MAX]{
         new ControlState(),
         new GameOverState(),
@@ -102,6 +109,11 @@ public class PlayDirector : MonoBehaviour
 
         _eraseWave = false;
         _stateErase = false;
+
+        _gameStart = false;
+        _gameOver = false;
+
+        QuotaCount = 0;
 
         StartCoroutine("BeatPlay");
     }
@@ -162,7 +174,10 @@ public class PlayDirector : MonoBehaviour
             //{
             //    return IState.E_State.GameOver;
             //}
+            // ノルマ数より少なければゲームオーバー
+            if(parent._gameOver) return IState.E_State.GameOver;
             parent.Spawn(parent._nextQueue.Update());
+            parent._gameStart = true;
 
             parent._stateErase = false;
 
@@ -213,7 +228,7 @@ public class PlayDirector : MonoBehaviour
         }
         public IState.E_State Update(PlayDirector parent)
         {
-            return parent._fieldController.Erase() ? IState.E_State.Unchanged : IState.E_State.Falling;
+            return parent._fieldController.Erase(parent.uiDeadGauge.GetIsDisappearPhaseFlag()) ? IState.E_State.Unchanged : IState.E_State.Falling;
         }
     }
 
@@ -235,12 +250,17 @@ public class PlayDirector : MonoBehaviour
         Debug.Assert(condition: _current_state is >= 0 and < IState.E_State.MAX);
 
         var next_state = states[(int)_current_state].Update(this);
-
-        if(_eraseWave)
+        if ((_current_state == IState.E_State.Waiting) && _gameStart)
+        {
+            if (!uiDeadGauge.GetIsDisappearPhaseFlag()) EnableSpawn(true);
+        }
+        if (uiDeadGauge.GetBeforeIsDisappearPhaseFlag() && !_stateErase)
         {
             next_state = IState.E_State.Erasing;
+            EnableSpawn(false);
             _stateErase = true;
-            _eraseWave = false;
+            if (uiObjectiveQuota.GetObjectiveQuota() > GetQuotaCount()) _gameOver = true;
+            uiDeadGauge.SetBeforeIsDisappearPhaseFlag(false);
         }
         if (next_state != IState.E_State.Unchanged)
         {
@@ -294,7 +314,8 @@ public class PlayDirector : MonoBehaviour
     {
         if (!PlayFlag)
         {
-            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
+            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)
+                || Input.GetKeyDown(KeyCode.Joystick1Button5) || Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.Joystick1Button11) || Input.GetKeyDown(KeyCode.Joystick1Button14) || Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Joystick1Button2))
             {
                 // ペナルティ処理
                 PenaltyFlag = true;
@@ -317,6 +338,7 @@ public class PlayDirector : MonoBehaviour
         AddScore(_playerController[0].popScore());
         AddScore(_playerController[1].popScore());
         AddScore(_fieldController.popScore());
+        QuotaCount = _fieldController._eraseCount / 3;
         SetChainScore(_fieldController._eraseCount / 3);
     }
 
@@ -327,7 +349,7 @@ public class PlayDirector : MonoBehaviour
         ui_NextBlock_Direction.ResetNextBlockAnimation();
         //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
         //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
-        return _playerController[0].Spawn((BlockType)1, (BlockType)2, position) ;
+        return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[1], position) ;
     }
 
     void SetScore(uint score)
@@ -348,6 +370,11 @@ public class PlayDirector : MonoBehaviour
     public bool GetPlayFlag()
     {
         return PlayFlag;
+    }    
+    
+    public int GetQuotaCount()
+    {
+        return QuotaCount;
     }
 
     public void EnableSpawn(bool enable)

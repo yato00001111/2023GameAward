@@ -8,12 +8,9 @@ public class TutorialDirector : MonoBehaviour
 {
     [SerializeField] GameObject prefabMessage = default!;
     [SerializeField] GameObject gameObjectCanvas = default!;
-    [SerializeField] GameObject arrow = default!;
-    [SerializeField] GameObject[] ScoreText = default!;
-    [SerializeField] T_PlayDirector TplayDirector = default!;
     [SerializeField] PlayerController _playerController = default!;
-    [SerializeField] private Animator animator;
-    FieldController _fieldController = default!;
+    [SerializeField] FieldController _fieldController = default!;
+    [SerializeField] PlayDirector _playDirector = default!;
     GameObject _message = null;
 
     // 画面にでる演出メッセージの表示
@@ -30,22 +27,22 @@ public class TutorialDirector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _fieldController = TplayDirector.GetComponent<FieldController>();
-        arrow.SetActive(false);
-        //animator.SetTrigger("IN_Animation");
         StartCoroutine("TutorialFlow");
     }
 
     private IEnumerator TutorialFlow()
     {
-        CreateMessage("ブロックは同じ色が3つ以上揃うと消えます");
-        yield return new WaitForSeconds(0.4f);
-        while (!Input.anyKey)// 何か押すのを待つ
+        _fieldController.SetTutorial();
+        //_playDirector.EnableSpawn(true);
+        //_playerController.SetPlayerPause(true);
+
+        while (!Input.GetKeyDown(KeyCode.RightArrow) && !Input.GetKeyDown(KeyCode.LeftArrow))// 何か押すのを待つ
         {
             yield return null;
         }
-        Destroy(_message); _message = null;
-        yield return new WaitForSeconds(0.3f);
+        //_playDirector.EnableSpawn(false);
+        //_playerController.SetPlayerPause(false);
+
 
         CreateMessage("止まっているブロックは回転させられます");
         yield return new WaitForSeconds(0.4f);
@@ -55,14 +52,10 @@ public class TutorialDirector : MonoBehaviour
         }
         Destroy(_message); _message = null;
 
-        _fieldController.SetTutorial();
-        _playerController.SetPlayerPause(true);
         yield return new WaitForSeconds(0.3f);
 
         CreateMessage("RBで回転させましょう");
-        arrow.SetActive(true);
         _playerController.SetPlayerQuick(true);
-        TplayDirector.EnableSpawn(true);// プレイ開始
         _message.transform.localPosition = new Vector3(-430, 350, 0);
         while (!Input.GetKeyDown(KeyCode.RightArrow) && !Input.GetKeyDown(KeyCode.Joystick1Button5))
         {
@@ -70,23 +63,9 @@ public class TutorialDirector : MonoBehaviour
         }
         _fieldController.SetControl(false); //
         Destroy(_message); _message = null;
-        foreach(var g in ScoreText)
-        {
-            g.SetActive(true);
-        }
-        arrow.SetActive(false);
         _playerController.SetPlayerPause(false);
-        TplayDirector.EnableSpawn(false);
         yield return new WaitForSeconds(0.3f);
 
-        while (!TplayDirector.IsWaiting())// 終了待ち
-        {
-            yield return null;
-        }
-        foreach (var g in ScoreText)
-        {
-            g.SetActive(false);
-        }
 
         CreateMessage("上手く連鎖できるように頑張って下さい");
         yield return new WaitForSeconds(0.5f);
@@ -94,8 +73,6 @@ public class TutorialDirector : MonoBehaviour
         {
             yield return null;
         }
-
-        animator.SetTrigger("OUT_Animation");
 
         yield return new WaitForSeconds(3.5f);
         SceneManager.LoadScene("GameScene");

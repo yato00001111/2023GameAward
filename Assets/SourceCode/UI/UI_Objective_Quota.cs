@@ -24,4 +24,6 @@ public class UI_Objective_Quota : MonoBehaviour
 
     // ƒmƒ‹ƒ}”‚ğİ’è‚·‚éŠÖ”
     public void SetObjectiveQuota(int num) { Num = num; }
+
+    public int GetObjectiveQuota() { return Num; }
 }

@@ -6,6 +6,8 @@ public class UI_Current_Quota : MonoBehaviour
 {
     public ImageRenderer imageRenderer;
 
+    [SerializeField] PlayDirector playDirector = default!;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,6 +17,6 @@ public class UI_Current_Quota : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        imageRenderer._Update(2);
+        imageRenderer._Update(playDirector.GetQuotaCount());
     }
 }

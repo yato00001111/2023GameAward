@@ -113,9 +113,10 @@ public class UI_Operate : MonoBehaviour
             Select_Operate_Image_Rect.localScale = new Vector3(1, 1, 1);
         }
 
+        float TrigerInput = Input.GetAxisRaw("Trigger");
 
         // XBoxコントローラーの"A"ボタンが押されている間は"クイックドロップ"UI演出
-        if (Input.GetKey(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKey(KeyCode.A) && uI_CountDown.GetGameStartFlag())  
+        if (Input.GetKey(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKey(KeyCode.DownArrow) && uI_CountDown.GetGameStartFlag())  
         {
             // 操作中画像のみを描画する
             Operate1_Image[1].enabled = true;
@@ -141,7 +142,7 @@ public class UI_Operate : MonoBehaviour
         }
 
         // XBoxコントローラーの"LT RT"ボタンが押されている間は"大回転"UI演出
-        if (/*(Input.GetKey(KeyCode.Joystick1Button11) || Input.GetKey(KeyCode.Joystick1Button14)) ||*/ /*確認用*/ Input.GetKey(KeyCode.S) && uI_CountDown.GetGameStartFlag()) 
+        if ((TrigerInput < 0.0f || TrigerInput > 0.0f) || /*確認用*/ Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A) && uI_CountDown.GetGameStartFlag()) 
         {
             // 操作中画像のみを描画する
             Operate2_Image[1].enabled = true;
@@ -181,7 +182,7 @@ public class UI_Operate : MonoBehaviour
         }
 
         // XBoxコントローラーの"LB RB"ボタンが押されている間は"半回転"UI演出
-        if ((Input.GetKey(KeyCode.Joystick1Button4) || Input.GetKey(KeyCode.Joystick1Button5)) || /*確認用*/ Input.GetKey(KeyCode.D) && uI_CountDown.GetGameStartFlag()) 
+        if ((Input.GetKey(KeyCode.Joystick1Button4) || Input.GetKey(KeyCode.Joystick1Button5)) || /*確認用*/ Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow) && uI_CountDown.GetGameStartFlag()) 
         {
             // 操作中画像のみを描画する
             Operate3_Image[1].enabled = true;
@@ -224,7 +225,7 @@ public class UI_Operate : MonoBehaviour
         }
 
         // XBoxコントローラーの"X"ボタンが押されている間は"入れ替え"UI演出
-        if (Input.GetKey(KeyCode.Joystick1Button2) || /*確認用*/ Input.GetKey(KeyCode.X) && uI_CountDown.GetGameStartFlag())
+        if (Input.GetKey(KeyCode.Joystick1Button2) || /*確認用*/ Input.GetKey(KeyCode.UpArrow) && uI_CountDown.GetGameStartFlag())
         {
             // 操作中画像のみを描画する
             Operate4_Image[1].enabled = true;

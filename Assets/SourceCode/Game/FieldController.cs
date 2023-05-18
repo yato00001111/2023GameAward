@@ -417,13 +417,12 @@ public class FieldController : MonoBehaviour
 
             if (puyoCount == 0) _additiveScore += 1800;// 全消しボーナス
         }
-
         _eraseCount = _erases.Count;
         if(_eraseCount != 0) _normaCount = _eraseCount / 3;
         return _erases.Count != 0;
     }
 
-    public bool Erase()
+    public bool Erase(bool isDisappearPhase)
     {
         _eraseFrames++;
         //// 1から増えてちょっとしたら最大に大きくなったあと小さくなって消える
@@ -468,23 +467,28 @@ public class FieldController : MonoBehaviour
 
         //return true;
 
-        foreach (Vector2Int d in _erases)
+        if (isDisappearPhase)
         {
-            if(needles.GetCurrentNumber() == d.x)
+            foreach (Vector2Int d in _erases)
             {
-                if (_Blocks[d.y, d.x] == null) continue;
-                //DelayDestroy(d.x, d.y);
-                if (isEffect)
+                if (needles.GetCurrentNumber() == d.x)
                 {
-                    int type = _board[d.y, d.x];
-                    _Blocks[d.y, d.x].transform.Find("effect").GetComponent<EffectController>().PlayEffect(type);
-                }
-                //if (_eraseFrames > _eraseTime)
-                {
-                    Destroy(_Blocks[d.y, d.x]);
-                    _Blocks[d.y, d.x] = null;
-                    _board[d.y, d.x] = 0;
-                    _needleEraseCount++;
+                    if (_Blocks[d.y, d.x] == null) continue;
+                    //DelayDestroy(d.x, d.y);
+                    if (isEffect)
+                    {
+                        int type = _board[d.y, d.x];
+                        _Blocks[d.y, d.x].transform.Find("effect").GetComponent<EffectController>().PlayEffect(type);
+                        audioSource.PlayOneShot(se_erase_block[type]);
+
+                    }
+                    //if (_eraseFrames > _eraseTime)
+                    {
+                        Destroy(_Blocks[d.y, d.x]);
+                        _Blocks[d.y, d.x] = null;
+                        _board[d.y, d.x] = 0;
+                        _needleEraseCount++;
+                    }
                 }
             }
         }
@@ -529,7 +533,7 @@ public class FieldController : MonoBehaviour
                 needleX = needles.GetCurrentNumber();
                 //if (tempType == _board[d.y, d.x]) continue;
                 tempType = _board[d.y, d.x];
-                Debug.Log("type" + tempType);
+                //Debug.Log("type" + tempType);
                 audioSource.PlayOneShot(se_erase_block[tempType]);
             }
         }
@@ -641,10 +645,11 @@ public class FieldController : MonoBehaviour
         if (_animationController.Update()) return;
 
 
+        float TrigerInput = Input.GetAxisRaw("Trigger");
 
         if (!isHalfTransR && !isHalfTransL)
         {
-            if (Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.D) || TrigerInput > 0.0f)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -653,7 +658,7 @@ public class FieldController : MonoBehaviour
                 isHalfTransR = true;
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.A) || TrigerInput < 0.0f)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -663,25 +668,25 @@ public class FieldController : MonoBehaviour
                 return;
             }
             // 平行移動のキー入力取得
-            if (_logicalInput.IsRepeat(LogicalInput.Key.Right) || _logicalInput.IsRepeat(LogicalInput.Key.D) ||
-                _logicalInput.IsRepeat(LogicalInput.Key.RB))
+            if (_logicalInput.IsTrigger(LogicalInput.Key.Right) ||
+                _logicalInput.IsTrigger(LogicalInput.Key.RB))
             {
                 if(playDirector.GetPlayFlag())
                     if (Translate(true)) return;
             }
-            if (_logicalInput.IsRepeat(LogicalInput.Key.Left) || _logicalInput.IsRepeat(LogicalInput.Key.A) ||
-                _logicalInput.IsRepeat(LogicalInput.Key.LB))
+            if (_logicalInput.IsTrigger(LogicalInput.Key.Left) ||
+                _logicalInput.IsTrigger(LogicalInput.Key.LB))
             {
                 if (playDirector.GetPlayFlag())
                     if (Translate(false)) return;
             }
-            if (_logicalInput.IsRelease(LogicalInput.Key.Right) || _logicalInput.IsRelease(LogicalInput.Key.D) ||
-                _logicalInput.IsRelease(LogicalInput.Key.RB))
+            if (_logicalInput.IsRelease(LogicalInput.Key.Right) ||
+                _logicalInput.IsRelease(LogicalInput.Key.RB) || TrigerInput == 0)
             {
                 if (playDirector.GetPlayFlag())
                     isKaiten = false;
             }
-            if (_logicalInput.IsRelease(LogicalInput.Key.Left) || _logicalInput.IsRelease(LogicalInput.Key.A) ||
+            if (_logicalInput.IsRelease(LogicalInput.Key.Left) ||
                 _logicalInput.IsRelease(LogicalInput.Key.LB))
             {
                 if (playDirector.GetPlayFlag())
@@ -779,85 +784,93 @@ public class FieldController : MonoBehaviour
 
     public void SetTutorial()
     {
-        // Tutorial
-        Settle(new Vector2Int(0, 0), (int)BlockType.Purple);
+        // Tutorial(仕様変更後)
 
-        Settle(new Vector2Int(1, 0), (int)BlockType.Red);
-        Settle(new Vector2Int(1, 1), (int)BlockType.Purple);
-        Settle(new Vector2Int(1, 2), (int)BlockType.Red);
-        Settle(new Vector2Int(1, 3), (int)BlockType.Green);
+        //Settle(new Vector2Int(6, 0), (int)BlockType.Blue);
+        //Settle(new Vector2Int(6, 1), (int)BlockType.Blue);
 
-        Settle(new Vector2Int(2, 0), (int)BlockType.Yellow);
-        Settle(new Vector2Int(2, 1), (int)BlockType.Red);
-        Settle(new Vector2Int(2, 2), (int)BlockType.Yellow);
-        Settle(new Vector2Int(2, 3), (int)BlockType.Blue);
+        //Settle(new Vector2Int(2, 0), (int)BlockType.Green);
+        Settle(new Vector2Int(2, 1), (int)BlockType.Green);
 
-        Settle(new Vector2Int(3, 0), (int)BlockType.Green);
-        Settle(new Vector2Int(3, 1), (int)BlockType.Yellow);
-        Settle(new Vector2Int(3, 2), (int)BlockType.Green);
-        Settle(new Vector2Int(3, 3), (int)BlockType.Purple);
+        // Tutorial(仕様変更前)
+        //Settle(new Vector2Int(0, 0), (int)BlockType.Purple);
 
-        Settle(new Vector2Int(4, 0), (int)BlockType.Blue);
-        Settle(new Vector2Int(4, 1), (int)BlockType.Green);
-        Settle(new Vector2Int(4, 2), (int)BlockType.Blue);
-        Settle(new Vector2Int(4, 3), (int)BlockType.Red);
+        //Settle(new Vector2Int(1, 0), (int)BlockType.Red);
+        //Settle(new Vector2Int(1, 1), (int)BlockType.Purple);
+        //Settle(new Vector2Int(1, 2), (int)BlockType.Red);
+        //Settle(new Vector2Int(1, 3), (int)BlockType.Green);
 
-        Settle(new Vector2Int(5, 0), (int)BlockType.Purple);
-        Settle(new Vector2Int(5, 1), (int)BlockType.Blue);
-        Settle(new Vector2Int(5, 2), (int)BlockType.Purple);
-        Settle(new Vector2Int(5, 3), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(2, 0), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(2, 1), (int)BlockType.Red);
+        //Settle(new Vector2Int(2, 2), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(2, 3), (int)BlockType.Blue);
 
-        Settle(new Vector2Int(6, 0), (int)BlockType.Red);
-        Settle(new Vector2Int(6, 1), (int)BlockType.Purple);
-        Settle(new Vector2Int(6, 2), (int)BlockType.Red);
-        Settle(new Vector2Int(6, 3), (int)BlockType.Purple);
+        //Settle(new Vector2Int(3, 0), (int)BlockType.Green);
+        //Settle(new Vector2Int(3, 1), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(3, 2), (int)BlockType.Green);
+        //Settle(new Vector2Int(3, 3), (int)BlockType.Purple);
 
-        Settle(new Vector2Int(7, 0), (int)BlockType.Yellow);
-        Settle(new Vector2Int(7, 1), (int)BlockType.Red);
-        Settle(new Vector2Int(7, 2), (int)BlockType.Yellow);
-        Settle(new Vector2Int(7, 3), (int)BlockType.Blue);
-        Settle(new Vector2Int(7, 4), (int)BlockType.Yellow);
-        Settle(new Vector2Int(7, 5), (int)BlockType.Blue);
-        Settle(new Vector2Int(7, 6), (int)BlockType.Blue);
+        //Settle(new Vector2Int(4, 0), (int)BlockType.Blue);
+        //Settle(new Vector2Int(4, 1), (int)BlockType.Green);
+        //Settle(new Vector2Int(4, 2), (int)BlockType.Blue);
+        //Settle(new Vector2Int(4, 3), (int)BlockType.Red);
 
-        Settle(new Vector2Int(8, 0), (int)BlockType.Green);
-        Settle(new Vector2Int(8, 1), (int)BlockType.Yellow);
-        Settle(new Vector2Int(8, 2), (int)BlockType.Green);
-        Settle(new Vector2Int(8, 3), (int)BlockType.Purple);
+        //Settle(new Vector2Int(5, 0), (int)BlockType.Purple);
+        //Settle(new Vector2Int(5, 1), (int)BlockType.Blue);
+        //Settle(new Vector2Int(5, 2), (int)BlockType.Purple);
+        //Settle(new Vector2Int(5, 3), (int)BlockType.Yellow);
 
-        Settle(new Vector2Int(9, 0), (int)BlockType.Blue);
-        Settle(new Vector2Int(9, 1), (int)BlockType.Green);
-        Settle(new Vector2Int(9, 2), (int)BlockType.Blue);
-        Settle(new Vector2Int(9, 3), (int)BlockType.Red);
+        //Settle(new Vector2Int(6, 0), (int)BlockType.Red);
+        //Settle(new Vector2Int(6, 1), (int)BlockType.Purple);
+        //Settle(new Vector2Int(6, 2), (int)BlockType.Red);
+        //Settle(new Vector2Int(6, 3), (int)BlockType.Purple);
 
-        Settle(new Vector2Int(10, 0), (int)BlockType.Purple);
-        Settle(new Vector2Int(10, 1), (int)BlockType.Blue);
-        Settle(new Vector2Int(10, 2), (int)BlockType.Purple);
-        Settle(new Vector2Int(10, 3), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(7, 0), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(7, 1), (int)BlockType.Red);
+        //Settle(new Vector2Int(7, 2), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(7, 3), (int)BlockType.Blue);
+        //Settle(new Vector2Int(7, 4), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(7, 5), (int)BlockType.Blue);
+        //Settle(new Vector2Int(7, 6), (int)BlockType.Blue);
 
-        Settle(new Vector2Int(11, 0), (int)BlockType.Red);
-        Settle(new Vector2Int(11, 1), (int)BlockType.Purple);
-        Settle(new Vector2Int(11, 2), (int)BlockType.Red);
-        Settle(new Vector2Int(11, 3), (int)BlockType.Green);
+        //Settle(new Vector2Int(8, 0), (int)BlockType.Green);
+        //Settle(new Vector2Int(8, 1), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(8, 2), (int)BlockType.Green);
+        //Settle(new Vector2Int(8, 3), (int)BlockType.Purple);
 
-        Settle(new Vector2Int(12, 0), (int)BlockType.Yellow);
-        Settle(new Vector2Int(12, 1), (int)BlockType.Red);
-        Settle(new Vector2Int(12, 2), (int)BlockType.Yellow);
-        Settle(new Vector2Int(12, 3), (int)BlockType.Blue);
+        //Settle(new Vector2Int(9, 0), (int)BlockType.Blue);
+        //Settle(new Vector2Int(9, 1), (int)BlockType.Green);
+        //Settle(new Vector2Int(9, 2), (int)BlockType.Blue);
+        //Settle(new Vector2Int(9, 3), (int)BlockType.Red);
 
-        Settle(new Vector2Int(13, 0), (int)BlockType.Green);
-        Settle(new Vector2Int(13, 1), (int)BlockType.Yellow);
-        Settle(new Vector2Int(13, 2), (int)BlockType.Green);
-        Settle(new Vector2Int(13, 3), (int)BlockType.Purple);
+        //Settle(new Vector2Int(10, 0), (int)BlockType.Purple);
+        //Settle(new Vector2Int(10, 1), (int)BlockType.Blue);
+        //Settle(new Vector2Int(10, 2), (int)BlockType.Purple);
+        //Settle(new Vector2Int(10, 3), (int)BlockType.Yellow);
 
-        Settle(new Vector2Int(14, 0), (int)BlockType.Blue);
-        Settle(new Vector2Int(14, 1), (int)BlockType.Green);
-        Settle(new Vector2Int(14, 2), (int)BlockType.Blue);
-        Settle(new Vector2Int(14, 3), (int)BlockType.Red);
+        //Settle(new Vector2Int(11, 0), (int)BlockType.Red);
+        //Settle(new Vector2Int(11, 1), (int)BlockType.Purple);
+        //Settle(new Vector2Int(11, 2), (int)BlockType.Red);
+        //Settle(new Vector2Int(11, 3), (int)BlockType.Green);
 
-        Settle(new Vector2Int(15, 0), (int)BlockType.Yellow);
-        Settle(new Vector2Int(15, 1), (int)BlockType.Blue);
-        Settle(new Vector2Int(15, 2), (int)BlockType.Yellow);
-        Settle(new Vector2Int(15, 3), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(12, 0), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(12, 1), (int)BlockType.Red);
+        //Settle(new Vector2Int(12, 2), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(12, 3), (int)BlockType.Blue);
+
+        //Settle(new Vector2Int(13, 0), (int)BlockType.Green);
+        //Settle(new Vector2Int(13, 1), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(13, 2), (int)BlockType.Green);
+        //Settle(new Vector2Int(13, 3), (int)BlockType.Purple);
+
+        //Settle(new Vector2Int(14, 0), (int)BlockType.Blue);
+        //Settle(new Vector2Int(14, 1), (int)BlockType.Green);
+        //Settle(new Vector2Int(14, 2), (int)BlockType.Blue);
+        //Settle(new Vector2Int(14, 3), (int)BlockType.Red);
+
+        //Settle(new Vector2Int(15, 0), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(15, 1), (int)BlockType.Blue);
+        //Settle(new Vector2Int(15, 2), (int)BlockType.Yellow);
+        //Settle(new Vector2Int(15, 3), (int)BlockType.Yellow);
     }
 }

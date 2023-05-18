@@ -7,6 +7,7 @@ public class sphereController : MonoBehaviour
     LogicalInput logicalInput = new();
 
     [SerializeField] FieldController _fieldController = default!;
+    [SerializeField] PlayDirector _playDirector = default!;
 
 
     static readonly KeyCode[] key_code_tbl = new KeyCode[(int)LogicalInput.Key.MAX]{
@@ -99,25 +100,28 @@ public class sphereController : MonoBehaviour
 
         if(_fieldController.GetControl())
         {
-            if (logicalInput.IsRepeat(LogicalInput.Key.Right) || logicalInput.IsRepeat(LogicalInput.Key.D) ||
-                logicalInput.IsRepeat(LogicalInput.Key.RB))
+            if(_playDirector.GetPlayFlag())
             {
-                angle = new Vector3(0f, 22.5f, 0f);
-                transform.Rotate(angle, Space.World);
+                if (logicalInput.IsRepeat(LogicalInput.Key.Right) || logicalInput.IsRepeat(LogicalInput.Key.D) ||
+                    logicalInput.IsRepeat(LogicalInput.Key.RB))
+                {
+                    angle = new Vector3(0f, 22.5f, 0f);
+                    transform.Rotate(angle, Space.World);
 
-                //isAnimate = true;
-                //angle = new Vector3(0f, 0.5f, 0f);
-                //count = 0;
-            }
-            if (logicalInput.IsRepeat(LogicalInput.Key.Left) || logicalInput.IsRepeat(LogicalInput.Key.A) ||
-                logicalInput.IsRepeat(LogicalInput.Key.LB))
-            {
-                angle = new Vector3(0f, -22.5f, 0f);
-                transform.Rotate(angle, Space.World);
+                    //isAnimate = true;
+                    //angle = new Vector3(0f, 0.5f, 0f);
+                    //count = 0;
+                }
+                if (logicalInput.IsRepeat(LogicalInput.Key.Left) || logicalInput.IsRepeat(LogicalInput.Key.A) ||
+                    logicalInput.IsRepeat(LogicalInput.Key.LB))
+                {
+                    angle = new Vector3(0f, -22.5f, 0f);
+                    transform.Rotate(angle, Space.World);
 
-                //isAnimate = true;
-                //angle = new Vector3(0f, -0.5f, 0f);
-                //count = 0;
+                    //isAnimate = true;
+                    //angle = new Vector3(0f, -0.5f, 0f);
+                    //count = 0;
+                }
             }
         }
     }

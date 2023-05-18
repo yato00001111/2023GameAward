@@ -59,6 +59,9 @@ public class UI_Dead_Gauge : MonoBehaviour
     [SerializeField]
     private bool Beat_Flag;                               // 拍のタイミングフラグ
 
+    [SerializeField]
+    private bool Before_Is_Disappear_Phase_Flag;            
+
     // Start is called before the first frame update
     void Start()
     {
@@ -90,6 +93,9 @@ public class UI_Dead_Gauge : MonoBehaviour
 
         // 拍のタイミングフラグを初期化する
         Beat_Flag = false;
+
+        //
+        Before_Is_Disappear_Phase_Flag = false;
 
         // スタートコルチン
         StartCoroutine("BeatPlay");
@@ -135,8 +141,10 @@ public class UI_Dead_Gauge : MonoBehaviour
             // 1枚目の色彩反転画像のサイズを大きくしていく
             if      (Revers_Image_Scale <  20.0f) Revers_Image_Scale += 0.25f;
             // 1枚目の色彩反転画像のサイズが最大値までいけば2枚目の色彩反転画像のサイズも大きくしていく
-            else if (Revers_Image_Scale >= 20.0f && Revers_Image_Scale2 < 15.0f) Revers_Image_Scale2 += 0.25f;
+            else if (Revers_Image_Scale >= 20.0f && Revers_Image_Scale2 < 15.0f) Revers_Image_Scale2 += 0.25f;          
         }
+
+        if(Dead_Gauge_ScaleX >= 1.0f && !Before_Is_Disappear_Phase_Flag) Before_Is_Disappear_Phase_Flag = true;
 
         // 色彩反転演出中に針の場所を移動させる
         if ((Revers_Image_Scale2 > 2.97f && Revers_Image_Scale2 < 10.1f) && !Is_Disappear_Phase_End_Flag) uI_Needles.SetNeedlePos();
@@ -178,6 +186,7 @@ public class UI_Dead_Gauge : MonoBehaviour
                 // ノルマを増やす
                 Quota_Count++;
             }
+            Before_Is_Disappear_Phase_Flag = false;
         }
 
         // trueのタイミングでfalseにする
@@ -218,4 +227,8 @@ public class UI_Dead_Gauge : MonoBehaviour
 
     // 消えるフェーズ真偽フラグ取得関数
     public bool GetIsDisappearPhaseFlag()    { return Is_Disappear_Phase_Flag; }
+
+    public bool GetBeforeIsDisappearPhaseFlag()    { return Before_Is_Disappear_Phase_Flag; }
+    public void SetBeforeIsDisappearPhaseFlag(bool flag)    { Before_Is_Disappear_Phase_Flag = flag; }
+
 }

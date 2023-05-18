@@ -10,7 +10,7 @@ public class Title : MonoBehaviour
     AudioSource audioSource;
     public AudioClip TitleSE;
 
-    private static int Tutorial = 0;
+    private static int Tutorial = 1;
 
     private void Start()
     {
