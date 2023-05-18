@@ -84,6 +84,8 @@ public class Result : MonoBehaviour
         OBJList[(int)ObjList.Wave]       = _Wave;
         OBJList[(int)ObjList.Combo]      = _Combo;
         OBJList[(int)ObjList.JustTiming] = _Just_Timing;
+
+        
     }
 
     // 更新処理
@@ -179,12 +181,13 @@ public class Result : MonoBehaviour
     {
         // 左クリックしたとき または　いずれかのボタンを押したとき
         if( 
-            Input.GetKeyDown(KeyCode.Joystick1Button0) ||
-            Input.GetKeyDown(KeyCode.Joystick1Button1) ||
-            Input.GetKeyDown(KeyCode.Joystick1Button2) ||
-            Input.GetKeyDown(KeyCode.Joystick1Button3) ||
-            Input.GetKeyDown(KeyCode.Joystick1Button4) ||
-            Input.GetKeyDown(KeyCode.Joystick1Button5)
+            //Input.GetKeyDown(KeyCode.Joystick1Button0) ||
+            //Input.GetKeyDown(KeyCode.Joystick1Button1) ||
+            //Input.GetKeyDown(KeyCode.Joystick1Button2) ||
+            //Input.GetKeyDown(KeyCode.Joystick1Button3) ||
+            //Input.GetKeyDown(KeyCode.Joystick1Button4) ||
+            //Input.GetKeyDown(KeyCode.Joystick1Button5
+            Input.anyKey
             )
         {
             // 関数の配列の中から _SkipCount の数値に応じて　呼び出し関数、<=関数の引数　を変更して関数を呼ぶ
