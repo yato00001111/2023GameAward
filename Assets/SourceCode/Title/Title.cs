@@ -28,7 +28,7 @@ public class Title : MonoBehaviour
     // パッドの入力値
     private float PadVertical;
 
-    private static int Tutorial = 0;
+    private static int Tutorial = 1;
 
     private void Start()
     {
@@ -60,7 +60,7 @@ public class Title : MonoBehaviour
 
         if (SelectActiveFlag)
         {
-            Deray -= 0.01f;
+            Deray -= 0.05f;
             if (Deray < 0.0)
             {
                 Deray = 0.0f;
@@ -94,7 +94,7 @@ public class Title : MonoBehaviour
     {
         if (OnExit)
         {
-            SelectFrame.transform.position = new Vector3(956, 220, 0);
+            SelectFrame.transform.position = new Vector3(960, 220, 0);
             if (Input.GetKeyDown(KeyCode.Return) ||
                 Input.GetKeyDown(KeyCode.Joystick1Button0))
             {
@@ -103,7 +103,7 @@ public class Title : MonoBehaviour
         }
         if (OnGameStart)
         {
-            SelectFrame.transform.position = new Vector3(956, 340, 0);
+            SelectFrame.transform.position = new Vector3(960, 340, 0);
 
             if (Input.GetKeyDown(KeyCode.Return) ||
                 Input.GetKeyDown(KeyCode.Joystick1Button0))
