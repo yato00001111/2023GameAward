@@ -44,7 +44,7 @@ public class PlayDirector : MonoBehaviour
     uint _score = 0;
     int _chainCount = -1;// 連鎖数（得点計算に必要）-1は初期化用 Magic number
 
-    bool _canSpawn = false;
+    [SerializeField] bool _canSpawn = false;
 
     // 音に合わせた操作
     // 1拍目到達通知
@@ -160,6 +160,7 @@ public class PlayDirector : MonoBehaviour
         public IState.E_State Initialize(PlayDirector parent) { return IState.E_State.Unchanged; }
         public IState.E_State Update(PlayDirector parent)
         {
+            Debug.Log("WaitingUpdate");
             return parent._canSpawn ? IState.E_State.Control : IState.E_State.Unchanged;
         }
     }
@@ -179,15 +180,17 @@ public class PlayDirector : MonoBehaviour
             parent.Spawn(parent._nextQueue.Update());
             parent._gameStart = true;
 
-            parent._stateErase = false;
+            //parent._stateErase = false;
 
             parent.UpdateNextsView();
             return IState.E_State.Unchanged;
         }
         public IState.E_State Update(PlayDirector parent)
         {
+            Debug.Log("ControlUpdate");
+
             //if(parent.PlayFlag)
-                parent._fieldController.TransUpdate(parent._logicalInput);
+            parent._fieldController.TransUpdate(parent._logicalInput);
 
             return parent.player[0].activeSelf || parent.player[1].activeSelf ? IState.E_State.Unchanged : IState.E_State.Falling;
             //return parent.player[0].activeSelf ? IState.E_State.Unchanged : IState.E_State.Waiting;
@@ -228,6 +231,8 @@ public class PlayDirector : MonoBehaviour
         }
         public IState.E_State Update(PlayDirector parent)
         {
+            Debug.Log("ErasingUpdate");
+            if (parent._canSpawn) return IState.E_State.Control;
             return parent._fieldController.Erase(parent.uiDeadGauge.GetIsDisappearPhaseFlag()) ? IState.E_State.Unchanged : IState.E_State.Falling;
         }
     }
@@ -349,7 +354,7 @@ public class PlayDirector : MonoBehaviour
         ui_NextBlock_Direction.ResetNextBlockAnimation();
         //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
         //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
-        return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[1], position) ;
+        return _playerController[0].Spawn((BlockType)1, (BlockType)2, position) ;
     }
 
     void SetScore(uint score)
@@ -375,6 +380,11 @@ public class PlayDirector : MonoBehaviour
     public int GetQuotaCount()
     {
         return QuotaCount;
+    } 
+    
+    public void SetStateErase(bool erase)
+    {
+        _stateErase = erase;
     }
 
     public void EnableSpawn(bool enable)

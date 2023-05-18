@@ -391,8 +391,7 @@ public class UI_Needles : MonoBehaviour
             Save_AngleZ = Save_AngleZ - 360.0f;
             // 消えるフェーズの360回転の終了フラグを立てる
             Disappear_Roatet_End_Flag = true;
-            // 角度番号リセット
-            Needle_Gauge_Number = 0;
+            
         }
     }
 
@@ -454,5 +453,13 @@ public class UI_Needles : MonoBehaviour
     }
 
     // 消えるフェーズフラグをリセットする
-    public void ResetDisappearPhaseFlag() { _Disappear_Phase_Flag = false; }
+    public void ResetDisappearPhaseFlag() { 
+        _Disappear_Phase_Flag = false;
+        // 角度番号リセット
+        Needle_Gauge_Number = 0;
+
+        playDirector.EnableSpawn(true);
+
+    }
+
 }

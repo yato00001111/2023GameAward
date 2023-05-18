@@ -286,7 +286,7 @@ public class PlayerController : MonoBehaviour
                 if (Translate(false)) return;
             }
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Joystick1Button2))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
             if (playDirector.GetPlayFlag())
                 ChangeColor();
@@ -294,7 +294,7 @@ public class PlayerController : MonoBehaviour
 
         if (isQuick) return;
         // クイックドロップのキー入力取得
-        if (_logicalInput.IsTrigger(LogicalInput.Key.QuickDrop) || _logicalInput.IsTrigger(LogicalInput.Key.JoyA))
+        if (_logicalInput.IsTrigger(LogicalInput.Key.Down) || _logicalInput.IsTrigger(LogicalInput.Key.JoyA))
         {
             if (playDirector.GetPlayFlag())
                 QuickDrop();

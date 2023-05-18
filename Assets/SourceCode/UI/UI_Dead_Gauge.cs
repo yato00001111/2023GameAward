@@ -60,7 +60,10 @@ public class UI_Dead_Gauge : MonoBehaviour
     private bool Beat_Flag;                               // 拍のタイミングフラグ
 
     [SerializeField]
-    private bool Before_Is_Disappear_Phase_Flag;            
+    private bool Before_Is_Disappear_Phase_Flag;
+
+    [SerializeField]
+    private PlayDirector playDirector;
 
     // Start is called before the first frame update
     void Start()
@@ -187,6 +190,7 @@ public class UI_Dead_Gauge : MonoBehaviour
                 Quota_Count++;
             }
             Before_Is_Disappear_Phase_Flag = false;
+            playDirector.SetStateErase(false);
         }
 
         // trueのタイミングでfalseにする
