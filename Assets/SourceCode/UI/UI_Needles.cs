@@ -82,7 +82,11 @@ public class UI_Needles : MonoBehaviour
 
     [SerializeField] UI_Rythm_Effect uiRythmEffect = default!;
 
+    [SerializeField]
+    private int justTiming;                   // リザルト画面に渡す
+
     bool beat;
+    bool TriggerFlag;                                   // トリガーの長押しを効かなくする用
 
     // Start is called before the first frame update
     void Start()
@@ -149,6 +153,10 @@ public class UI_Needles : MonoBehaviour
 
         // 消えるフェーズの360回転の終了フラグを初期化する
         Disappear_Roatet_End_Flag = false;
+
+        justTiming = 0;
+
+        TriggerFlag = false;
 
         // スタートコルチン
         StartCoroutine("BeatPlay");
@@ -269,12 +277,16 @@ public class UI_Needles : MonoBehaviour
         //***<< 操作成功 or 操作失敗　の演出>>***//
         //***************************************//
         float TrigerInput = Input.GetAxisRaw("Trigger");
+        if (TriggerFlag)
+        {
+            if (TrigerInput == 0) TriggerFlag = false;
+        }
 
         // "成功"
         if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (playDirector.GetPlayFlag())
-            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Joystick1Button2) || Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.Joystick1Button5) || TrigerInput < 0.0f || TrigerInput > 0.0f
+            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Joystick1Button2) || Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.Joystick1Button5) || (TrigerInput < 0.0f && !TriggerFlag )|| (TrigerInput > 0.0f && !TriggerFlag)
             || /*確認用*/ Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.DownArrow)
-            || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow)))
+            || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D)))
         {
             // 操作成功にする
             Succeed_Flag = true;
@@ -290,10 +302,12 @@ public class UI_Needles : MonoBehaviour
             //
             uiRythmEffect.PlayEffect(true);
 
+            justTiming++;
+            TriggerFlag = true;
         }
         // "失敗"
         else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (!playDirector.GetPlayFlag())
-            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Joystick1Button2) || Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.Joystick1Button5) || TrigerInput < 0.0f || TrigerInput > 0.0f || /*確認用*/ Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.DownArrow)
+            && (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Joystick1Button2) || Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.Joystick1Button5) || (TrigerInput < 0.0f && !TriggerFlag) || (TrigerInput > 0.0f && !TriggerFlag) || /*確認用*/ Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.DownArrow)
             || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow)))
         {
             Rhythm_Gauge_Image_OBJ[0].SetActive(false);
@@ -301,9 +315,10 @@ public class UI_Needles : MonoBehaviour
             Rhythm_Gauge_Image_OBJ[2].SetActive(false);
 
             uiRythmEffect.PlayEffect(false);
+            TriggerFlag = true;
         }
         // キー入力が離れたら色を元に戻す
-        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyUp(KeyCode.Joystick1Button2) || Input.GetKeyUp(KeyCode.Joystick1Button4) || Input.GetKeyUp(KeyCode.Joystick1Button5) || TrigerInput == 0.0f || /*確認用*/ Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.DownArrow)
+        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyUp(KeyCode.Joystick1Button2) || Input.GetKeyUp(KeyCode.Joystick1Button4) || Input.GetKeyUp(KeyCode.Joystick1Button5) || TrigerInput == 0.0f || /*確認用*/ Input.GetKeyUp(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.DownArrow)
             || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.UpArrow)) 
         {
             Rhythm_Gauge_Image_OBJ[0].SetActive(true);
@@ -462,4 +477,8 @@ public class UI_Needles : MonoBehaviour
 
     }
 
+    public int GetJustTiming()
+    {
+        return justTiming;
+    }
 }

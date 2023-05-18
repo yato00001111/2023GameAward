@@ -41,8 +41,10 @@ public class PlayDirector : MonoBehaviour
     // 得点
     [SerializeField] TextMeshProUGUI textScore = default!;
     [SerializeField] TextMeshProUGUI chainScore = default!;
-    uint _score = 0;
-    int _chainCount = -1;// 連鎖数（得点計算に必要）-1は初期化用 Magic number
+
+    // Resultに引継ぎ
+    public static uint _score = 0;
+    public static int _chainCount = -1;// 連鎖数（得点計算に必要）-1は初期化用 Magic number
 
     [SerializeField] bool _canSpawn = false;
 
@@ -222,11 +224,11 @@ public class PlayDirector : MonoBehaviour
             parent._fieldController.CheckDead();
             if (parent.player[0].activeSelf) parent.player[0].SetActive(false);
             // CheckErase-消えるブロックがあればtrue
-            if (parent._fieldController.CheckErase(parent._chainCount++))
+            if (parent._fieldController.CheckErase(PlayDirector._chainCount++))
             {
                 return parent._stateErase ? IState.E_State.Unchanged : IState.E_State.Control;// 消すアニメーションに突入
             }
-            parent._chainCount = 0;// 連鎖が途切れた
+            PlayDirector._chainCount = 0;// 連鎖が途切れた
             return parent._canSpawn ? IState.E_State.Control : IState.E_State.Waiting;// 消すものはない
         }
         public IState.E_State Update(PlayDirector parent)

@@ -83,6 +83,6 @@ public class Number : MonoBehaviour
     // •\¦‚·‚é’l‚Ìİ’è
     public void SetNumber(int value)
     {
-        _NowNum = value;
+        _Num = value;
     }
 }

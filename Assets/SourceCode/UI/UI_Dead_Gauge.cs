@@ -65,6 +65,8 @@ public class UI_Dead_Gauge : MonoBehaviour
     [SerializeField]
     private PlayDirector playDirector;
 
+    private const int normaSpeed = 8;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -131,7 +133,7 @@ public class UI_Dead_Gauge : MonoBehaviour
         uI_Objective_Quota.SetObjectiveQuota(Quota_Count);
 
         // 8回拍が来るたびにスケールを1段階増やす & 消えるフェーズになるまで
-        if ((Beat_Flag && (Clap_Count - Start_Count) % 2 == 0) && !Is_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Dead_Gauge_ScaleX < 1.0f)   
+        if ((Beat_Flag && (Clap_Count - Start_Count) % normaSpeed == 0) && !Is_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Dead_Gauge_ScaleX < 1.0f)   
         {
             // 演出
             DOTween

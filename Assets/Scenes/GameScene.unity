@@ -541,6 +541,7 @@ MonoBehaviour:
   Disappear_Roatet_End_Flag: 0
   playDirector: {fileID: 1731863634}
   uiRythmEffect: {fileID: 1850059153}
+  justTiming: 0
 --- !u!114 &78027280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -824,6 +825,8 @@ MonoBehaviour:
   gameObjectCanvas: {fileID: 1447695056}
   playDirector: {fileID: 1731863634}
   uiCountDown: {fileID: 1606327072}
+  uiObjectiveQuota: {fileID: 1395634671}
+  uiNeedles: {fileID: 78027279}
   se_gameover: {fileID: 8300000, guid: 054d7099fd6a8b941b759fbddc0c3ed7, type: 3}
 --- !u!4 &86986319
 Transform:
@@ -962,7 +965,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 92808190}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -971,7 +974,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 848, y: -435}
+  m_AnchoredPosition: {x: 692, y: -435}
   m_SizeDelta: {x: 138.5, y: 136}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &92808192
@@ -1721,7 +1724,7 @@ PrefabInstance:
     - target: {fileID: 3744586902825878552, guid: f8eb5cc320dec6a48a4a9bb9a0c71bcf,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.384075
+      value: -2.32
       objectReference: {fileID: 0}
     - target: {fileID: 3744586902825878552, guid: f8eb5cc320dec6a48a4a9bb9a0c71bcf,
         type: 3}

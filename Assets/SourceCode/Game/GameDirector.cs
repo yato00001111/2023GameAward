@@ -10,7 +10,12 @@ public class GameDirector : MonoBehaviour
     [SerializeField] GameObject gameObjectCanvas = default!;
     [SerializeField] PlayDirector playDirector = default!;
     [SerializeField] UI_CountDown uiCountDown = default!;
+    [SerializeField] UI_Objective_Quota uiObjectiveQuota = default!;
+    [SerializeField] UI_Needles uiNeedles = default!;
     GameObject _message = null;
+
+    public static int normaClear;
+    public static int justTiming;
 
     //SE
     AudioSource audioSource;
@@ -37,6 +42,8 @@ public class GameDirector : MonoBehaviour
         IsFadeOut = true;
         FadeDeltaTime = 0;
         StartCoroutine("GameFlow");
+        normaClear = 0;
+        justTiming = 0;
     }
 
     private IEnumerator GameFlow()
@@ -59,6 +66,7 @@ public class GameDirector : MonoBehaviour
             yield return null;
         }
 
+        yield return new WaitForSeconds(1.0f);
 
         CreateMessage("Game Over");
         audioSource.PlayOneShot(se_gameover);
@@ -73,12 +81,15 @@ public class GameDirector : MonoBehaviour
             audioSource.volume = (float)(FadeDeltaTime / FadeOutSeconds);
         }
 
-        while (!Input.anyKey)// ‰½‚©‰Ÿ‚·‚Ì‚ð‘Ò‚Â
-        {
-            yield return null;
-        }
+        normaClear = uiObjectiveQuota.GetObjectiveQuota() - 1;
+        justTiming = uiNeedles.GetJustTiming();
 
-        yield return new WaitForSeconds(1.0f);
-        SceneManager.LoadScene("Title");
+        //while (!Input.anyKey)// ‰½‚©‰Ÿ‚·‚Ì‚ð‘Ò‚Â
+        //{
+        //    yield return null;
+        //}
+
+        yield return new WaitForSeconds(2.0f);
+        SceneManager.LoadScene("ResultScene");
     }
 }

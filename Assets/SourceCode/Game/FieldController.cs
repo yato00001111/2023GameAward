@@ -81,6 +81,8 @@ public class FieldController : MonoBehaviour
     public AudioClip se_kaiten;
     private bool isKaiten = false;
 
+    private bool TriggerFlag;
+
     int needleX;
     int tempType;
     private void ClearAll()
@@ -117,6 +119,7 @@ public class FieldController : MonoBehaviour
         _normaCount = 0;
         needleX = -1;
         tempType = 0;
+        TriggerFlag = false;
 
         // 全マスに置く
         //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
@@ -646,26 +649,38 @@ public class FieldController : MonoBehaviour
 
 
         float TrigerInput = Input.GetAxisRaw("Trigger");
+        if(TriggerFlag)
+        {
+            if(TrigerInput == 0) TriggerFlag = false;
+        }
 
         if (!isHalfTransR && !isHalfTransL)
         {
-            if (Input.GetKeyDown(KeyCode.D) || TrigerInput > 0.0f)
+            if (Input.GetKeyDown(KeyCode.D) || (TrigerInput > 0.0f && !TriggerFlag))
             {
-                for (int i = 0; i < 2; i++)
+                if (playDirector.GetPlayFlag())
                 {
-                    _playerController[i].SetisHalfTrans(true);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        _playerController[i].SetisHalfTrans(true);
+                    }
+                    isHalfTransR = true;
+                    TriggerFlag = true;
+                    return;
                 }
-                isHalfTransR = true;
-                return;
             }
-            if (Input.GetKeyDown(KeyCode.A) || TrigerInput < 0.0f)
+            if (Input.GetKeyDown(KeyCode.A) || (TrigerInput < 0.0f && !TriggerFlag))
             {
-                for (int i = 0; i < 2; i++)
+                if (playDirector.GetPlayFlag())
                 {
-                    _playerController[i].SetisHalfTrans(true);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        _playerController[i].SetisHalfTrans(true);
+                    }
+                    isHalfTransL = true;
+                    TriggerFlag = true;
+                    return;
                 }
-                isHalfTransL = true;
-                return;
             }
             // 平行移動のキー入力取得
             if (_logicalInput.IsTrigger(LogicalInput.Key.Right) ||

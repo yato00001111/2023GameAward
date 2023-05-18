@@ -84,6 +84,8 @@ public class Result : MonoBehaviour
         OBJList[(int)ObjList.Wave]       = _Wave;
         OBJList[(int)ObjList.Combo]      = _Combo;
         OBJList[(int)ObjList.JustTiming] = _Just_Timing;
+
+        SetResultNumber((int)PlayDirector._score, GameDirector.normaClear, PlayDirector._chainCount, GameDirector.justTiming);
     }
 
     // XVˆ—
@@ -232,9 +234,9 @@ public class Result : MonoBehaviour
     // İ’èŠÖ”
     public void SetResultNumber(int FinalScore, int Wave, int  Combo, int Just_Timing)
     {
-        _Score.transform.GetComponent<Number>().SetNumber(FinalScore);
-        _Wave.transform.GetComponent<Number>().SetNumber(Wave);
-        _Combo.transform.GetComponent<Number>().SetNumber(Combo);
-        _Just_Timing.transform.GetComponent<Number>().SetNumber(Just_Timing);
+        _Score.transform.GetChild(1).GetComponent<Number>().SetNumber(FinalScore);
+        _Wave.transform.GetChild(1).GetComponent<Number>().SetNumber(Wave);
+        _Combo.transform.GetChild(1).GetComponent<Number>().SetNumber(Combo);
+        _Just_Timing.transform.GetChild(1).GetComponent<Number>().SetNumber(Just_Timing);
     }
 }

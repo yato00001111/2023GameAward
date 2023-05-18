@@ -97,13 +97,14 @@ public class sphereController : MonoBehaviour
         //        //count = 0;
         //    }
         //}
+        float TrigerInput = Input.GetAxisRaw("Trigger");
 
-        if(_fieldController.GetControl())
+        if (_fieldController.GetControl())
         {
             if(_playDirector.GetPlayFlag())
             {
-                if (logicalInput.IsRepeat(LogicalInput.Key.Right) || logicalInput.IsRepeat(LogicalInput.Key.D) ||
-                    logicalInput.IsRepeat(LogicalInput.Key.RB))
+                if (logicalInput.IsTrigger(LogicalInput.Key.Right) || logicalInput.IsTrigger(LogicalInput.Key.D) ||
+                    logicalInput.IsTrigger(LogicalInput.Key.RB) || TrigerInput > 0.0f)
                 {
                     angle = new Vector3(0f, 22.5f, 0f);
                     transform.Rotate(angle, Space.World);
@@ -112,8 +113,8 @@ public class sphereController : MonoBehaviour
                     //angle = new Vector3(0f, 0.5f, 0f);
                     //count = 0;
                 }
-                if (logicalInput.IsRepeat(LogicalInput.Key.Left) || logicalInput.IsRepeat(LogicalInput.Key.A) ||
-                    logicalInput.IsRepeat(LogicalInput.Key.LB))
+                if (logicalInput.IsTrigger(LogicalInput.Key.Left) || logicalInput.IsTrigger(LogicalInput.Key.A) ||
+                    logicalInput.IsTrigger(LogicalInput.Key.LB) || TrigerInput > 0.0f)
                 {
                     angle = new Vector3(0f, -22.5f, 0f);
                     transform.Rotate(angle, Space.World);
