@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.UI;
 
 public class Result : MonoBehaviour
 {
@@ -56,21 +57,21 @@ public class Result : MonoBehaviour
     // タイマー
     private float _Timer = 0f;
 
-    // 入力遅延タイマー
-    [SerializeField]
-    private float _lateTimer = 0f;
-
     // プレイヤーの入力取得
     [SerializeField, HideInInspector]
     KeyCode PlayerInput = 0;
 
     // ボタン押下フラグ
     [SerializeField]
-    private bool PushFlg = false;
+    private bool PushFlg = true;
 
     // スキップ関数配列
     public delegate void Delegate(GameObject gameObject);
     Delegate[] SkipFunctions = new Delegate[2];
+
+    //透明度を動的に動かすImage
+    [SerializeField, HideInInspector]
+    GameObject MoveAlphaImage = null;
 
     // 初期化
     public void Start()
@@ -85,7 +86,11 @@ public class Result : MonoBehaviour
         OBJList[(int)ObjList.Combo]      = _Combo;
         OBJList[(int)ObjList.JustTiming] = _Just_Timing;
 
-        
+        // 各々の初期化
+        _Timer = 0f;
+        PlayerInput = 0;
+        PushFlg = true;
+        MoveAlphaImage = null;
     }
 
     // 更新処理
@@ -128,14 +133,9 @@ public class Result : MonoBehaviour
             _Just_Timing.transform.GetChild(1).GetComponent<Number>().GetEndCount()
             )
         {
-            // 遷移ボタン表示
-            RetryButton.SetActive(true);
-            TitleButton.SetActive(true);
-
-            if (_lateTimer > 3f)
-            {
-                PushFlg = true;
-            }
+            // ボタンアニメーション
+            RetryButton.GetComponent<Animator>().SetBool("StartButtonAnimation", true);
+            TitleButton.GetComponent<Animator>().SetBool("StartButtonAnimation", true);
 
             // Aボタン(Retry)が押されたら
             if (Input.GetKeyDown(KeyCode.Joystick1Button0) && PushFlg)
@@ -143,7 +143,13 @@ public class Result : MonoBehaviour
                 // 一度だけの制御
                 PushFlg = false;
 
+                MoveAlphaImage = RetryButton;
+
                 PlayerInput = KeyCode.Joystick1Button0;
+
+                // ボタンアニメーション
+                RetryButton.GetComponent<Animator>().SetBool("EndButtonAnimation", true);
+                TitleButton.GetComponent<Animator>().SetBool("EndButtonAnimation", true);
 
                 // 遷移アニメーション再生
                 _transition.Start_OUTanimation();
@@ -155,13 +161,17 @@ public class Result : MonoBehaviour
                 // 一度だけの制御
                 PushFlg = false;
 
+                MoveAlphaImage = TitleButton;
+
                 PlayerInput = KeyCode.Joystick1Button1;
+
+                // ボタンアニメーション
+                RetryButton.GetComponent<Animator>().SetBool("EndButtonAnimation", true);
+                TitleButton.GetComponent<Animator>().SetBool("EndButtonAnimation", true);
 
                 // 遷移アニメーション再生
                 _transition.Start_OUTanimation();
             }
-
-            _lateTimer += Time.deltaTime;
         }
 
         // 遷移アニメーションが終わったら
@@ -174,6 +184,14 @@ public class Result : MonoBehaviour
             if (PlayerInput == KeyCode.Joystick1Button1)
                 SceneManager.LoadScene("Title");
         }
+
+        // MoveAlphaImageがあったら
+        if (MoveAlphaImage != null)
+        {
+            var image = MoveAlphaImage.transform.GetChild(0).GetComponent<Image>().color;
+            MoveAlphaImage.transform.GetChild(0).GetComponent<Image>().color = new Color(image.r, image.g, image.b, (Mathf.Sin(20 * Time.time) + 1) / 2.0f);
+        }
+
     }
 
     // スキップ処理
