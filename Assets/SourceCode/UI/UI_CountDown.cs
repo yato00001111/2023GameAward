@@ -21,6 +21,10 @@ public class UI_CountDown : MonoBehaviour
     [SerializeField]                               
     public float currentTime;                      // 現在のカウントダウンアニメーションの再生時間
 
+    [SerializeField]
+    private bool Tutorial_Start_Flag;              // チュートリアル開始フラグ
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +34,8 @@ public class UI_CountDown : MonoBehaviour
         Animation_Start_Count = 0;
         // ゲーム開始フラグを初期化する
         Game_Start_Flag = false;
+
+        Tutorial_Start_Flag = false;
     }
 
     // Update is called once per frame
@@ -52,8 +58,11 @@ public class UI_CountDown : MonoBehaviour
 
         // アニメーション再生時間が1になればゲーム開始フラグを立てる
         if (currentTime >= CountDown_AnimationClip.length) Game_Start_Flag = true;
+        if(Tutorial_Start_Flag) Game_Start_Flag = true;
     }
 
     // ゲーム開始フラグを取得関数
     public bool GetGameStartFlag() { return Game_Start_Flag; }
+
+    public void SetTutorialStartFlag(bool flag) { Tutorial_Start_Flag = flag; }
 }

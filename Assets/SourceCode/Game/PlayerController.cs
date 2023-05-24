@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     const int FALL_COUNT_UNIT = 120; // ひとマス落下するカウント数
     [SerializeField] float FALL_COUNT_SPD = 5; // 落下速度
     const int FALL_COUNT_FAST_SPD = 13; // 高速落下時の速度
-    const int GROUND_FRAMES = 15; // 接地移動可能時間
+    const int GROUND_FRAMES = 5; // 接地移動可能時間
 
     float _fallCount = 0;
     int _groundFrame = GROUND_FRAMES;// 接地時間
@@ -23,7 +23,8 @@ public class PlayerController : MonoBehaviour
     bool is0_15 = false;
     bool is15_0 = false;
 
-    private bool isPause = false;
+    [SerializeField] private bool isPause = false;
+    [SerializeField] private bool isFall = false;
     private bool isQuick = false;
 
     [SerializeField] FieldController fieldController = default!;
@@ -53,6 +54,7 @@ public class PlayerController : MonoBehaviour
         is0_15 = false;
         is15_0 = false;
         isPause = false;
+        isFall = true;
         isQuick = false;
         isTransR = false;
         isTransL = false;
@@ -214,6 +216,7 @@ public class PlayerController : MonoBehaviour
 
     bool Fall(bool is_fast)
     {
+        if (!isFall) return true;
         //_fallCount -= is_fast ? FALL_COUNT_FAST_SPD : FALL_COUNT_SPD;
         _fallCount -= FALL_COUNT_SPD;
 
@@ -373,6 +376,11 @@ public class PlayerController : MonoBehaviour
     public void SetPlayerPause(bool pause)
     {
         isPause = pause;
+    }
+    
+    public void SetisFall(bool fall)
+    {
+        isFall = fall;
     }
 
     public void SetPlayerQuick(bool quick)

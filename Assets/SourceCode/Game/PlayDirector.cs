@@ -44,7 +44,7 @@ public class PlayDirector : MonoBehaviour
 
     // Resultに引継ぎ
     public static uint _score = 0;
-    public static int _chainCount = -1;// 連鎖数（得点計算に必要）-1は初期化用 Magic number
+    public static int _chainCount = 0;// 連鎖数（得点計算に必要）-1は初期化用 Magic number
 
     [SerializeField] bool _canSpawn = false;
 
@@ -64,6 +64,9 @@ public class PlayDirector : MonoBehaviour
     [SerializeField] private bool _stateErase;
 
     [SerializeField] private int QuotaCount;
+
+    [SerializeField] private bool isTutorial;
+    [SerializeField] private bool tutorialControlA;
 
     private bool _gameStart;
     private bool _gameOver;
@@ -116,6 +119,9 @@ public class PlayDirector : MonoBehaviour
         _gameOver = false;
 
         QuotaCount = 0;
+
+        tutorialControlA = false;
+        isTutorial = false;
 
         StartCoroutine("BeatPlay");
     }
@@ -221,6 +227,12 @@ public class PlayDirector : MonoBehaviour
     {
         public IState.E_State Initialize(PlayDirector parent)
         {
+            Debug.Log("ErasingInitialize");
+
+            if (parent.isTutorial)
+            {
+                if (parent._fieldController.TutorialCheck_8()) parent.tutorialControlA = true;
+            }
             parent._fieldController.CheckDead();
             if (parent.player[0].activeSelf) parent.player[0].SetActive(false);
             // CheckErase-消えるブロックがあればtrue
@@ -315,11 +327,6 @@ public class PlayDirector : MonoBehaviour
             if (count == 0)
             {
                 PlayFlag = false;
-                if (PenaltyFlag)
-                {
-                    PlayFlag = true;
-                    PenaltyCount++;
-                }
             }
             yield return new WaitForFixedUpdate();
             // 0.02秒後
@@ -327,15 +334,20 @@ public class PlayDirector : MonoBehaviour
             if (count == 10)
             {
                 PlayFlag = true;
+                if (PenaltyFlag)
+                {
+                    PlayFlag = false;
+                    PenaltyCount++;
+                }
             }
             if (count == 20)
             {
                 PlayFlag = false;
-                if (PenaltyFlag)
-                {
-                    PlayFlag = true;
-                    PenaltyCount++;
-                }
+                //if (PenaltyFlag)
+                //{
+                //    PlayFlag = true;
+                //    PenaltyCount++;
+                //}
             }
             if (count == 30)
             {
@@ -357,12 +369,11 @@ public class PlayDirector : MonoBehaviour
                 PenaltyFlag = true;
             }
         }
-        if (PenaltyCount ==2)
+        if (PenaltyCount ==1)
         {
             PenaltyFlag = false;
             PenaltyCount = 0;
         }
-
         // 入力を取り込む
         UpdateInput();
 
@@ -374,7 +385,7 @@ public class PlayDirector : MonoBehaviour
         AddScore(_playerController[0].popScore());
         AddScore(_playerController[1].popScore());
         AddScore(_fieldController.popScore());
-        QuotaCount = _fieldController._eraseCount / 3;
+        QuotaCount = _fieldController._normaCount;
         SetChainScore(_fieldController._eraseCount / 3);
     }
 
@@ -385,6 +396,7 @@ public class PlayDirector : MonoBehaviour
         ui_NextBlock_Direction.ResetNextBlockAnimation();
         //return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[0], position) && 
         //    _playerController[1].Spawn((BlockType)next[1], (BlockType)next[1], new Vector2Int(position.x, position.y - 3));
+        if(isTutorial) return _playerController[0].Spawn((BlockType)1, (BlockType)1, position);
         return _playerController[0].Spawn((BlockType)next[0], (BlockType)next[1], position) ;
     }
 
@@ -413,6 +425,20 @@ public class PlayDirector : MonoBehaviour
         return QuotaCount;
     } 
     
+    public bool GetTutorialControlA()
+    {
+        return tutorialControlA;
+    }
+    
+    public bool GetisTutorial()
+    {
+        return isTutorial;
+    }
+    public void SetisTutorial(bool flag)
+    {
+        isTutorial = flag;
+    }
+
     public void SetStateErase(bool erase)
     {
         _stateErase = erase;

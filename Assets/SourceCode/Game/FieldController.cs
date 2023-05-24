@@ -71,7 +71,7 @@ public class FieldController : MonoBehaviour
     bool isHalfTransL;
 
     //　ノルマ
-    [SerializeField] public int _normaCount;
+    public int _normaCount;
 
     //SE
     AudioSource audioSource;
@@ -82,6 +82,9 @@ public class FieldController : MonoBehaviour
     private bool isKaiten = false;
 
     private bool TriggerFlag;
+
+    // Tutorial
+    [SerializeField] private int _tutorialTransCount;
 
     int needleX;
     int tempType;
@@ -120,6 +123,7 @@ public class FieldController : MonoBehaviour
         needleX = -1;
         tempType = 0;
         TriggerFlag = false;
+        _tutorialTransCount = 0;
 
         // 全マスに置く
         //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
@@ -420,8 +424,11 @@ public class FieldController : MonoBehaviour
 
             if (puyoCount == 0) _additiveScore += 1800;// 全消しボーナス
         }
-        _eraseCount = _erases.Count;
-        if(_eraseCount != 0) _normaCount = _eraseCount / 3;
+        if (_eraseCount != _erases.Count / 3)
+        {
+            _normaCount++;
+        }
+        _eraseCount = _erases.Count / 3;
         return _erases.Count != 0;
     }
 
@@ -512,7 +519,7 @@ public class FieldController : MonoBehaviour
         _board[y, x] = 0;
     }
 
-    // 9段目にブロックが存在しているか
+    // 9段目以上にブロックが存在しているか
     public void CheckDead()
     {
         for (int y = 8; y < BOARD_HEIGHT; y++)
@@ -524,6 +531,20 @@ public class FieldController : MonoBehaviour
 
             }
         }
+    }
+
+    // 8段目にブロックが存在しているか
+    public bool TutorialCheck_8()
+    {
+        Debug.Log("TutorialCheck_8");
+
+        int y = 7;
+        for (int x = 0; x < BOARD_WIDTH; x++)
+        {
+            if (_board[y, x] == 0) continue;
+            return true;
+        }
+        return false;
     }
 
     public void EraseBlockSound()
@@ -609,6 +630,12 @@ public class FieldController : MonoBehaviour
             //audioSource.PlayOneShot(se_kaiten);
             isKaiten = true;
         }
+
+        if(playDirector.GetisTutorial())
+        {
+            _tutorialTransCount++;
+        }
+
         return true;
     }
 
@@ -795,6 +822,11 @@ public class FieldController : MonoBehaviour
     public bool GetControl()
     {
         return isControl;
+    }
+    
+    public int GetTutorialTransCount()
+    {
+        return _tutorialTransCount;
     }
 
     public void SetTutorial()

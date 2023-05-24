@@ -11,6 +11,7 @@ public class TutorialDirector : MonoBehaviour
     [SerializeField] PlayerController _playerController = default!;
     [SerializeField] FieldController _fieldController = default!;
     [SerializeField] PlayDirector _playDirector = default!;
+    [SerializeField] UI_CountDown _uiCountDown = default!;
     GameObject _message = null;
 
     // チュートリアル表示オブジェクトのスクリプト(仮)
@@ -35,7 +36,7 @@ public class TutorialDirector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        StartCoroutine("TutorialFlow");
     }
 
     private IEnumerator TutorialFlow()
@@ -84,20 +85,52 @@ public class TutorialDirector : MonoBehaviour
 
         //yield return new WaitForSeconds(3.5f);
 
-        // チュートリアルが終わったら
-        transition.SetTrigger("OUT_Animation");
+        yield return new WaitForSeconds(1.5f);
 
-        yield return new WaitForSeconds(3.5f);
+        _uiCountDown.SetTutorialStartFlag(true);
+        _playDirector.SetisTutorial(true);
 
-        SceneManager.LoadScene("GameScene");
+        while (!_uiCountDown.GetGameStartFlag())
+        {
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1.0f);
+
+        _playDirector.EnableSpawn(true);// プレイ開始
+        yield return new WaitForSeconds(1.0f);
+
+        _fieldController.SetControl(false); //ブロック回転禁止
+        _playerController.SetisFall(false); //プレイヤー落下停止
+
+        while (_playDirector.GetTutorialControlA() == false) //ブロックを4回積むまで待機
+        {
+            yield return null;
+        }
+
+        _fieldController.SetControl(true); //ブロック回転許可
+
+        while (_fieldController.GetTutorialTransCount() != 4) //ブロックを4回回転させるまでまで待機
+        {
+            yield return null;
+        }
+
+        Debug.Log("TutorialFlow");
+
+        //// チュートリアルが終わったら
+        //transition.SetTrigger("OUT_Animation");
+
+        //yield return new WaitForSeconds(3.5f);
+
+        //SceneManager.LoadScene("GameScene");
     }
 
     private void Update()
     {
-        // チュートリアルが終わったら
-        if (exampleTutorial.GetEndTutorial())
-        {
-            StartCoroutine("TutorialFlow");
-        }
+        //// チュートリアルが終わったら
+        //if (exampleTutorial.GetEndTutorial())
+        //{
+        //    StartCoroutine("TutorialFlow");
+        //}
     }
 }

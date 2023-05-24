@@ -28,7 +28,7 @@ public class Title : MonoBehaviour
     // パッドの入力値
     private float PadVertical;
 
-    private static int Tutorial = 1;
+    private static int Tutorial = 0;
 
     private void Start()
     {

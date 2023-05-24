@@ -65,6 +65,9 @@ public class UI_Dead_Gauge : MonoBehaviour
     [SerializeField]
     private PlayDirector playDirector;
 
+    [SerializeField]
+    private FieldController _fieldController;
+
     private const int normaSpeed = 8;
 
     // Start is called before the first frame update
@@ -188,6 +191,9 @@ public class UI_Dead_Gauge : MonoBehaviour
                 Is_Disappear_Phase_End_Flag = false;
                 // タイマーリセット
                 ElapsedTime = 0.0f;
+
+                _fieldController._normaCount -= (Quota_Count);
+
                 // ノルマを増やす
                 Quota_Count++;
             }
