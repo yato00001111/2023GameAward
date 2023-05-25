@@ -54,6 +54,8 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
     [SerializeField]
     private float ElapsedTime;                            // 死亡ゲージの拡大経過時間
 
+    private const float Stepalpha = 0.2f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -98,7 +100,7 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
 
         // ステップ画像を初期化する
         Step_Image[0].enabled = Step_Image[1].enabled = Step_Image[2].enabled = Step_Image[3].enabled = false;
-        Step_Image[0].color   = Step_Image[1].color   = Step_Image[2].color   = Step_Image[3].color   = new Vector4(1, 1, 1, 0.5f);
+        Step_Image[0].color   = Step_Image[1].color   = Step_Image[2].color   = Step_Image[3].color   = new Vector4(1, 1, 1, Stepalpha);
     }
 
 
@@ -131,7 +133,7 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
                 //SetStepImage(0);
 
                 // XBoxコントローラーの"A"ボタンが押された
-                if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)) && !Input_Stop_Flag[0] && !Input_Stop_Flag[1])
+                if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.Return)) && !Input_Stop_Flag[0] && !Input_Stop_Flag[1])
                 {
                     // チュートリアル01画像を非表示にする
                     Tutorial_Content_01_Image.enabled = false;
@@ -139,13 +141,13 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
                     Tutorial_Content_02_Image.enabled = true;
                 }
                 // XBoxコントローラーの"A"ボタンが離された
-                else if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/   Input.GetKeyUp(KeyCode.A)) && !Input_Stop_Flag[0] && !Input_Stop_Flag[1])
+                else if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/   Input.GetKeyUp(KeyCode.Return)) && !Input_Stop_Flag[0] && !Input_Stop_Flag[1])
                 {
                     // クリック制御
                     Input_Stop_Flag[0] = true;
                 }
                 // XBoxコントローラーの"A"ボタンが押された
-                else if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/  Input.GetKeyDown(KeyCode.A)) && Input_Stop_Flag[0] && !Input_Stop_Flag[1])
+                else if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/  Input.GetKeyDown(KeyCode.Return)) && Input_Stop_Flag[0] && !Input_Stop_Flag[1])
                 {
                     // チュートリアル02画像を非表示にする
                     Tutorial_Content_02_Image.enabled = false;
@@ -153,13 +155,13 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
                     Tutorial_Content_03_Image.enabled = true;
                 }
                 // XBoxコントローラーの"A"ボタンが離された
-                else if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/  Input.GetKeyUp(KeyCode.A)) && Input_Stop_Flag[0] && !Input_Stop_Flag[1])
+                else if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || /*確認用*/  Input.GetKeyUp(KeyCode.Return)) && Input_Stop_Flag[0] && !Input_Stop_Flag[1])
                 {
                     // クリック制御
                     Input_Stop_Flag[1] = true;
                 }
                 // XBoxコントローラーの"A"ボタンが押された
-                else if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)) && Input_Stop_Flag[0] && Input_Stop_Flag[1])
+                else if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.Return)) && Input_Stop_Flag[0] && Input_Stop_Flag[1])
                 {
                     // 説明を終了する
                     Explanation_End_Flag = true;
@@ -271,7 +273,7 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
             for (int index = 0; index < 4; ++index)
             {
                 // 念のため半透明にしておく
-                Step_Image[index].color = new Vector4(1, 1, 1, 0.5f);
+                Step_Image[index].color = new Vector4(1, 1, 1, Stepalpha);
                 // 非表示にする
                 Step_Image[index].enabled = false;
             }
@@ -287,31 +289,31 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
         // 指定のステップまで描画する
         if      (Num == 0) 
         {
-            Step_Image[0].color = new Vector4(1, 1, 1, 0.5f);
-            Step_Image[1].color = new Vector4(1, 1, 1, 0.5f);
-            Step_Image[2].color = new Vector4(1, 1, 1, 0.5f);
-            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[0].color = new Vector4(1, 1, 1, Stepalpha);
+            Step_Image[1].color = new Vector4(1, 1, 1, Stepalpha);
+            Step_Image[2].color = new Vector4(1, 1, 1, Stepalpha);
+            Step_Image[3].color = new Vector4(1, 1, 1, Stepalpha);
         }
         else if (Num == 1)
         {
             Step_Image[0].color = new Vector4(1, 1, 1, 1.0f);
-            Step_Image[1].color = new Vector4(1, 1, 1, 0.5f);
-            Step_Image[2].color = new Vector4(1, 1, 1, 0.5f);
-            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[1].color = new Vector4(1, 1, 1, Stepalpha);
+            Step_Image[2].color = new Vector4(1, 1, 1, Stepalpha);
+            Step_Image[3].color = new Vector4(1, 1, 1, Stepalpha);
         }
         else if (Num == 2)
         {
             Step_Image[0].color = new Vector4(1, 1, 1, 1.0f);
             Step_Image[1].color = new Vector4(1, 1, 1, 1.0f);
-            Step_Image[2].color = new Vector4(1, 1, 1, 0.5f);
-            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[2].color = new Vector4(1, 1, 1, Stepalpha);
+            Step_Image[3].color = new Vector4(1, 1, 1, Stepalpha);
         }
         else if (Num == 3)
         {
             Step_Image[0].color = new Vector4(1, 1, 1, 1.0f);
             Step_Image[1].color = new Vector4(1, 1, 1, 1.0f);
             Step_Image[2].color = new Vector4(1, 1, 1, 1.0f);
-            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[3].color = new Vector4(1, 1, 1, Stepalpha);
         }
         else if (Num == 4)
         {

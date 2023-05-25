@@ -66,7 +66,7 @@ public class PlayDirector : MonoBehaviour
     [SerializeField] private int QuotaCount;
 
     [SerializeField] private bool isTutorial;
-    [SerializeField] private bool tutorialControlA;
+    [SerializeField] private int tutorialControlACount;
 
     private bool _gameStart;
     private bool _gameOver;
@@ -120,7 +120,7 @@ public class PlayDirector : MonoBehaviour
 
         QuotaCount = 0;
 
-        tutorialControlA = false;
+        tutorialControlACount = 0;
         isTutorial = false;
 
         StartCoroutine("BeatPlay");
@@ -231,7 +231,11 @@ public class PlayDirector : MonoBehaviour
 
             if (parent.isTutorial)
             {
-                if (parent._fieldController.TutorialCheck_8()) parent.tutorialControlA = true;
+                if (parent._fieldController.TutorialCheck_8()) parent.tutorialControlACount = 4;
+                else if(parent._fieldController.TutorialCheck_6()) parent.tutorialControlACount = 3;
+                else if(parent._fieldController.TutorialCheck_4()) parent.tutorialControlACount = 2;
+                else if(parent._fieldController.TutorialCheck_2()) parent.tutorialControlACount = 1;
+                else parent.tutorialControlACount = 0;
             }
             parent._fieldController.CheckDead();
             if (parent.player[0].activeSelf) parent.player[0].SetActive(false);
@@ -425,9 +429,9 @@ public class PlayDirector : MonoBehaviour
         return QuotaCount;
     } 
     
-    public bool GetTutorialControlA()
+    public int GetTutorialControlACount()
     {
-        return tutorialControlA;
+        return tutorialControlACount;
     }
     
     public bool GetisTutorial()

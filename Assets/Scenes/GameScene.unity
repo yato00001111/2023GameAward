@@ -2489,6 +2489,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FALL_COUNT_SPD: 5
+  isPause: 0
+  isFall: 0
   fieldController: {fileID: 1731863635}
   _blockControllers:
   - {fileID: 0}
@@ -9534,7 +9536,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db88689c3be329545b5193950c49e1e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FALL_COUNT_SPD: 4.2
+  FALL_COUNT_SPD: 3.9
+  isPause: 0
+  isFall: 0
   fieldController: {fileID: 1731863635}
   _blockControllers:
   - {fileID: 2036697805}
@@ -9583,6 +9587,7 @@ MonoBehaviour:
   Animation_Start_Count: 0
   Game_Start_Flag: 0
   currentTime: 0
+  Tutorial_Start_Flag: 0
 --- !u!95 &1606327073
 Animator:
   serializedVersion: 5
@@ -9657,6 +9662,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FALL_COUNT_SPD: 5
+  isPause: 0
+  isFall: 0
   fieldController: {fileID: 1731863635}
   _blockControllers:
   - {fileID: 0}
@@ -10423,6 +10430,8 @@ MonoBehaviour:
   _eraseWave: 0
   _stateErase: 0
   QuotaCount: 0
+  isTutorial: 0
+  tutorialControlACount: 0
 --- !u!114 &1731863635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10457,6 +10466,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 389fb1684b6c22547b2f43500f73aba0, type: 3}
   - {fileID: 0}
   se_kaiten: {fileID: 8300000, guid: 88dd536022c7c394d840fa120efb1708, type: 3}
+  _tutorialTransCount: 0
 --- !u!82 &1731863636
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10654,6 +10664,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FALL_COUNT_SPD: 5
+  isPause: 0
+  isFall: 0
   fieldController: {fileID: 1731863635}
   _blockControllers:
   - {fileID: 0}
@@ -12010,6 +12022,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FALL_COUNT_SPD: 5
+  isPause: 0
+  isFall: 0
   fieldController: {fileID: 1731863635}
   _blockControllers:
   - {fileID: 0}

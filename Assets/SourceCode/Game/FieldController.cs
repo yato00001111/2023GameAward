@@ -536,9 +536,40 @@ public class FieldController : MonoBehaviour
     // 8段目にブロックが存在しているか
     public bool TutorialCheck_8()
     {
-        Debug.Log("TutorialCheck_8");
-
         int y = 7;
+        for (int x = 0; x < BOARD_WIDTH; x++)
+        {
+            if (_board[y, x] == 0) continue;
+            return true;
+        }
+        return false;
+    }
+    // 6段目にブロックが存在しているか
+    public bool TutorialCheck_6()
+    {
+        int y = 5;
+        for (int x = 0; x < BOARD_WIDTH; x++)
+        {
+            if (_board[y, x] == 0) continue;
+            return true;
+        }
+        return false;
+    }
+    // 4段目にブロックが存在しているか
+    public bool TutorialCheck_4()
+    {
+        int y = 3;
+        for (int x = 0; x < BOARD_WIDTH; x++)
+        {
+            if (_board[y, x] == 0) continue;
+            return true;
+        }
+        return false;
+    }
+    // 2段目にブロックが存在しているか
+    public bool TutorialCheck_2()
+    {
+        int y = 1;
         for (int x = 0; x < BOARD_WIDTH; x++)
         {
             if (_board[y, x] == 0) continue;

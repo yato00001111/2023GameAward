@@ -109,10 +109,15 @@ public class TutorialDirector : MonoBehaviour
 
         _uiDeadGaugeTutorial.SetArrowDownAnimation(); //クイックドロップの位置に矢印
 
-        while (_playDirector.GetTutorialControlA() == false) //ブロックを4回積むまで待機
+        while (_playDirector.GetTutorialControlACount() != 4) //ブロックを4回積むまで待機
         {
+            _uiDeadGaugeTutorial.SetStepImage(_playDirector.GetTutorialControlACount());
+
             yield return null;
         }
+        _uiDeadGaugeTutorial.SetStepImage(4);
+        yield return new WaitForSeconds(0.7f);
+        _uiDeadGaugeTutorial.SetStepImage(0); //0.7秒後StepImage4つ半透明
 
         _fieldController.SetControl(true); //ブロック回転許可
 
@@ -122,15 +127,22 @@ public class TutorialDirector : MonoBehaviour
 
         while (_fieldController.GetTutorialTransCount() != 4) //ブロックを4回回転させるまでまで待機
         {
+            _uiDeadGaugeTutorial.SetStepImage(_fieldController.GetTutorialTransCount());
 
             yield return null;
         }
 
-        _playerController.SetPlayerPause(true);
+        _uiDeadGaugeTutorial.SetStepImage(4);
+
+        _playerController.SetPlayerPause(true); //player操作禁止
+
+        yield return new WaitForSeconds(0.1f); //即回転禁止にすると4回目が回転しなくなるので
         _fieldController.SetControl(false); //ブロック回転禁止
         _uiDeadGaugeTutorial.SetArrowResetAnimation(); //矢印リセット
         _uiDeadGaugeTutorial.SetTutorial04StartFlag(); //DeadGauge開始
 
+        yield return new WaitForSeconds(0.7f);
+        _uiDeadGaugeTutorial.SetStepImage(5); //0.7秒後StepImage非表示
 
 
 
