@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Threading.Tasks;
 
 public class UI_Needles : MonoBehaviour
 {
@@ -103,6 +104,8 @@ public class UI_Needles : MonoBehaviour
     bool beat;
     bool TriggerFlag;                                   // トリガーの長押しを効かなくする用
 
+    private bool Stick_Change_Color;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -183,6 +186,8 @@ public class UI_Needles : MonoBehaviour
 
         TriggerFlag = false;
 
+        Stick_Change_Color = false;
+
         // スタートコルチン
         StartCoroutine("BeatPlay");
     }
@@ -209,6 +214,17 @@ public class UI_Needles : MonoBehaviour
             }
         }
     }
+
+    private async void Delay_Stick_Change_Color()
+    {
+        await Task.Delay(200);
+        Debug.Log("Delay");
+        Stick_Change_Color = false;
+        Rhythm_Gauge_Image_OBJ[0].SetActive(true);
+        Rhythm_Gauge_Image_OBJ[1].SetActive(false);
+        Rhythm_Gauge_Image_OBJ[2].SetActive(false);
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -343,6 +359,8 @@ public class UI_Needles : MonoBehaviour
 
             justTiming++;
             TriggerFlag = true;
+
+            Stick_Change_Color = true;
         }
         // "失敗"
         else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (!playDirector.GetPlayFlag())
@@ -355,14 +373,25 @@ public class UI_Needles : MonoBehaviour
 
             uiRythmEffect.PlayEffect(false);
             TriggerFlag = true;
+
+            Stick_Change_Color = true;
         }
         // キー入力が離れたら色を元に戻す
-        else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyUp(KeyCode.Joystick1Button2) || Input.GetKeyUp(KeyCode.Joystick1Button4) || Input.GetKeyUp(KeyCode.Joystick1Button5) || TrigerInput == 0.0f || /*確認用*/ Input.GetKeyUp(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.DownArrow)
-            || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.UpArrow)) 
+        //else if (!_Disappear_Phase_Flag && uI_CountDown.GetGameStartFlag() && (Input.GetKeyUp(KeyCode.Joystick1Button0) || 
+        //    Input.GetKeyUp(KeyCode.Joystick1Button2) || Input.GetKeyUp(KeyCode.Joystick1Button4) ||
+        //    Input.GetKeyUp(KeyCode.Joystick1Button5) /*|| TrigerInput == 0.0f*/ || /*確認用*/ Input.GetKeyUp(KeyCode.A) || 
+        //    Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.DownArrow)
+        //    || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.UpArrow)))
+        //{
+        //    Rhythm_Gauge_Image_OBJ[0].SetActive(true);
+        //    Rhythm_Gauge_Image_OBJ[1].SetActive(false);
+        //    Rhythm_Gauge_Image_OBJ[2].SetActive(false);
+
+        //}
+
+        if(Stick_Change_Color)
         {
-            Rhythm_Gauge_Image_OBJ[0].SetActive(true);
-            Rhythm_Gauge_Image_OBJ[1].SetActive(false);
-            Rhythm_Gauge_Image_OBJ[2].SetActive(false);
+            Delay_Stick_Change_Color();
         }
 
         // 操作成功から一定時間経過したら

@@ -89,6 +89,7 @@ public class TutorialDirector : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
 
         _uiCountDown.SetTutorialStartFlag(true);
+        _fieldController.SetIsTutorial(true);
         _playDirector.SetisTutorial(true);
 
         _uiDeadGaugeTutorial.SetStepImage(0);
@@ -120,6 +121,8 @@ public class TutorialDirector : MonoBehaviour
         _uiDeadGaugeTutorial.SetStepImage(0); //0.7秒後StepImage4つ半透明
 
         _fieldController.SetControl(true); //ブロック回転許可
+        _fieldController.SetHalfControl(false); //ブロック大回転禁止
+        _playerController.SetPlayerPause(true); //player操作禁止
 
         _uiDeadGaugeTutorial.SetArrowResetAnimation(); //矢印リセット
         _uiDeadGaugeTutorial.SetArrowUpAnimation(); //回転の位置に矢印
@@ -134,7 +137,6 @@ public class TutorialDirector : MonoBehaviour
 
         _uiDeadGaugeTutorial.SetStepImage(4);
 
-        _playerController.SetPlayerPause(true); //player操作禁止
 
         yield return new WaitForSeconds(0.1f); //即回転禁止にすると4回目が回転しなくなるので
         _fieldController.SetControl(false); //ブロック回転禁止
@@ -144,14 +146,17 @@ public class TutorialDirector : MonoBehaviour
         yield return new WaitForSeconds(0.7f);
         _uiDeadGaugeTutorial.SetStepImage(5); //0.7秒後StepImage非表示
 
+        while (_uiDeadGaugeTutorial.GetTutorialEndFlag() == false) //消えるフェーズ終了まで待機
+        {
+            yield return null;
+        }
 
+        // チュートリアルが終わったら
+        transition.SetTrigger("OUT_Animation");
 
-        //// チュートリアルが終わったら
-        //transition.SetTrigger("OUT_Animation");
+        yield return new WaitForSeconds(3.5f);
 
-        //yield return new WaitForSeconds(3.5f);
-
-        //SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("GameScene");
     }
 
     private void Update()

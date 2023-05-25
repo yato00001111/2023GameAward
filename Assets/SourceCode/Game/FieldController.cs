@@ -37,6 +37,7 @@ public class FieldController : MonoBehaviour
     [SerializeField] PlayerController[] _playerController = { default!, default! };
     [SerializeField] PlayDirector playDirector = default!;
     [SerializeField] UI_Needles needles = default!;
+    [SerializeField] UI_Dead_Gauge_Tutorial uiDeadGaugeTutorial = default!;
 
     int[,] _board = new int[BOARD_HEIGHT, BOARD_WIDTH];
     int[,] _boardDst = new int[BOARD_HEIGHT, BOARD_WIDTH];
@@ -48,6 +49,7 @@ public class FieldController : MonoBehaviour
     const int HALF_TRANS_TIME = 15; // 移動速度遷移時間
 
     private bool isControl;
+    private bool isHalfControl;
 
     // 追加された得点を保持
     uint _additiveScore = 0;
@@ -86,6 +88,8 @@ public class FieldController : MonoBehaviour
     // Tutorial
     [SerializeField] private int _tutorialTransCount;
 
+    private bool isTutorial;
+
     int needleX;
     int tempType;
     private void ClearAll()
@@ -113,6 +117,7 @@ public class FieldController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
 
         isControl = true;
+        isHalfControl = true;
         _animationController.Set(1);
         isKaiten = false;
         isHalfTransR = false;
@@ -124,6 +129,7 @@ public class FieldController : MonoBehaviour
         tempType = 0;
         TriggerFlag = false;
         _tutorialTransCount = 0;
+        isTutorial = false;
 
         // 全マスに置く
         //for (int y = 0; y < BOARD_HEIGHT - 1; y++)
@@ -477,30 +483,65 @@ public class FieldController : MonoBehaviour
 
         //return true;
 
-        if (isDisappearPhase)
+        if(isTutorial)
         {
-            foreach (Vector2Int d in _erases)
+            if (isDisappearPhase)
             {
-                if (needles.GetCurrentNumber() == d.x)
+                foreach (Vector2Int d in _erases)
                 {
-                    if (_Blocks[d.y, d.x] == null) continue;
-                    //DelayDestroy(d.x, d.y);
-                    if (isEffect)
+                    if (uiDeadGaugeTutorial.GetCurrentNumber() == d.x)
                     {
-                        int type = _board[d.y, d.x];
-                        _Blocks[d.y, d.x].transform.Find("effect").GetComponent<EffectController>().PlayEffect(type);
-                        audioSource.PlayOneShot(se_erase_block[type]);
+                        if (_Blocks[d.y, d.x] == null) continue;
+                        //DelayDestroy(d.x, d.y);
+                        if (isEffect)
+                        {
+                            int type = _board[d.y, d.x];
+                            _Blocks[d.y, d.x].transform.Find("effect").GetComponent<EffectController>().PlayEffect(type);
+                            audioSource.PlayOneShot(se_erase_block[type]);
 
+                        }
+                        //if (_eraseFrames > _eraseTime)
+                        {
+                            Destroy(_Blocks[d.y, d.x]);
+                            _Blocks[d.y, d.x] = null;
+                            _board[d.y, d.x] = 0;
+                            _needleEraseCount++;
+
+                            //
+                            _additiveScore += 50;
+                        }
                     }
-                    //if (_eraseFrames > _eraseTime)
-                    {
-                        Destroy(_Blocks[d.y, d.x]);
-                        _Blocks[d.y, d.x] = null;
-                        _board[d.y, d.x] = 0;
-                        _needleEraseCount++;
+                }
+            }
 
-                        //
-                        _additiveScore += 50;
+        }
+        else
+        {
+            if (isDisappearPhase)
+            {
+                foreach (Vector2Int d in _erases)
+                {
+                    if (needles.GetCurrentNumber() == d.x)
+                    {
+                        if (_Blocks[d.y, d.x] == null) continue;
+                        //DelayDestroy(d.x, d.y);
+                        if (isEffect)
+                        {
+                            int type = _board[d.y, d.x];
+                            _Blocks[d.y, d.x].transform.Find("effect").GetComponent<EffectController>().PlayEffect(type);
+                            audioSource.PlayOneShot(se_erase_block[type]);
+
+                        }
+                        //if (_eraseFrames > _eraseTime)
+                        {
+                            Destroy(_Blocks[d.y, d.x]);
+                            _Blocks[d.y, d.x] = null;
+                            _board[d.y, d.x] = 0;
+                            _needleEraseCount++;
+
+                            //
+                            _additiveScore += 50;
+                        }
                     }
                 }
             }
@@ -582,17 +623,35 @@ public class FieldController : MonoBehaviour
     }
 
     public void EraseBlockSound()
-    {     
-        foreach (Vector2Int d in _erases)
+    {
+        if (isTutorial)
         {
-            if (needles.GetCurrentNumber() == d.x)
+            foreach (Vector2Int d in _erases)
             {
-                if (needleX == needles.GetCurrentNumber()) continue;
-                needleX = needles.GetCurrentNumber();
-                //if (tempType == _board[d.y, d.x]) continue;
-                tempType = _board[d.y, d.x];
-                //Debug.Log("type" + tempType);
-                audioSource.PlayOneShot(se_erase_block[tempType]);
+                if (uiDeadGaugeTutorial.GetCurrentNumber() == d.x)
+                {
+                    if (needleX == uiDeadGaugeTutorial.GetCurrentNumber()) continue;
+                    needleX = uiDeadGaugeTutorial.GetCurrentNumber();
+                    //if (tempType == _board[d.y, d.x]) continue;
+                    tempType = _board[d.y, d.x];
+                    //Debug.Log("type" + tempType);
+                    audioSource.PlayOneShot(se_erase_block[tempType]);
+                }
+            }
+        }
+        else
+        {
+            foreach (Vector2Int d in _erases)
+            {
+                if (needles.GetCurrentNumber() == d.x)
+                {
+                    if (needleX == needles.GetCurrentNumber()) continue;
+                    needleX = needles.GetCurrentNumber();
+                    //if (tempType == _board[d.y, d.x]) continue;
+                    tempType = _board[d.y, d.x];
+                    //Debug.Log("type" + tempType);
+                    audioSource.PlayOneShot(se_erase_block[tempType]);
+                }
             }
         }
 
@@ -717,30 +776,33 @@ public class FieldController : MonoBehaviour
 
         if (!isHalfTransR && !isHalfTransL)
         {
-            if (Input.GetKeyDown(KeyCode.D) || (TrigerInput > 0.0f && !TriggerFlag))
+            if(isHalfControl)
             {
-                if (playDirector.GetPlayFlag())
+                if (Input.GetKeyDown(KeyCode.D) || (TrigerInput > 0.0f && !TriggerFlag))
                 {
-                    for (int i = 0; i < 2; i++)
+                    if (playDirector.GetPlayFlag())
                     {
-                        _playerController[i].SetisHalfTrans(true);
+                        for (int i = 0; i < 2; i++)
+                        {
+                            _playerController[i].SetisHalfTrans(true);
+                        }
+                        isHalfTransR = true;
+                        TriggerFlag = true;
+                        return;
                     }
-                    isHalfTransR = true;
-                    TriggerFlag = true;
-                    return;
                 }
-            }
-            if (Input.GetKeyDown(KeyCode.A) || (TrigerInput < 0.0f && !TriggerFlag))
-            {
-                if (playDirector.GetPlayFlag())
+                if (Input.GetKeyDown(KeyCode.A) || (TrigerInput < 0.0f && !TriggerFlag))
                 {
-                    for (int i = 0; i < 2; i++)
+                    if (playDirector.GetPlayFlag())
                     {
-                        _playerController[i].SetisHalfTrans(true);
+                        for (int i = 0; i < 2; i++)
+                        {
+                            _playerController[i].SetisHalfTrans(true);
+                        }
+                        isHalfTransL = true;
+                        TriggerFlag = true;
+                        return;
                     }
-                    isHalfTransL = true;
-                    TriggerFlag = true;
-                    return;
                 }
             }
             // 平行移動のキー入力取得
@@ -856,11 +918,25 @@ public class FieldController : MonoBehaviour
     public bool GetControl()
     {
         return isControl;
+    }  
+    
+    public void SetHalfControl(bool control)
+    {
+        isHalfControl = control;
+    }
+    public bool GetHalfControl()
+    {
+        return isHalfControl;
     }
     
     public int GetTutorialTransCount()
     {
         return _tutorialTransCount;
+    }
+
+    public void SetIsTutorial(bool flag)
+    {
+        isTutorial = flag;
     }
 
     public void SetTutorial()
