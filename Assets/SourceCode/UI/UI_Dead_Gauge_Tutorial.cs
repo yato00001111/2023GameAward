@@ -411,4 +411,7 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
 
     // チュートリアル終了フラグ取得関数
     public bool GetTutorialEndFlag() { return TutorialEndFlag; }
+
+    // フェーズ開始
+    public bool GetDisappearPhaseFlag() { return Is_Disappear_Phase_Flag; }
 }

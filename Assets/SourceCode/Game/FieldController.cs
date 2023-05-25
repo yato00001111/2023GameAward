@@ -408,22 +408,22 @@ public class FieldController : MonoBehaviour
         //xChainTemp = -1;
         //yChainTemp = -1;
 
-        if (chainCount != -1)// 初期化時は得点計算はしない
-        {
-            // ボーナス計算
-            uint colorNum = 0;
-            for (; 0 < colorBits; colorBits >>= 1)// 立っているビットの数を数える
-            {
-                colorNum += (colorBits & 1u);
-            }
+        //if (chainCount != -1)// 初期化時は得点計算はしない
+        //{
+        //    // ボーナス計算
+        //    uint colorNum = 0;
+        //    for (; 0 < colorBits; colorBits >>= 1)// 立っているビットの数を数える
+        //    {
+        //        colorNum += (colorBits & 1u);
+        //    }
 
-            uint colorBonus = colorBonusTbl[System.Math.Min(colorNum, colorBonusTbl.Length - 1)];
-            uint chainBonus = chainBonusTbl[System.Math.Min(chainCount, chainBonusTbl.Length - 1)];
-            uint bonus = System.Math.Max(1, chainBonus + connectBonus + colorBonus);// 0 の時も1入る
-            _additiveScore += 10 * (uint)_erases.Count * bonus;
+        //    uint colorBonus = colorBonusTbl[System.Math.Min(colorNum, colorBonusTbl.Length - 1)];
+        //    uint chainBonus = chainBonusTbl[System.Math.Min(chainCount, chainBonusTbl.Length - 1)];
+        //    uint bonus = System.Math.Max(1, chainBonus + connectBonus + colorBonus);// 0 の時も1入る
+        //    _additiveScore += 10 * (uint)_erases.Count * bonus;
 
-            if (puyoCount == 0) _additiveScore += 1800;// 全消しボーナス
-        }
+        //    if (puyoCount == 0) _additiveScore += 1800;// 全消しボーナス
+        //}
         if (_eraseCount != _erases.Count / 3)
         {
             _normaCount++;
@@ -498,6 +498,9 @@ public class FieldController : MonoBehaviour
                         _Blocks[d.y, d.x] = null;
                         _board[d.y, d.x] = 0;
                         _needleEraseCount++;
+
+                        //
+                        _additiveScore += 50;
                     }
                 }
             }

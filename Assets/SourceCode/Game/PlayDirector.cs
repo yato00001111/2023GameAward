@@ -29,6 +29,7 @@ public class PlayDirector : MonoBehaviour
     public const int BOARD_HEIGHT = 20;
 
     [SerializeField] UI_Objective_Quota uiObjectiveQuota = default!;
+    [SerializeField] UI_Dead_Gauge_Tutorial uiDeadGaugeTutorial = default!;
     [SerializeField] UI_Dead_Gauge uiDeadGauge = default!;
     [SerializeField] GameObject[] player = { default!, default! };
     PlayerController[] _playerController = new PlayerController[2];
@@ -251,7 +252,12 @@ public class PlayDirector : MonoBehaviour
         {
             Debug.Log("ErasingUpdate");
             if (parent._canSpawn) return IState.E_State.Control;
-            return parent._fieldController.Erase(parent.uiDeadGauge.GetIsDisappearPhaseFlag()) ? IState.E_State.Unchanged : IState.E_State.Falling;
+            if (parent.isTutorial)
+            {
+                return parent._fieldController.Erase(parent.uiDeadGaugeTutorial.GetDisappearPhaseFlag()) ? IState.E_State.Unchanged : IState.E_State.Falling;
+            }
+            else
+                return parent._fieldController.Erase(parent.uiDeadGauge.GetIsDisappearPhaseFlag()) ? IState.E_State.Unchanged : IState.E_State.Falling;
         }
     }
 
@@ -276,6 +282,15 @@ public class PlayDirector : MonoBehaviour
         if ((_current_state == IState.E_State.Waiting) && _gameStart)
         {
             if (!uiDeadGauge.GetIsDisappearPhaseFlag()) EnableSpawn(true);
+        }
+        if(isTutorial)
+        {
+            if (uiDeadGaugeTutorial.GetDisappearPhaseFlag() && !_stateErase)
+            {
+                next_state = IState.E_State.Erasing;
+                EnableSpawn(false);
+                _stateErase = true;
+            }
         }
         if (uiDeadGauge.GetBeforeIsDisappearPhaseFlag() && !_stateErase)
         {
@@ -386,8 +401,8 @@ public class PlayDirector : MonoBehaviour
         UpdateState();
 
 
-        AddScore(_playerController[0].popScore());
-        AddScore(_playerController[1].popScore());
+        //AddScore(_playerController[0].popScore());
+        //AddScore(_playerController[1].popScore());
         AddScore(_fieldController.popScore());
         QuotaCount = _fieldController._normaCount;
         SetChainScore(_fieldController._eraseCount / 3);
