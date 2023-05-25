@@ -95,6 +95,10 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
 
         // 背景黒画像を初期化する
         Back_Black_Image.enabled = false;
+
+        // ステップ画像を初期化する
+        Step_Image[0].enabled = Step_Image[1].enabled = Step_Image[2].enabled = Step_Image[3].enabled = false;
+        Step_Image[0].color   = Step_Image[1].color   = Step_Image[2].color   = Step_Image[3].color   = new Vector4(1, 1, 1, 0.5f);
     }
 
 
@@ -123,6 +127,8 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
                 Tutorial_Content_01_Image.enabled = true;
                 // 背景黒画像を描画する
                 Back_Black_Image.enabled = true;
+
+                //SetStepImage(0);
 
                 // XBoxコントローラーの"A"ボタンが押された
                 if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)) && !Input_Stop_Flag[0] && !Input_Stop_Flag[1])
@@ -167,6 +173,7 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
                     Tutorial_Content_03_Image.enabled = false;
                     // 背景黒画像を非表示にする
                     Back_Black_Image.enabled = false;
+
                 }
             }
 
@@ -202,7 +209,8 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
         // 0.2まで行ったら一旦止める
         if (Scale >= 0.2f && !Explanation_End_Flag) Gauge_Stop_Flag = true;
 
-        if(Scale >= 1.0f)
+        // チュートリア04の終了↓
+        if (Scale >= 1.0f) 
         {
 
         }
@@ -255,10 +263,62 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
     // 何回成功したかの画像設定関数
     public void SetStepImage(int Num)
     {
-        // 指定のステップまで描画する
-        for (int index = 0; index < Num; ++index) 
+        //*************************************//
+        // 引数が"5"ならそもそもの描画をしない //
+        //*************************************//
+        if (Num == 5) 
         {
-            Step_Image[index + 1].enabled = true;
+            for (int index = 0; index < 4; ++index)
+            {
+                // 念のため半透明にしておく
+                Step_Image[index].color = new Vector4(1, 1, 1, 0.5f);
+                // 非表示にする
+                Step_Image[index].enabled = false;
+            }
+            return;
+        }
+
+        // この関数が呼ばれた段階で表示する
+        for (int index = 0; index < 4; ++index)
+        {
+            Step_Image[index].enabled = true;
+        }
+
+        // 指定のステップまで描画する
+        if      (Num == 0) 
+        {
+            Step_Image[0].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[1].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[2].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+        }
+        else if (Num == 1)
+        {
+            Step_Image[0].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[1].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[2].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+        }
+        else if (Num == 2)
+        {
+            Step_Image[0].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[1].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[2].color = new Vector4(1, 1, 1, 0.5f);
+            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+        }
+        else if (Num == 3)
+        {
+            Step_Image[0].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[1].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[2].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[3].color = new Vector4(1, 1, 1, 0.5f);
+        }
+        else if (Num == 4)
+        {
+            Step_Image[0].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[1].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[2].color = new Vector4(1, 1, 1, 1.0f);
+            Step_Image[3].color = new Vector4(1, 1, 1, 1.0f);
         }
     }
 }
