@@ -24,6 +24,16 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
     private Image[] Step_Image                            // ステップ画像
         = new Image[4];
 
+    [SerializeField]
+    private RectTransform Revers_Image_Rect;              // 色彩反転UI画像のRectTransform
+    [SerializeField]
+    private float Revers_Image_Scale;                     // 色彩反転UI画像のサイズ
+
+    [SerializeField]
+    private RectTransform Revers_Image_Rect2;             // 色彩反転UI画像のRectTransform(2枚目)
+    [SerializeField]
+    private float Revers_Image_Scale2;                    // 色彩反転UI画像のサイズ(2枚目)
+
 
     [SerializeField]
     private Image[] Arrow_Image                           // 矢印画像
@@ -53,6 +63,21 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
 
     [SerializeField]
     private float ElapsedTime;                            // 死亡ゲージの拡大経過時間
+
+    [SerializeField]
+    private float ElapsedTime2;                           // 死亡ゲージの縮小経過時間
+
+    [SerializeField]
+    private bool Is_Disappear_Phase_Flag;                 // 消えるフェーズフラグ
+
+    [SerializeField]
+    private float Dead_Gauge_ScaleX;                      // 死亡ゲージUI画像の横幅変数
+
+    [SerializeField]
+    private bool Is_Disappear_Phase_End_Flag;             // 消えるフェーズの終了フラグ
+
+    [SerializeField]
+    private bool TutorialEndFlag;                         // "チュートリアル"の終了フラグ
 
     // Start is called before the first frame update
     void Start()
@@ -99,6 +124,21 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
         // ステップ画像を初期化する
         Step_Image[0].enabled = Step_Image[1].enabled = Step_Image[2].enabled = Step_Image[3].enabled = false;
         Step_Image[0].color   = Step_Image[1].color   = Step_Image[2].color   = Step_Image[3].color   = new Vector4(1, 1, 1, 0.5f);
+
+        // 色彩反転画像のスケール初期化する
+        Revers_Image_Rect.localScale = new Vector3(0, 0, 0);
+        Revers_Image_Rect2.localScale = new Vector3(0, 0, 0);
+        // 色彩反転UI画像のサイズ変数を初期化する
+        Revers_Image_Scale = 0.0f;
+        Revers_Image_Scale2 = 0.0f;
+        // 死亡ゲージUI画像の横幅変数を初期化する
+        Dead_Gauge_ScaleX = 0.0f;
+        // 消えるフェーズの終了フラグを初期化する
+        Is_Disappear_Phase_End_Flag = false;
+        // "チュートリアル"の終了フラグを初期化する
+        TutorialEndFlag = false;
+        // 死亡ゲージの縮小経過時間を初期化する
+        ElapsedTime2 = 0.0f;
     }
 
 
@@ -108,10 +148,6 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
         // チュートリアル04が開始されたら各画像の位置を戻す
         if (Tutorial04_Start_Flag)
         {
-            // 針画像の登場
-
-
-
             // ゲージが0.2地点までいけば説明フェーズに入る
             if (Gauge_Stop_Flag)
             {
@@ -128,7 +164,6 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
                 // 背景黒画像を描画する
                 Back_Black_Image.enabled = true;
 
-                //SetStepImage(0);
 
                 // XBoxコントローラーの"A"ボタンが押された
                 if ((Input.GetKeyDown(KeyCode.Joystick1Button0) || /*確認用*/ Input.GetKeyDown(KeyCode.A)) && !Input_Stop_Flag[0] && !Input_Stop_Flag[1])
@@ -183,19 +218,65 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
             // ゲージが止まっている間はここでリターン
             if (Gauge_Stop_Flag) return;
 
-            // タイマー起動
-            ElapsedTime += Time.deltaTime;
-            float Current_Time = Mathf.Clamp01(ElapsedTime / 4.8f);
-            // 演出
-            OnScale(Current_Time);
-
-            float Current_Value = Mathf.Lerp(0.0f, 1.0f, Current_Time);
-
-            // 回転関数
-            UI_Rotate(Current_Value);
-
-
+            // 消えるフェーズ中以外は通常通り動かす
+            if (!Is_Disappear_Phase_Flag)
+            {
+                // タイマー起動
+                ElapsedTime += Time.deltaTime;
+                float Current_Time = Mathf.Clamp01(ElapsedTime / 4.8f);
+                // 演出
+                OnScale(Current_Time);
+                float Current_Value = Mathf.Lerp(0.0f, 1.0f, Current_Time);
+                // 回転関数
+                UI_Rotate(Current_Value);
+            }
            
+            // 消えるフェーズに入ったら消えるフェーズフラグを立てる
+            if (Dead_Gauge_ScaleX >= 1.0f)
+            {
+                // 1枚目の色彩反転画像のサイズを大きくしていく
+                if (Revers_Image_Scale < 20.0f) Revers_Image_Scale += 0.25f;
+                // 1枚目の色彩反転画像のサイズが最大値までいけば2枚目の色彩反転画像のサイズも大きくしていく
+                else if (Revers_Image_Scale >= 20.0f && Revers_Image_Scale2 < 15.0f) Revers_Image_Scale2 += 0.25f;
+            }
+
+
+            // 色彩反転演出が終了次第消えるフェーズに入る フラグを立てる
+            if (Revers_Image_Scale2 >= 15.0f) Is_Disappear_Phase_Flag = true;
+
+            // 消えるフェーズ中は死亡ゲージのスケールを減らす
+            if (Is_Disappear_Phase_Flag)
+            {
+                // タイマー起動
+                ElapsedTime2 += Time.deltaTime;
+                float Current_Time = Mathf.Clamp01(ElapsedTime2 / 4.8f);
+                // 演出
+                OnScale(Current_Time);
+                float Current_Value = Mathf.Lerp(0.0f, 1.0f, Current_Time);
+                // 回転関数
+                UI_Rotate(Current_Value);
+            }
+
+            // 消えるフェーズの終了お知らせを受け取ったら
+            if (Is_Disappear_Phase_End_Flag)
+            {
+                // 2枚目の色彩反転画像のサイズを小さくしていく
+                if (Revers_Image_Scale2 > 0.0f) Revers_Image_Scale2 -= 0.25f;
+                // 2枚目の色彩反転画像のサイズが最小値までいけば1枚目の色彩反転画像のサイズも小さくしていく
+                else if (Revers_Image_Scale2 <= 0.0f && Revers_Image_Scale > 0.0f) Revers_Image_Scale -= 0.25f;
+
+                // 色彩反転演出が終了すれば
+                if (Revers_Image_Scale <= 0.0f)
+                {
+                    // チュートリアル終了フラグを立てる
+                    TutorialEndFlag = true;
+                }
+            }
+
+
+            // 色彩反転画像のサイズ設定
+            Revers_Image_Rect.localScale  = new Vector3(Revers_Image_Scale,  Revers_Image_Scale,  Revers_Image_Scale);
+            Revers_Image_Rect2.localScale = new Vector3(Revers_Image_Scale2, Revers_Image_Scale2, Revers_Image_Scale2);
         }
     }
 
@@ -203,16 +284,20 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
     private void OnScale(float value)
     {
         // 消えるフェーズ中なら360度回転　それ以外は通常通り45度回転
-        var Scale = Mathf.Lerp(0.0f, 1.0f, value);
+        var Scale = Is_Disappear_Phase_Flag ? Mathf.Lerp(1.0f, 0.0f, value) : Mathf.Lerp(0.0f, 1.0f, value);
         // スケール反映
         Dead_Gauge_Image_Rect.localScale = new Vector3(Scale, 1, 1);
         // 0.2まで行ったら一旦止める
         if (Scale >= 0.2f && !Explanation_End_Flag) Gauge_Stop_Flag = true;
 
-        // チュートリア04の終了↓
-        if (Scale >= 1.0f) 
-        {
+        // スケール値保存する
+        Dead_Gauge_ScaleX = Scale;
 
+        // 消えるフェーズのゲージが0になれば
+        if (Is_Disappear_Phase_Flag && Scale <= 0.0f) 
+        {
+            // 消えるフェーズの終了フラグを立てる
+            Is_Disappear_Phase_End_Flag = true;
         }
     }
 
@@ -321,4 +406,7 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
             Step_Image[3].color = new Vector4(1, 1, 1, 1.0f);
         }
     }
+
+    // チュートリアル終了フラグ取得関数
+    public bool GetTutorialEndFlag() { return TutorialEndFlag; }
 }
