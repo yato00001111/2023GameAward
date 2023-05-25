@@ -201,6 +201,11 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
         Dead_Gauge_Image_Rect.localScale = new Vector3(Scale, 1, 1);
         // 0.2‚Ü‚Ås‚Á‚½‚çˆê’UŽ~‚ß‚é
         if (Scale >= 0.2f && !Explanation_End_Flag) Gauge_Stop_Flag = true;
+
+        if(Scale >= 1.0f)
+        {
+
+        }
     }
 
     // jƒQ[ƒWUI‚ð‰ñ“]‚³‚¹‚éŠÖ”

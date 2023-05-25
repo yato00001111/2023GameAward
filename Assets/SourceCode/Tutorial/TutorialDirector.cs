@@ -12,6 +12,7 @@ public class TutorialDirector : MonoBehaviour
     [SerializeField] FieldController _fieldController = default!;
     [SerializeField] PlayDirector _playDirector = default!;
     [SerializeField] UI_CountDown _uiCountDown = default!;
+    [SerializeField] UI_Dead_Gauge_Tutorial _uiDeadGaugeTutorial = default!;
     GameObject _message = null;
 
     // チュートリアル表示オブジェクトのスクリプト(仮)
@@ -90,6 +91,9 @@ public class TutorialDirector : MonoBehaviour
         _uiCountDown.SetTutorialStartFlag(true);
         _playDirector.SetisTutorial(true);
 
+        _uiDeadGaugeTutorial.SetStepImage(0);
+
+
         while (!_uiCountDown.GetGameStartFlag())
         {
             yield return null;
@@ -103,6 +107,8 @@ public class TutorialDirector : MonoBehaviour
         _fieldController.SetControl(false); //ブロック回転禁止
         _playerController.SetisFall(false); //プレイヤー落下停止
 
+        _uiDeadGaugeTutorial.SetArrowDownAnimation(); //クイックドロップの位置に矢印
+
         while (_playDirector.GetTutorialControlA() == false) //ブロックを4回積むまで待機
         {
             yield return null;
@@ -110,12 +116,23 @@ public class TutorialDirector : MonoBehaviour
 
         _fieldController.SetControl(true); //ブロック回転許可
 
+        _uiDeadGaugeTutorial.SetArrowResetAnimation(); //矢印リセット
+        _uiDeadGaugeTutorial.SetArrowUpAnimation(); //回転の位置に矢印
+
+
         while (_fieldController.GetTutorialTransCount() != 4) //ブロックを4回回転させるまでまで待機
         {
+
             yield return null;
         }
 
-        Debug.Log("TutorialFlow");
+        _playerController.SetPlayerPause(true);
+        _fieldController.SetControl(false); //ブロック回転禁止
+        _uiDeadGaugeTutorial.SetArrowResetAnimation(); //矢印リセット
+        _uiDeadGaugeTutorial.SetTutorial04StartFlag(); //DeadGauge開始
+
+
+
 
         //// チュートリアルが終わったら
         //transition.SetTrigger("OUT_Animation");
