@@ -79,6 +79,9 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
     [SerializeField]
     private bool TutorialEndFlag;                         // "チュートリアル"の終了フラグ
 
+    [SerializeField]
+    private int Needle_Gauge_Number;                      // 針ゲージの現在の角度番号
+
     // Start is called before the first frame update
     void Start()
     {
@@ -306,6 +309,15 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
     {
         var Angle = Mathf.Lerp(-157.5f, -517.5f, timer);
         Needle_Gauge_Image_Rect.eulerAngles = new Vector3(Needle_Gauge_Image_Rect.eulerAngles.x, 0f, Angle);
+
+        if      (Angle <= -157.5f && Angle > -202.5f) Needle_Gauge_Number = 0;
+        else if (Angle <= -202.5f && Angle > -247.5f) Needle_Gauge_Number = 1;
+        else if (Angle <= -247.5f && Angle > -292.5f) Needle_Gauge_Number = 2;
+        else if (Angle <= -292.5f && Angle > -337.5f) Needle_Gauge_Number = 3;
+        else if (Angle <= -337.5f && Angle > -382.5f) Needle_Gauge_Number = 4;
+        else if (Angle <= -382.5f && Angle > -427.5f) Needle_Gauge_Number = 5;
+        else if (Angle <= -427.5f && Angle > -472.5f) Needle_Gauge_Number = 6;
+        else if (Angle <= -472.5f && Angle > -517.5f) Needle_Gauge_Number = 7;
     }
 
     // No04のチュートリアル開始フラグの真偽設定関数
@@ -409,4 +421,7 @@ public class UI_Dead_Gauge_Tutorial : MonoBehaviour
 
     // チュートリアル終了フラグ取得関数
     public bool GetTutorialEndFlag() { return TutorialEndFlag; }
+
+    // 現在の回転番号を取得する関数
+    public int GetCurrentNumber() { return Needle_Gauge_Number; }
 }
